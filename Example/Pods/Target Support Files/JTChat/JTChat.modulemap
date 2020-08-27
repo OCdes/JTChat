@@ -1,0 +1,6 @@
+framework module JTChat {
+  umbrella header "JTChat-umbrella.h"
+
+  export *
+  module * { export * }
+}

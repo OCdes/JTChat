@@ -1,0 +1,6 @@
+framework module ALQRCode {
+  umbrella header "ALQRCode-umbrella.h"
+
+  export *
+  module * { export * }
+}

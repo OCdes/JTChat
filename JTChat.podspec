@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = 'JTChat'
   s.version          = '0.1.0'
-  s.summary          = 'A short description of JTChat.'
+  s.summary          = '精特聊天演示'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+                        精特聊天演示初始化
                        DESC
 
   s.homepage         = 'https://github.com/76515226@qq.com/JTChat'
@@ -28,15 +28,31 @@ TODO: Add long description of the pod here.
   s.source           = { :git => 'https://github.com/76515226@qq.com/JTChat.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '8.0'
-
-  s.source_files = 'JTChat/Classes/**/*'
-  
-  # s.resource_bundles = {
-  #   'JTChat' => ['JTChat/Assets/*.png']
-  # }
-
+  s.ios.deployment_target = '10.0'
+  s.source_files = 'JTChat/Classes/**/*.swift'
+  s.swift_versions = ['4.0','4.2','5.0']
+   s.resource_bundles = {
+     'JTChat' => ['JTChat/Assets/*']
+   }
+   s.static_framework = true
+   #s.pod_target_xcconfig = {'DEFINES_MODULE' => 'YES'}
+   # , 'FRAMEWORK_SEARCH_PATHS' => '"${PODS_ROOT}/MJRefresh"'
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.dependency "KeychainSwift", "~> 18.0.0"
+  s.dependency "ESTabBarController-swift"
+  s.dependency "Moya", "~> 13.0.0"
+  s.dependency "HandyJSON"
+  s.dependency "IQKeyboardManagerSwift"
+  s.dependency "RxSwift"
+  s.dependency "RxCocoa"
+  s.dependency "SnapKit", "~>4.0.0"
+  s.dependency "Kingfisher"
+  s.dependency "YPImagePicker"
+  s.dependency "MJRefresh"
+  s.dependency "SVProgressHUD"
+  s.dependency "EmptyDataSet-Swift"
+  s.dependency "ALQRCode"
+  s.dependency "CocoaAsyncSocket"
+  s.dependency "FMDB"
 end

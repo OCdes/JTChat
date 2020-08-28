@@ -10,6 +10,7 @@
 #endif
 #endif
 
+#import "JTChat-Bridging-Header.h"
 
 FOUNDATION_EXPORT double JTChatVersionNumber;
 FOUNDATION_EXPORT const unsigned char JTChatVersionString[];

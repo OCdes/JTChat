@@ -21,15 +21,15 @@ Pod::Spec.new do |s|
                         精特聊天演示初始化
                        DESC
 
-  s.homepage         = 'https://github.com/76515226@qq.com/JTChat'
+  s.homepage         = 'https://github.com/OCdes/JTChat'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { '76515226@qq.com' => '76515226@qq.com' }
-  s.source           = { :git => 'https://github.com/76515226@qq.com/JTChat.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/OCdes/JTChat.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '10.0'
-  s.source_files = 'JTChat/Classes/**/*.swift'
+  s.source_files = 'JTChat/Classes/**/*'
   s.swift_versions = ['4.0','4.2','5.0']
    s.resource_bundles = {
      'JTChat' => ['JTChat/Assets/*']

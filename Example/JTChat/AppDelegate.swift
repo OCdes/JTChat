@@ -15,12 +15,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
 //        let tabVC = UITabBarController.init()
-//        let a = MessageList
 //        let messageVc = MessageListVC()
 //        let messageNav = UINavigationController.init(rootViewController: messageVc)
 //
 //
-//        let contactorVc = ConntactersVC()
+        let contactorVc = ConntactersVC()
 //        let contactorNav = UINavigationController.init(rootViewController: contactorVc)
 //        tabVC.viewControllers = [messageNav, contactorNav]
         return true

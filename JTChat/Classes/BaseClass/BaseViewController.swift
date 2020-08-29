@@ -8,13 +8,13 @@
 
 import UIKit
 
-@objc class BaseViewController: UIViewController , UINavigationControllerDelegate, UIGestureRecognizerDelegate {
+open class BaseViewController: UIViewController , UINavigationControllerDelegate, UIGestureRecognizerDelegate {
     var isFullScreen: Bool?
-    override var preferredStatusBarStyle: UIStatusBarStyle {
+    open override var preferredStatusBarStyle: UIStatusBarStyle {
         return UIStatusBarStyle.lightContent
     }
     
-    override var prefersStatusBarHidden: Bool {
+    open override var prefersStatusBarHidden: Bool {
         return true
     }
     
@@ -40,7 +40,7 @@ import UIKit
         return btn
     }()
     
-    override func viewWillAppear(_ animated: Bool) {
+    open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if (UserInfo.shared.userData?.data.emp_phone) != nil {
             if UserInfo.shared.placeData?.data.placeDetail.isShowWatermark ?? false {
@@ -51,7 +51,7 @@ import UIKit
     
     
     
-    override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.white
         // Do any additional setup after loading the view.
@@ -86,7 +86,7 @@ import UIKit
     
     
     
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if (gestureRecognizer == self.navigationController?.interactivePopGestureRecognizer) {
             return self.navigationController!.viewControllers.count > 1
         }
@@ -103,7 +103,7 @@ import UIKit
     
     
     
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+    public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
 //        let isShowNavi = viewController.isKind(of: SignInVC.self) || viewController.isKind(of: MineVC.self)
 //        self.navigationController?.navigationBar.isHidden = isShowNavi
 //        self.navigationController?.setNavigationBarHidden(isShowNavi, animated: true)

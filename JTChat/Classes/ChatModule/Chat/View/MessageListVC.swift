@@ -9,7 +9,7 @@
 import UIKit
 import RxSwift
 import ALQRCode
-class MessageListVC: BaseViewController {
+open class MessageListVC: BaseViewController {
     var viewModel: MessageViewModel = MessageViewModel()
     lazy var scrollView: RecentDialogView = {
         let tv = RecentDialogView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: self.view.frame.height-45), viewModel: self.viewModel)
@@ -18,7 +18,7 @@ class MessageListVC: BaseViewController {
     var previousBtn: UIButton?
     var perBtn: UIButton?
     var groupBtn: UIButton?
-    override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "消息"
         setNav()
@@ -27,7 +27,7 @@ class MessageListVC: BaseViewController {
         // Do any additional setup after loading the view.
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.viewModel.getMessageList(scrollView: self.scrollView)
     }

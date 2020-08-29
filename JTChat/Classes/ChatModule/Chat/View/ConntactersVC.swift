@@ -8,13 +8,14 @@
 
 import UIKit
 import ALQRCode
-class ConntactersVC: BaseViewController {
+open class ConntactersVC: BaseViewController  {
     var viewModel: ContactorViewModel = ContactorViewModel.init()
     lazy var tableView:ContactersTableView = {
         let tv = ContactersTableView.init(frame: CGRect.zero, style: .grouped, viewModel: self.viewModel)
         return tv
     }()
-    override func viewDidLoad() {
+    
+    open override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "联系人"
         setNav()

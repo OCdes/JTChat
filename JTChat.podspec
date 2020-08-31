@@ -55,4 +55,7 @@ Pod::Spec.new do |s|
   s.dependency "ALQRCode"
   s.dependency "CocoaAsyncSocket"
   s.dependency "FMDB"
+  s.dependency "ReactiveObjC", "~> 3.0.0"
+  s.dependency "Masonry"
+  s.dependency "MJExtension"
 end

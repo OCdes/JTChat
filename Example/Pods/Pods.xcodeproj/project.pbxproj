@@ -237,7 +237,7 @@
 		2AA55BDE24AA27EFD882DC6220BE73B5 /* AsSingle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51326831324A0AB22FFFD507AF23BF09 /* AsSingle.swift */; };
 		2AD0B2D8DFF0E273A6F2051CD6FB48DF /* Indicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601A955308A44CD0FD3C6FD1392007FB /* Indicator.swift */; };
 		2ADD7D3E0B94EF044CF3FFD2F8EA2C67 /* DSL.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0CE65041163F7DF9D46284E3E26148C /* DSL.swift */; };
-		2AFF4BE024FDE00B0008BB6B /* JTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFF4BDE24FDD9DE0008BB6B /* JTManager.swift */; };
+		2AFF4BE624FDF98A0008BB6B /* JTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFF4BE524FDF98A0008BB6B /* JTManager.swift */; };
 		2B14F8ADE0AF70B2778A261B8D5FDDB4 /* LabelScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED60F5948A667C972428DAED0255EC3F /* LabelScrollView.swift */; };
 		2B18D00648F38F8BE1D6C69427546453 /* CombineLatest+arity.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF7739C9A7990A6457369953BAF0DD5F /* CombineLatest+arity.swift */; };
 		2B1C3D3FD2072DDA8A88D51F2079F8A0 /* ImmediateSchedulerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC9A479F3D758E87B63EB267E771BD92 /* ImmediateSchedulerType.swift */; };
@@ -1916,7 +1916,7 @@
 		2A121F7F486217655F6A99EFC1411E96 /* NSNotificationCenter+RACSupport.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSNotificationCenter+RACSupport.h"; path = "ReactiveObjC/NSNotificationCenter+RACSupport.h"; sourceTree = "<group>"; };
 		2A2B94DF337F1E447E94DBB05E218809 /* ALQRCode.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ALQRCode.debug.xcconfig; sourceTree = "<group>"; };
 		2A9A406B1C217A6E1523CD952FA58FA1 /* VirtualTimeScheduler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VirtualTimeScheduler.swift; path = RxSwift/Schedulers/VirtualTimeScheduler.swift; sourceTree = "<group>"; };
-		2AFF4BDE24FDD9DE0008BB6B /* JTManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JTManager.swift; sourceTree = "<group>"; };
+		2AFF4BE524FDF98A0008BB6B /* JTManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JTManager.swift; path = JTChat/Classes/JTManager.swift; sourceTree = "<group>"; };
 		2B0419DD6C0AFC663E0EB1DA61026CE1 /* NSTextView+Rx.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "NSTextView+Rx.swift"; path = "RxCocoa/macOS/NSTextView+Rx.swift"; sourceTree = "<group>"; };
 		2B0E978F7A0D4117747095ACBD211B1A /* Logger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Logger.swift; path = Source/Logger.swift; sourceTree = "<group>"; };
 		2B276B0A79173A1D6E83C9B4FB9A4A57 /* MJExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MJExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -5233,7 +5233,7 @@
 			isa = PBXGroup;
 			children = (
 				16FC849C79CBCA4D84CB0F90F526225A /* JTChat-Bridging-Header.h */,
-				2AFF4BDE24FDD9DE0008BB6B /* JTManager.swift */,
+				2AFF4BE524FDF98A0008BB6B /* JTManager.swift */,
 				84BF35FEAF927D1295EC2EA2AB71AE27 /* BaseClass */,
 				D50CBC782BA787C9E6E01CE56397FCD3 /* ChatModule */,
 				AABFC43B1125E9D259C24987BB8579E3 /* Config */,
@@ -7166,7 +7166,6 @@
 				B7F74794F6712B63FEA1DAF12618D868 /* GroupManagerVC.swift in Sources */,
 				75A1440BE6E81C752CA8E893D46EB606 /* GroupMemTableView.swift in Sources */,
 				BAD91ED687BD5D022727506258B59476 /* GroupMemVC.swift in Sources */,
-				2AFF4BE024FDE00B0008BB6B /* JTManager.swift in Sources */,
 				571D4D44BBE372E2267A85158188459D /* GroupMemView.swift in Sources */,
 				BC81315CA1CB64A4B3F7CC7A7A3C1338 /* GroupSelectListView.swift in Sources */,
 				99AEE889F7B40D3774C5514FD002A31E /* GroupSelectViewModel.swift in Sources */,
@@ -7234,6 +7233,7 @@
 				1986B50C74F1697EA43F68335C93CEB3 /* MultipartFormData.swift in Sources */,
 				3571F958A3907B3A806E62D50C2550D4 /* NetworkReachabilityManager.swift in Sources */,
 				132E0F619E4338E5D1B27E4C72076B3F /* Notifications.swift in Sources */,
+				2AFF4BE624FDF98A0008BB6B /* JTManager.swift in Sources */,
 				0C5E11DE24DAA737704B355F5F2F3426 /* ParameterEncoding.swift in Sources */,
 				98A929C8E9012AB167672714FFD2113C /* Request.swift in Sources */,
 				D65C254F5ABF2CB5ECEE50FE8F8E1A80 /* Response.swift in Sources */,

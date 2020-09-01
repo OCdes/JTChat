@@ -14,7 +14,7 @@ PODS:
   - FMDB/standard (2.7.5)
   - HandyJSON (5.0.2)
   - IQKeyboardManagerSwift (6.5.6)
-  - JTChat (0.1.0):
+  - JTChat (0.2.0):
     - ALQRCode
     - CocoaAsyncSocket
     - EmptyDataSet-Swift
@@ -24,8 +24,11 @@ PODS:
     - IQKeyboardManagerSwift
     - KeychainSwift (~> 18.0.0)
     - Kingfisher
+    - Masonry
+    - MJExtension
     - MJRefresh
     - Moya (~> 13.0.0)
+    - ReactiveObjC (~> 3.0.0)
     - RxCocoa
     - RxSwift
     - SnapKit (~> 4.0.0)
@@ -35,6 +38,8 @@ PODS:
   - Kingfisher (5.15.0):
     - Kingfisher/Core (= 5.15.0)
   - Kingfisher/Core (5.15.0)
+  - Masonry (1.1.0)
+  - MJExtension (3.2.2)
   - MJRefresh (3.5.0)
   - Moya (13.0.1):
     - Moya/Core (= 13.0.1)
@@ -49,6 +54,7 @@ PODS:
     - Nimble (~> 7.0)
   - PryntTrimmerView (4.0.0)
   - Quick (1.2.0)
+  - ReactiveObjC (3.0.0)
   - Result (4.1.0)
   - RxCocoa (5.1.1):
     - RxRelay (~> 5)
@@ -83,12 +89,15 @@ SPEC REPOS:
     - IQKeyboardManagerSwift
     - KeychainSwift
     - Kingfisher
+    - Masonry
+    - MJExtension
     - MJRefresh
     - Moya
     - Nimble
     - Nimble-Snapshots
     - PryntTrimmerView
     - Quick
+    - ReactiveObjC
     - Result
     - RxCocoa
     - RxRelay
@@ -112,15 +121,18 @@ SPEC CHECKSUMS:
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
   IQKeyboardManagerSwift: c7df9d2deb356c04522f5c4b7b6e4ce4d8ed94fe
-  JTChat: 7ca71795d79ec80c21c4a1502e0a2738733603df
+  JTChat: bbb8c4acf54ba072d51e5a722d093d121f3c5f30
   KeychainSwift: c46e1438d121e47459fb304ac88c5e058a2a91ed
   Kingfisher: 1acb67597a520c2d0310677e66d6e0af455ef757
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  MJExtension: d9b9c74cbdeb724c1e9ecbb157b318276e62e876
   MJRefresh: 6afc955813966afb08305477dd7a0d9ad5e79a16
   Moya: f4a4b80ff2f8a4ffc208dfb31cd91636622fee6e
   Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
   Nimble-Snapshots: f5459b5b091678dc942d03ec4741cacb58ba4a52
   PryntTrimmerView: 67e67573ffd4c073f1308effa66aefd0cfa667a0
   Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
+  ReactiveObjC: ce79989e8684b9086b5f8d0c74bc7b81a8729c9e
   Result: bd966fac789cc6c1563440b348ab2598cc24d5c7
   RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
   RxRelay: d77f7d771495f43c556cbc43eebd1bb54d01e8e9

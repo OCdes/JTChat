@@ -5,7 +5,7 @@
 #import <ALQRCode/ALScannerQRCodeVC.h>
 #import <SVProgressHUD/SVProgressHUD.h>
 #import <CocoaAsyncSocket/GCDAsyncSocket.h>
-#import <CocoaAsyncSocket/GCDAsyncSocket.h>
+
 
 
 

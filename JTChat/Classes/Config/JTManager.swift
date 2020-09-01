@@ -35,7 +35,6 @@ open class JTManager: NSObject {
     @objc open class func shareManager()->JTManager {
         return manager
     }
-    
     @objc open func didRecievePersonalChatMessage(data: Data) {
         let model = SocketDataManager()
         model.unpackageData(data: data)

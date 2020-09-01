@@ -16,18 +16,18 @@ public protocol JTChatDelegate: NSObjectProtocol {
 
 open class JTManager: NSObject {
     public static let manager = JTManager()
-    open weak var delegate: JTChatDelegate?
-    open var url: String = "" {
+    @objc open weak var delegate: JTChatDelegate?
+    @objc open var url: String = "" {
         didSet {
             USERDEFAULT.set(url, forKey: "baseURL")
         }
     }
-    open var jwt: String = "" {
+    @objc open var jwt: String = "" {
         didSet {
             USERDEFAULT.set(jwt, forKey: "jwt")
         }
     }
-    open var socketUrl: String = "" {
+    @objc open var socketUrl: String = "" {
         didSet {
             USERDEFAULT.set(socketUrl, forKey: "baseSocket")
         }

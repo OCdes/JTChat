@@ -59,6 +59,30 @@ open class JTManager: NSObject {
         NotificationCenter.default.post(name: NotificationHelper.kChatOnlineNotiName, object: nil)
     }
     
+    @objc open func didRecieveGroupChatMessage(data: Data) {
+        let model = SocketDataManager()
+        model.unpackageData(data: data)
+        let str = model.contentString
+        let mmodel = MessageModel()
+        mmodel.senderPhone = model.fromUserId
+        mmodel.packageType = Int(model.transType.rawValue)
+        if model.transType == .TransTypeFileStream {
+            ChatimagManager.manager.saveImage(imageDataStr: model.contentString)
+        }
+        mmodel.msgContent = str.count > 0 ? str : " "
+        mmodel.timeStamp = Date().timeIntervalSince1970
+        mmodel.topic_group = model.targetUserId
+        mmodel.isRemote = true
+        let cm = DBManager.manager.getContactor(phone: model.fromUserId)
+        mmodel.sender = cm.nickName
+        mmodel.senderAvanter = cm.avatarUrl
+        mmodel.receiverPhone = UserInfo.shared.userData?.data.emp_phone ?? ""
+        mmodel.receiverAvanter = UserInfo.shared.userData?.data.emp_avatar ?? ""
+        mmodel.isReaded = false
+        let _ = DBManager.manager.AddChatLog(model: mmodel)
+        NotificationCenter.default.post(name: NotificationHelper.kChatOnlineNotiName, object: nil)
+    }
+    
     func sendMessage(targetModel: ContactorModel?, msg: String?, suffix: String?) {
         if let cmodel = targetModel, (cmodel.phone.count > 0 || cmodel.topicGroupID.count > 0){
             let model = MessageModel()

@@ -17,7 +17,7 @@ class ContactersTableView: BaseTableView {
         st.layer.cornerRadius = 15
         st.backgroundColor = HEX_FFF
         let sv = UIImageView.init(frame: CGRect(x: 0, y: 0, width: 18, height: 18))
-        sv.image = UIImage(named: "contacterSearch")
+        sv.image = JTBundleTool.getBundleImg(with:"contacterSearch")
         let lv = UIView.init(frame: CGRect(x: 0, y: 0, width: 40, height: 30))
         sv.center = lv.center
         lv.addSubview(sv)
@@ -63,9 +63,9 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
                 portraitUrlString = m.employeeArr[indexPath.row].avatarUrl
                 titleString = m.employeeArr[indexPath.row].nickName
                 if portraitUrlString.count > 0 {
-                    cell.portraitV.kf.setImage(with: URL.init(string: portraitUrlString), placeholder: UIImage.init(named: "approvalPortrait"))
+                    cell.portraitV.kf.setImage(with: URL.init(string: portraitUrlString), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
                 } else {
-                    cell.portraitV.image = UIImage(named: "approvalPortrait")
+                    cell.portraitV.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
                 }
             } else {
                 //                portraitUrlString = m.subdepartmentArr[indexPath.row - m.employeeArr.count].
@@ -125,7 +125,7 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
 class ContactersTableCell: BaseTableCell {
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
-        pv.image = UIImage(named: "groupicon")
+        pv.image = JTBundleTool.getBundleImg(with:"groupicon")
         pv.layer.cornerRadius = 19
         pv.layer.masksToBounds = true
         return pv

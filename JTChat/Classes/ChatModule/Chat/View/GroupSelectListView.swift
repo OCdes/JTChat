@@ -103,7 +103,7 @@ extension GroupSelectListView: UITableViewDelegate, UITableViewDataSource {
 class GroupSelectListCell: BaseTableCell {
     var fmodel: FriendModel? {
         didSet {
-            portraitV.kf.setImage(with: URL(string: fmodel!.avatar), placeholder: UIImage(named: "approvalPortrait"))
+            portraitV.kf.setImage(with: URL(string: fmodel!.avatar), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             titleLa.text = fmodel!.nickname
             seleBtn.isSelected = fmodel!.isSelected
         }
@@ -116,14 +116,14 @@ class GroupSelectListCell: BaseTableCell {
     
     lazy var seleBtn: UIButton = {
         let sb = UIButton()
-        sb.setImage(UIImage(named: "employee_selected"), for: .selected)
-        sb.setImage(UIImage(named: "employee_not_selected"), for: .normal)
+        sb.setImage(JTBundleTool.getBundleImg(with:"employee_selected"), for: .selected)
+        sb.setImage(JTBundleTool.getBundleImg(with:"employee_not_selected"), for: .normal)
         return sb
     }()
     
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
-        pv.image = UIImage(named: "groupicon")
+        pv.image = JTBundleTool.getBundleImg(with:"groupicon")
         pv.layer.cornerRadius = 19
         pv.layer.masksToBounds = true
         return pv

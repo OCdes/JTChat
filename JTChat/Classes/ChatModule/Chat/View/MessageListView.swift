@@ -79,7 +79,7 @@ extension MessageListView: UITableViewDelegate, UITableViewDataSource {
 class MessageListCell: BaseTableCell {
     var model: FriendModel? {
         didSet {
-            portraitV.kf.setImage(with: URL(string: model!.avatar), placeholder: UIImage(named: "approvalPortrait"))
+            portraitV.kf.setImage(with: URL(string: model!.avatar), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             nameLa.text = model!.topicGroupName.count > 0 ? model!.topicGroupName : model!.nickname
             dateLa.text = model!.createTime
             messageLa.text = model!.packageType == 2 ? "[图片]" : model!.msgContent

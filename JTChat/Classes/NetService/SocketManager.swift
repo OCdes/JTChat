@@ -237,7 +237,7 @@ extension SocketManager: GCDAsyncSocketDelegate {
                     let popv = PopAlertView.init(frame: CGRect.zero)
                     popv.titleLa.text = (dict["sub_type"] as? String ) ?? ""
                     popv.contentLa.text = (dict["content"] as? String ) ?? ""
-                    popv.portraitV.image = UIImage(named: "remote_msg")
+                    popv.portraitV.image = JTBundleTool.getBundleImg(with:"remote_msg")
                     popv.show()
                 }
             }

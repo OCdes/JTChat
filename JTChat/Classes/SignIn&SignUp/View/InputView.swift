@@ -17,7 +17,7 @@ class InputView: BottomLineInputView {
     init(frame: CGRect,leftImgStr leftStr: String, placeHolder holder:String) {
         super.init(frame: frame)
         let leftV = UIView(frame:CGRect(x:0, y:0, width:25.5, height:frame.height))
-        let leftIcon = UIImageView(image: UIImage(named: leftStr))
+        let leftIcon = UIImageView(image: JTBundleTool.getBundleImg(with: leftStr))
         leftIcon.frame = CGRect(x: 0, y: 0, width: 15.5, height: 17.5)
         leftIcon.center.y = leftV.center.y
         leftV.addSubview(leftIcon)
@@ -36,7 +36,7 @@ class InputView: BottomLineInputView {
         leftViewMode = UITextField.ViewMode.always
         let rightV = UIView(frame:CGRect(x:0, y:0, width:25.5, height:frame.height))
         let rightBtn = UIButton.init(frame:CGRect(x:0, y:0, width:25.5, height:frame.height))
-        rightBtn.setImage(UIImage(named: rightStr), for: UIControl.State.normal)
+        rightBtn.setImage(JTBundleTool.getBundleImg(with:rightStr), for: UIControl.State.normal)
         rightBtn.addTarget(self, action: action, for: UIControl.Event.touchUpInside)
         rightV.addSubview(rightBtn)
         rightView = rightV

@@ -62,7 +62,7 @@ extension GroupMemTableView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let m = dataArr[indexPath.row]
         let cell: GroupMemCell = tableView.dequeueReusableCell(withIdentifier: "GroupMemCell", for: indexPath) as! GroupMemCell
-        cell.portraitV.kf.setImage(with: URL(string: m.avatar), placeholder: UIImage(named: "approvalPortrait"))
+        cell.portraitV.kf.setImage(with: URL(string: m.avatar), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
         cell.titleLa.text = m.nickname
         cell.markLa.isHidden = m.memberPhone != viewModel!.model.creator
         return cell

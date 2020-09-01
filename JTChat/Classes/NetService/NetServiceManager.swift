@@ -56,7 +56,7 @@ let currentNetworkEv: NetworkEnvironment = .NetworkEnvironmentProduct
 
 let networkTimeout: TimeInterval = 20
 
-var netBaseUrl: String = "http://192.168.0.82:14002"
+var netBaseUrl: String = USERDEFAULT.object(forKey: "baseURL") as! String
 
 func urlByNetworkEnv(env: NetworkEnvironment)->String{
     var urlStr = BASE_URL
@@ -125,7 +125,7 @@ class NetServiceManager: NSObject {
     
     public func requestByType(requestType: RequestType, url: String, params: [String: Any], success: @escaping RequestSuccess, fail: @escaping RequestFail)->PublishSubject<Any> {
         let sub: PublishSubject = PublishSubject<Any>()
-        if let a = UserInfo.shared.userData?.parameter.jwt {
+        if let a = USERDEFAULT.object(forKey: "jwt") {
             self.header["jwt"] = a
         }
         switch requestType {
@@ -167,7 +167,7 @@ class NetServiceManager: NSObject {
     
     public func requestByType(requestType: RequestType, api: String, params: [String: Any], success: @escaping RequestSuccess, fail: @escaping RequestFail)->PublishSubject<Any> {
         let sub: PublishSubject = PublishSubject<Any>()
-        if let a = UserInfo.shared.userData?.parameter.jwt {
+        if let a = USERDEFAULT.object(forKey: "jwt") {
             self.header["jwt"] = a
         }
         let uStr = urlByNetworkEnv(env: currentNetworkEv) + api
@@ -237,7 +237,7 @@ extension NetServiceManager {
     }
     
     func UploadImage(images: [UIImage], api: String, param: Dictionary<String, Any>, isShowHUD: Bool, progressBlock: @escaping NetworkProgress, successBlock:@escaping RequestSuccess,faliedBlock:@escaping RequestFail) {
-        if let a = UserInfo.shared.userData?.parameter.jwt {
+        if let a = USERDEFAULT.object(forKey: "jwt") {
             self.header["jwt"] = a
             self.header["content-type"] = "multipart/form-data"
         }

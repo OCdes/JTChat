@@ -51,7 +51,7 @@ class ChatVC: BaseViewController, InputToolViewDelegate {
     
     func setNavItem() {
         let btn = UIButton.init(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
-        btn.setImage(UIImage(named: "whiteMore"), for: .normal)
+        btn.setImage(JTBundleTool.getBundleImg(with:"whiteMore"), for: .normal)
         let _ = btn.rx.controlEvent(.touchUpInside).subscribe(onNext: { [weak self](a) in
             if self!.viewModel.contactor!.topicGroupID.count > 0 {
                 let vc = GroupInfoVC()

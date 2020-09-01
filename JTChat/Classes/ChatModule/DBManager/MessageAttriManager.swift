@@ -35,7 +35,7 @@ class MessageAttriManager: NSObject {
             for range in ranges.reversed() {
                 if let name = dict?["\(emStr)"] {
                     let attac = NSTextAttachment()
-                    attac.image = UIImage(named: (name as! String))
+                    attac.image = JTBundleTool.getBundleImg(with:(name as! String))
                     attac.bounds = CGRect(x: 0, y: -5, width: 20, height: 20)
                     let att = NSMutableAttributedString.init(string: " ")
                     att.append(NSAttributedString.init(attachment: attac))

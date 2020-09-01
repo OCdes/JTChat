@@ -15,8 +15,23 @@ public protocol JTChatDelegate: NSObjectProtocol {
 }
 
 open class JTManager: NSObject {
-    static let manager = JTManager()
-    weak var delegate: JTChatDelegate?
+    public static let manager = JTManager()
+    open weak var delegate: JTChatDelegate?
+    open var url: String = "" {
+        didSet {
+            USERDEFAULT.set(url, forKey: "baseURL")
+        }
+    }
+    open var jwt: String = "" {
+        didSet {
+            USERDEFAULT.set(jwt, forKey: "jwt")
+        }
+    }
+    open var socketUrl: String = "" {
+        didSet {
+            USERDEFAULT.set(socketUrl, forKey: "baseSocket")
+        }
+    }
     @objc open class func shareManager()->JTManager {
         return manager
     }
@@ -64,7 +79,6 @@ open class JTManager: NSObject {
             model.isRemote = false
             model.isReaded = true
             let _ = DBManager.manager.AddChatLog(model: model)
-            
             let socketData = SocketDataManager()
             let data = UserInfo.shared.userData?.data
             socketData.fromUserId = data?.emp_phone ?? ""

@@ -84,7 +84,7 @@ extension FunctionCollectionView: UICollectionViewDelegate, UICollectionViewData
 private class FunctionCollectionCell: BaseCollectionCell {
     var dict: Dictionary<String, Any>? {
         didSet {
-            imgv.image = UIImage(named: (dict!["icon"] as! String))
+            imgv.image = JTBundleTool.getBundleImg(with:(dict!["icon"] as! String))
             nameLa.text = (dict!["name"] as! String)
         }
     }

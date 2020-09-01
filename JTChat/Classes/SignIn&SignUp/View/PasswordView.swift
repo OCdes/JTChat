@@ -27,8 +27,8 @@ class PasswordView: InputView {
         leftViewMode = UITextField.ViewMode.always
         let rightV = UIView(frame:CGRect(x:0, y:0, width:25.5, height:frame.height))
         let rightBtn = UIButton.init(frame:CGRect(x:0, y:0, width:25.5, height:frame.height))
-        rightBtn.setImage(UIImage(named: "eyeClose"), for: UIControl.State.selected)
-        rightBtn.setImage(UIImage(named: "eyeOpen"), for: UIControl.State.normal)
+        rightBtn.setImage(JTBundleTool.getBundleImg(with:"eyeClose"), for: UIControl.State.selected)
+        rightBtn.setImage(JTBundleTool.getBundleImg(with:"eyeOpen"), for: UIControl.State.normal)
         rightBtn.addTarget(self, action: #selector(clearBtnClicked(sender:)), for: UIControl.Event.touchUpInside)
         rightBtn.isSelected = true
         rightV.addSubview(rightBtn)

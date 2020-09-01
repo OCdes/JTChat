@@ -20,7 +20,7 @@ open class BaseViewController: UIViewController , UINavigationControllerDelegate
     
     lazy var backBtn: UIButton = {
         var btn = UIButton(frame: CGRect(x: 0, y: 0, width: 30, height: 40))
-        btn.setImage(UIImage.init(named: "whitNavBack"), for: .normal)
+        btn.setImage(JTBundleTool.getBundleImg(with:"whitNavBack"), for: .normal)
         btn.addTarget(self, action: #selector(backClicked), for: .touchUpInside)
         return btn
     }()
@@ -35,7 +35,7 @@ open class BaseViewController: UIViewController , UINavigationControllerDelegate
     
     lazy var closeBtn: UIButton = {
         var btn = UIButton(frame: CGRect(x: 0, y: 0, width: 30, height: 40))
-        btn.setImage(UIImage.init(named: "backToHome"), for: .normal)
+        btn.setImage(JTBundleTool.getBundleImg(with:"backToHome"), for: .normal)
         btn.addTarget(self, action: #selector(backToHome), for: .touchUpInside)
         return btn
     }()

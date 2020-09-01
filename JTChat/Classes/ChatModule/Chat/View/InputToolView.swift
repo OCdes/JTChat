@@ -50,22 +50,22 @@ class InputToolView: UIView {
     
     lazy var typeBtn: UIButton = {
         let vb = UIButton()
-        vb.setImage(UIImage(named: "voiceicon"), for: .normal)
-        vb.setImage(UIImage(named: "texticon"), for: .selected)
+        vb.setImage(JTBundleTool.getBundleImg(with:"voiceicon"), for: .normal)
+        vb.setImage(JTBundleTool.getBundleImg(with:"texticon"), for: .selected)
         return vb
     }()
     
     lazy var emojBtn: UIButton = {
         let eb = UIButton()
-        eb.setImage(UIImage(named: "emojicon"), for: .normal)
-        eb.setImage(UIImage(named: "texticon"), for: .selected)
+        eb.setImage(JTBundleTool.getBundleImg(with:"emojicon"), for: .normal)
+        eb.setImage(JTBundleTool.getBundleImg(with:"texticon"), for: .selected)
         eb.addTarget(self, action: #selector(emojiBtnClicked(btn:)), for: .touchUpInside)
         return eb
     }()
     
     lazy var moreBtn: UIButton = {
         let mb = UIButton()
-        mb.setImage(UIImage(named: "moreicon"), for: .normal)
+        mb.setImage(JTBundleTool.getBundleImg(with:"moreicon"), for: .normal)
         mb.addTarget(self, action: #selector(moreBtnClicked(btn:)), for: .touchUpInside)
         return mb
     }()

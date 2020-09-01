@@ -73,7 +73,7 @@ extension GroupMemCollectView: UICollectionViewDelegate, UICollectionViewDataSou
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let model = dataArr[indexPath.item]
         let cell: GroupMemItem = collectionView.dequeueReusableCell(withReuseIdentifier: "GroupMemItem", for: indexPath) as! GroupMemItem
-        cell.imgv.kf.setImage(with: URL(string: model.avatar), placeholder: UIImage(named: "approvalPortrait"))
+        cell.imgv.kf.setImage(with: URL(string: model.avatar), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
         return cell
     }
     

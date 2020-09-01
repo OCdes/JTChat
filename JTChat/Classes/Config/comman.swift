@@ -163,15 +163,15 @@ let HEX_FFF = HEX_COLOR(hexStr: "#FFFFFF")
 let HEX_LightBlue = HEX_COLOR(hexStr: "#408CE2")
 let HEX_ThemeBlack = HEX_COLOR(hexStr: "#1A1C29")
 let HEX_F5F5F5 = HEX_COLOR(hexStr: "#f5f5f5")
-let PLACEHOLDERIMG = UIImage(named: "placeHolder")
+let PLACEHOLDERIMG = JTBundleTool.getBundleImg(with:"placeHolder")
 
 let USERDEFAULT = UserDefaults.standard
 
 let APPWINDOW: UIWindow = (UIApplication.shared.delegate?.window!)!
 //云端地址
 let URL_CLOUD = "https://cloud.hzjtyh.com"
-public var BASE_URL = UserInfo.shared.placeData?.data.placeInfo.agentUrl ?? ""
-public let ACCESS_TOKEN = UserInfo.shared.userData?.parameter.jwt
+public var BASE_URL = USERDEFAULT.object(forKey: "baseURL") as! String
+public let ACCESS_TOKEN = USERDEFAULT.object(forKey: "jwt") as! String
 //请求状态码
 //NOTE:网络请求状态码
 let REQUEST_SUCCESSFUL: Int = 0

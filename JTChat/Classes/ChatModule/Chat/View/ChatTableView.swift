@@ -151,7 +151,7 @@ class ChatTableLeftCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.senderPhone)
-            portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: UIImage(named: "approvalPortrait"))
+            portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             if model.packageType == 1 {
                 contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
                 imgv.isHidden = true
@@ -167,7 +167,7 @@ class ChatTableLeftCell: BaseTableCell {
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
         pv.layer.cornerRadius = 18
-        pv.image = UIImage(named: "approvalPortrait")
+        pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
     lazy var contentV: UIView = {
@@ -269,7 +269,7 @@ class ChatTableRightCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.receiverPhone)
-            portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: UIImage(named: "approvalPortrait"))
+            portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             if model.packageType == 1 {
                 contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
                 imgv.isHidden = true
@@ -285,7 +285,7 @@ class ChatTableRightCell: BaseTableCell {
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
         pv.layer.cornerRadius = 18
-        pv.image = UIImage(named: "approvalPortrait")
+        pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
     lazy var contentV: UIView = {

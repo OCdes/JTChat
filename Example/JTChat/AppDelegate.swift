@@ -14,14 +14,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-//        let tabVC = UITabBarController.init()
-//        let messageVc = MessageListVC()
-//        let messageNav = UINavigationController.init(rootViewController: messageVc)
-//
-//
+        
+        let manager = JTManager.manager
+        manager.url = "192.168.1.28"
+        manager.jwt = "测试 token"
+        
+        let tabVC = UITabBarController.init()
+        let messageVc = MessageListVC()
+        let messageNav = UINavigationController.init(rootViewController: messageVc)
+
+
         let contactorVc = ConntactersVC()
-//        let contactorNav = UINavigationController.init(rootViewController: contactorVc)
-//        tabVC.viewControllers = [messageNav, contactorNav]
+        let contactorNav = UINavigationController.init(rootViewController: contactorVc)
+        tabVC.viewControllers = [messageNav, contactorNav]
+        self.window = UIWindow.init(frame: UIScreen.main.bounds)
+        self.window?.makeKeyAndVisible()
+        self.window?.rootViewController = tabVC
         return true
     }
     

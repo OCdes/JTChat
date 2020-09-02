@@ -17,6 +17,10 @@ open class DBManager: NSObject {
         initChatListDataBase()
     }
     
+    @objc open class func shareManager()->DBManager {
+        return manager
+    }
+    
     private func initChatListDataBase() {
         let docPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first ?? ""
         let filePath = "\(docPath)/\(UserInfo.shared.placeData?.data.placeDetail.placeID ?? "")\(UserInfo.shared.userData?.data.emp_phone ?? "")chatList.sqlite"

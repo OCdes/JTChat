@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let manager = JTManager.manager
         manager.url = "192.168.1.28"
-        manager.jwt = "测试 token"
+        manager.ctoken = "测试 token"
         
         let tabVC = UITabBarController.init()
         let messageVc = MessageListVC()

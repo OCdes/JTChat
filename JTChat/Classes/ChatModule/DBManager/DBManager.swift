@@ -8,8 +8,9 @@
 
 import UIKit
 import FMDB
-class DBManager: NSObject {
-    static let manager = DBManager()
+@objc
+open class DBManager: NSObject {
+    public static let manager = DBManager()
     private var dbQueue: FMDatabaseQueue?
     private override init() {
         super.init()
@@ -72,6 +73,22 @@ class DBManager: NSObject {
                 db.close()
             }
         })
+    }
+    
+    @objc open func getRecentUnreadCount()->Int {
+        var allnum = 0
+        DBManager.manager.getRecentList { (arr1, arr2) in
+            var nump = 0
+            var numg = 0
+            for m in arr1 {
+                nump += m.unreadCount
+            }
+            for m in arr2 {
+                numg += m.unreadCount
+            }
+            allnum = nump + numg
+        }
+        return allnum
     }
     
     func addRecentChat(model: FriendModel) {
@@ -359,11 +376,11 @@ class DBManager: NSObject {
                         if let rs = result {
                             var dataNum = 0
                             while rs.next() {
-                                    var d: Dictionary<String, Any> = Dictionary()
-                                    d["ctime"] = rs["ctime"] as! String
-                                    d["total"] = rs["total"] as! Int
-                                    darr.append(d)
-                                    dataNum += rs["total"] as! Int
+                                var d: Dictionary<String, Any> = Dictionary()
+                                d["ctime"] = rs["ctime"] as! String
+                                d["total"] = rs["total"] as! Int
+                                darr.append(d)
+                                dataNum += rs["total"] as! Int
                             }
                             rs.close()
                         }
@@ -416,11 +433,11 @@ class DBManager: NSObject {
                         if let rs = result {
                             var dataNum = 0
                             while rs.next() {
-                                    var d: Dictionary<String, Any> = Dictionary()
-                                    d["ctime"] = rs["ctime"] as! String
-                                    d["total"] = rs["total"] as! Int
-                                    darr.append(d)
-                                    dataNum += rs["total"] as! Int
+                                var d: Dictionary<String, Any> = Dictionary()
+                                d["ctime"] = rs["ctime"] as! String
+                                d["total"] = rs["total"] as! Int
+                                darr.append(d)
+                                dataNum += rs["total"] as! Int
                             }
                             rs.close()
                         }

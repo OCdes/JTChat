@@ -41,18 +41,19 @@ class ContactorViewModel: BaseViewModel {
         let subject1 = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POSST_FETCHEMPLOYEETOCHAT, params: [:], success: { (msg, code, response, data) in
             
         }) { (errorInfo) in
+            scrollView.jt_endRefresh()
             SVProgressHUD.showError(withStatus: (errorInfo.message.count>0 ? errorInfo.message : "未知错误"))
         }
         
         let subject2 = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_DEPARTMENTDATA, params: ["":""], success: { (msg, code, response, data) in
             
         }) { (errorInfo) in
-            
+            scrollView.jt_endRefresh()
         }
         
         _ = Observable.zip(subject1, subject2).subscribe(onNext: { [weak self](employeeData, departmentData) in
 //            print(employeeData, departmentData)
-            scrollView.jt_endRefresh()
+            
             let employeeDict: Dictionary<String, Any> = employeeData as! Dictionary<String, Any>
             //            let dict: Dictionary<String, Any> = employeeDict["data"] as! Dictionary<String, Any>
             let arr: Array<Any> = employeeDict["data"] as! Array

@@ -27,6 +27,11 @@ open class JTManager: NSObject {
             USERDEFAULT.set(jwt, forKey: "jwt")
         }
     }
+    @objc open var ctoken: String = "" {
+        didSet {
+            USERDEFAULT.set(ctoken, forKey: "ctoken")
+        }
+    }
     @objc open var socketUrl: String = "" {
         didSet {
             USERDEFAULT.set(socketUrl, forKey: "baseSocket")

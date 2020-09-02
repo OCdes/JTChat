@@ -128,9 +128,14 @@ class NetServiceManager: NSObject {
         if let a = USERDEFAULT.object(forKey: "jwt") {
             self.header["jwt"] = a
         }
+        var mparam: Dictionary<String, Any> = params
+        if let a = USERDEFAULT.object(forKey: "ctoken") {
+            mparam["token"] = a
+        }
+        print(mparam)
         switch requestType {
         case .RequestTypeGet:
-            self.GET(requestType: requestType, url: url, params: params, success: { (msg, code, response, data) in
+            self.GET(requestType: requestType, url: url, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -138,7 +143,7 @@ class NetServiceManager: NSObject {
                 fail(errorInfo)
             }
         case .RequestTypePost:
-            self.POST(requestType: requestType, url: url, params: params, success: { (msg, code, response, data) in
+            self.POST(requestType: requestType, url: url, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -146,7 +151,7 @@ class NetServiceManager: NSObject {
                 fail(errorInfo)
             }
         case .RequestTypeUpload:
-            self.POST(requestType: requestType, url: url, params: params, success: { (msg, code, response, data) in
+            self.POST(requestType: requestType, url: url, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -154,7 +159,7 @@ class NetServiceManager: NSObject {
                 fail(errorInfo)
             }
         case .RequestTypeDownload:
-            self.GET(requestType: requestType, url: url, params: params, success: { (msg, code, response, data) in
+            self.GET(requestType: requestType, url: url, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -170,11 +175,15 @@ class NetServiceManager: NSObject {
         if let a = USERDEFAULT.object(forKey: "jwt") {
             self.header["jwt"] = a
         }
+        var mparam: Dictionary<String, Any> = params
+        if let a = USERDEFAULT.object(forKey: "ctoken") {
+            mparam["token"] = a
+        }
         let uStr = urlByNetworkEnv(env: currentNetworkEv) + api
-        print("\(uStr)\(params)")
+        print("\(uStr)\(mparam)")
         switch requestType {
         case .RequestTypeGet:
-            self.GET(requestType: requestType, url: uStr, params: params, success: { (msg, code, response, data) in
+            self.GET(requestType: requestType, url: uStr, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -183,7 +192,7 @@ class NetServiceManager: NSObject {
             }
 
         case .RequestTypePost:
-            self.POST(requestType: requestType, url: uStr, params: params, success: { (msg, code, response, data) in
+            self.POST(requestType: requestType, url: uStr, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -192,7 +201,7 @@ class NetServiceManager: NSObject {
             }
 
         case .RequestTypeUpload:
-            self.POST(requestType: requestType, url: uStr, params: params, success: { (msg, code, response, data) in
+            self.POST(requestType: requestType, url: uStr, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -200,7 +209,7 @@ class NetServiceManager: NSObject {
                 fail(errorInfo)
             }
         case .RequestTypeDownload:
-            self.GET(requestType: requestType, url: uStr, params: params, success: { (msg, code, response, data) in
+            self.GET(requestType: requestType, url: uStr, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()

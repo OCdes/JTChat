@@ -17,7 +17,7 @@ class ContactorInfoViewModel: BaseViewModel {
         if employeeModel.phone.count > 0 {
             let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_DETAILOFCHATEMPLOYEE, params: ["targetPhone":employeeModel.phone], success: { [weak self](msg, code, response, data) in
                 
-                let dict = data["data"] as! Dictionary<String, Any>
+                let dict = (data["data"] ?? data["Data"]) as! Dictionary<String, Any>
                 self!.employeeModel = JSONDeserializer<ContactorModel>.deserializeFrom(dict: dict)!
                 self!.subject.onNext("")
             }) { (errorInfo) in

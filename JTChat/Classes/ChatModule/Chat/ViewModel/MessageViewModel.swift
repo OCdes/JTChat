@@ -30,8 +30,8 @@ class MessageViewModel: BaseViewModel {
         let _ = Observable.zip(sub1, sub2).subscribe(onNext: { (data1, data2) in
             let dict1 = data1 as! Dictionary<String, Any>
             let dict2 = data2 as! Dictionary<String, Any>
-            var arr1: Array<FriendModel> = JSONDeserializer<FriendModel>.deserializeModelArrayFrom(array: (dict1["data"] as! Array<Dictionary<String, Any>>))! as! Array<FriendModel>
-            let arr2: Array<FriendModel> = JSONDeserializer<FriendModel>.deserializeModelArrayFrom(array: (dict2["data"] as! Array<Dictionary<String, Any>>))! as! Array<FriendModel>
+            var arr1: Array<FriendModel> = JSONDeserializer<FriendModel>.deserializeModelArrayFrom(array: ((dict1["data"] ?? dict1["Data"]) as! Array<Dictionary<String, Any>>))! as! Array<FriendModel>
+            let arr2: Array<FriendModel> = JSONDeserializer<FriendModel>.deserializeModelArrayFrom(array: ((dict2["data"] ?? dict2["Data"]) as! Array<Dictionary<String, Any>>))! as! Array<FriendModel>
             arr1.append(contentsOf: arr2)
             for m in arr1 {
                 m.isReaded = true

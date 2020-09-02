@@ -16,8 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
         let manager = JTManager.manager
-        manager.url = "192.168.1.28"
-        manager.ctoken = "测试 token"
+        manager.url = "https://api.hzjtyh.com"
+        manager.ctoken = "22784be678464d4d94a737d83d1f1627"
         
         let tabVC = UITabBarController.init()
         let messageVc = MessageListVC()

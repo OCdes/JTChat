@@ -38,33 +38,14 @@ class ContactorViewModel: BaseViewModel {
     
     func refreshData(scrollView: UIScrollView) {
         sectionModel = ContactDataModel.init()
-        let subject1 = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POSST_FETCHEMPLOYEETOCHAT, params: [:], success: { (msg, code, response, data) in
-            
-        }) { (errorInfo) in
-            scrollView.jt_endRefresh()
-            SVProgressHUD.showError(withStatus: (errorInfo.message.count>0 ? errorInfo.message : "未知错误"))
-        }
-        
-        let subject2 = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_DEPARTMENTDATA, params: ["":""], success: { (msg, code, response, data) in
-            
-        }) { (errorInfo) in
-            scrollView.jt_endRefresh()
-        }
-        
-        _ = Observable.zip(subject1, subject2).subscribe(onNext: { [weak self](employeeData, departmentData) in
-//            print(employeeData, departmentData)
-            
-            let employeeDict: Dictionary<String, Any> = employeeData as! Dictionary<String, Any>
-            //            let dict: Dictionary<String, Any> = employeeDict["data"] as! Dictionary<String, Any>
+        let employeeDict: Dictionary<String, Any> = USERDEFAULT.object(forKey: "cemployeeDict") as! Dictionary<String, Any>
             let arr: Array<Any> = employeeDict["data"] as! Array
-            self!.employeeArr = JSONDeserializer<ContactorModel>.deserializeModelArrayFrom(array: arr)! as? Array<ContactorModel>
-            let deDict: Dictionary<String, Any> = departmentData as! Dictionary<String, Any>
+        self.employeeArr = JSONDeserializer<ContactorModel>.deserializeModelArrayFrom(array: arr)! as? Array<ContactorModel>
+        let deDict: Dictionary<String, Any> = USERDEFAULT.object(forKey: "cdepartmentDict") as! Dictionary<String, Any>
             let deArr: Array<Any> = deDict["data"] as! Array
-            self!.departmentArr = JSONDeserializer<DepartmentModel>.deserializeModelArrayFrom(array: deArr)! as? Array<DepartmentModel>
-            self!.listChangeWithType(b: self!.typeChange)
-            self!.employeePersistence()
-        })
-        
+        self.departmentArr = JSONDeserializer<DepartmentModel>.deserializeModelArrayFrom(array: deArr)! as? Array<DepartmentModel>
+        self.listChangeWithType(b: self.typeChange)
+        self.employeePersistence()
     }
     
     func employeePersistence() {

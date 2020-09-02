@@ -331,8 +331,8 @@ extension NetServiceManager {
     
      /** 处理请求成功数据*/
     private func handleRequestSuccess(value: Any, data: Dictionary<String , Any>, successBlock: RequestSuccess,faliedBlock: RequestFail){
-        let code: Int = (data["error_code"] ?? (data["code"] ?? data["status"] ?? "101")) as! Int
-        let msg: String = (data["msg"] ?? data["Msg"] ?? data["message"] ?? "未知错误") as! String
+        let code: Int = (data["error_code"] ?? (data["code"] ?? data["status"] ?? data["ErrCode"] ?? "101" )) as! Int
+        let msg: String = (data["msg"] ?? data["Msg"] ?? data["message"] ?? data["ErrMsg"] ?? "未知错误") as! String
         if code == REQUEST_SUCCESSFUL {
             successBlock(msg,code,value as AnyObject,data)
         } else if code == 501 {

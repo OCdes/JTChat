@@ -37,7 +37,6 @@ open class JTManager: NSObject {
             USERDEFAULT.set(socketUrl, forKey: "baseSocket")
         }
     }
-    
     @objc open var departmentDict: Dictionary<String, Any> = [:] {
         didSet {
             USERDEFAULT.set(departmentDict, forKey: "cdepartmentDict")

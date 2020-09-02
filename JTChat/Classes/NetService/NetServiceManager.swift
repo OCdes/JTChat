@@ -130,7 +130,7 @@ class NetServiceManager: NSObject {
         }
         var mparam: Dictionary<String, Any> = params
         if let a = USERDEFAULT.object(forKey: "ctoken") {
-            mparam["token"] = a
+            mparam["AccessToken"] = a
         }
         print(mparam)
         switch requestType {
@@ -177,7 +177,7 @@ class NetServiceManager: NSObject {
         }
         var mparam: Dictionary<String, Any> = params
         if let a = USERDEFAULT.object(forKey: "ctoken") {
-            mparam["token"] = a
+            mparam["AccessToken"] = a
         }
         let uStr = urlByNetworkEnv(env: currentNetworkEv) + api
         print("\(uStr)\(mparam)")

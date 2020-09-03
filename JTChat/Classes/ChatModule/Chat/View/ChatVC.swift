@@ -8,7 +8,6 @@
 
 import UIKit
 import SnapKit
-import IQKeyboardManagerSwift
 class ChatVC: BaseViewController, InputToolViewDelegate {
     var viewModel: ChatViewModel = ChatViewModel()
     lazy var tableView: ChatTableView = {
@@ -26,7 +25,6 @@ class ChatVC: BaseViewController, InputToolViewDelegate {
     var toolBottomConstrait: Constraint?
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        IQKeyboardManager.shared.enable = false
         if let m = self.viewModel.contactor {
             if m.topicGroupID.count > 0 {
                 let cm = DBManager.manager.getRecent(byPhone: nil, byTopicID: m.topicGroupID)
@@ -39,7 +37,6 @@ class ChatVC: BaseViewController, InputToolViewDelegate {
     }
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        IQKeyboardManager.shared.enable = true
     }
     override func viewDidLoad() {
         super.viewDidLoad()

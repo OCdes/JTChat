@@ -28,7 +28,7 @@ open class BaseViewController: UIViewController , UINavigationControllerDelegate
     lazy var markV: WaterMarkView = {
         var f = self.view.frame
         f.origin.y = 0
-        let mv = WaterMarkView.init(frame: f, text: UserInfo.shared.userData?.data.emp_phone ?? "")
+        let mv = WaterMarkView.init(frame: f, text: (USERDEFAULT.object(forKey: "phone") as? String) ?? "")
 //        mv.isHidden = true
         return mv
     }()
@@ -42,14 +42,18 @@ open class BaseViewController: UIViewController , UINavigationControllerDelegate
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if (UserInfo.shared.userData?.data.emp_phone) != nil {
-            if UserInfo.shared.placeData?.data.placeDetail.isShowWatermark ?? false {
+        if (USERDEFAULT.object(forKey: "phone")) != nil {
+            if USERDEFAULT.bool(forKey: "isWaterShow") {
                 view.addSubview(self.markV)
             }
         }
+        self.navigationController?.navigationBar.isTranslucent = false
     }
     
-    
+    open override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.navigationBar.isTranslucent = true
+    }
     
     open override func viewDidLoad() {
         super.viewDidLoad()

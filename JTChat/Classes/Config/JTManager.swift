@@ -32,6 +32,26 @@ open class JTManager: NSObject {
             USERDEFAULT.set(ctoken, forKey: "ctoken")
         }
     }
+    @objc open var phone: String = "" {
+        didSet {
+            USERDEFAULT.set(phone, forKey: "phone")
+        }
+    }
+    @objc open var isWaterShow: Bool = false {
+        didSet {
+            USERDEFAULT.set(isWaterShow, forKey: "isWaterShow")
+        }
+    }
+    @objc open var isAutoResizeBottom: Bool = false {
+        didSet {
+            USERDEFAULT.set(isAutoResizeBottom, forKey: "isAutoResizeBottom")
+        }
+    }
+    @objc open var placeID: Int = 0 {
+        didSet {
+            USERDEFAULT.set(placeID, forKey: "placeID")
+        }
+    }
     @objc open var socketUrl: String = "" {
         didSet {
             USERDEFAULT.set(socketUrl, forKey: "baseSocket")
@@ -42,7 +62,6 @@ open class JTManager: NSObject {
             USERDEFAULT.set(departmentDict, forKey: "cdepartmentDict")
         }
     }
-    
     @objc open var employeeDict: Dictionary<String, Any> = [:] {
         didSet {
             USERDEFAULT.set(employeeDict, forKey: "cemployeeDict")
@@ -69,8 +88,8 @@ open class JTManager: NSObject {
         let cm = DBManager.manager.getContactor(phone: model.fromUserId)
         mmodel.sender = cm.nickName
         mmodel.senderAvanter = cm.avatarUrl
-        mmodel.receiverPhone = UserInfo.shared.userData?.data.emp_phone ?? ""
-        mmodel.receiverAvanter = UserInfo.shared.userData?.data.emp_avatar ?? ""
+        mmodel.receiverPhone = (USERDEFAULT.object(forKey: "phone") ?? "") as! String
+        mmodel.receiverAvanter = ""
         mmodel.isReaded = false
         let _ = DBManager.manager.AddChatLog(model: mmodel)
         NotificationCenter.default.post(name: NotificationHelper.kChatOnlineNotiName, object: nil)
@@ -93,8 +112,8 @@ open class JTManager: NSObject {
         let cm = DBManager.manager.getContactor(phone: model.fromUserId)
         mmodel.sender = cm.nickName
         mmodel.senderAvanter = cm.avatarUrl
-        mmodel.receiverPhone = UserInfo.shared.userData?.data.emp_phone ?? ""
-        mmodel.receiverAvanter = UserInfo.shared.userData?.data.emp_avatar ?? ""
+        mmodel.receiverPhone = (USERDEFAULT.object(forKey: "phone") ?? "") as! String
+        mmodel.receiverAvanter = ""
         mmodel.isReaded = false
         let _ = DBManager.manager.AddChatLog(model: mmodel)
         NotificationCenter.default.post(name: NotificationHelper.kChatOnlineNotiName, object: nil)
@@ -110,23 +129,19 @@ open class JTManager: NSObject {
             model.packageType = (suffix ?? "").count > 0 ? 2 : 1
             model.topic_group = cmodel.topicGroupID
             model.timeStamp = Date().timeIntervalSince1970
-            let userModel = UserInfo.shared.userData?.data
-            if let um = userModel {
-                model.receiver = um.emp_stageName 
-                model.receiverPhone = um.emp_phone 
-                model.receiverAvanter = um.emp_avatar 
-            }
+            model.receiver = ""
+            model.receiverPhone = (USERDEFAULT.object(forKey: "phone") ?? "") as! String
+            model.receiverAvanter = ""
             model.isRemote = false
             model.isReaded = true
             let _ = DBManager.manager.AddChatLog(model: model)
             let socketData = SocketDataManager()
-            let data = UserInfo.shared.userData?.data
-            socketData.fromUserId = data?.emp_phone ?? ""
+            socketData.fromUserId = (USERDEFAULT.object(forKey: "phone") ?? "") as! String
             socketData.targetUserId = cmodel.topicGroupID.count > 0 ? cmodel.topicGroupID : cmodel.phone
             socketData.eventType = cmodel.topicGroupID.count > 0 ? .EventTypeGroupChat : .EventTypeLineChat
             socketData.packageType = .PackageTypeData
             socketData.fileSuffix = suffix ?? ""
-            socketData.placeId = data?.PlaceID ?? 0
+            socketData.placeId = (USERDEFAULT.object(forKey: "placeID") ?? "0") as! Int
             socketData.transType = (suffix ?? "").count > 0 ? .TransTypeFileStream : .TransTypeByteStream
             socketData.contentString = (socketData.transType == .TransTypeFileStream) ? (ChatimagManager.manager.GetImageDataBy(MD5Str: msg ?? "").base64EncodedString()) : (msg ?? "")
             let messageOfSend = socketData.getFullData()

@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JTChat'
-  s.version          = '0.4.7'
+  s.version          = '0.4.8'
   s.summary          = '精特聊天演示'
 
 # This description is used to generate tags and improve search results.
@@ -43,7 +43,6 @@ Pod::Spec.new do |s|
   s.dependency "ESTabBarController-swift"
   s.dependency "Moya", "~> 13.0.0"
   s.dependency "HandyJSON"
-  s.dependency "IQKeyboardManagerSwift"
   s.dependency "RxSwift"
   s.dependency "RxCocoa"
   s.dependency "SnapKit", "~>4.0.0"

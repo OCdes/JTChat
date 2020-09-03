@@ -11,7 +11,7 @@ import UIKit
 class EmojiViewModel: BaseViewModel {
     @objc dynamic var dataArr: Array<Dictionary<String,Any>> = []
     func refreshData() {
-        let path = Bundle.main.path(forResource: "iconfont", ofType: "json")!
+        let path = JTBundleTool.bundle.path(forResource: "iconfont", ofType: "json")!
         let data = NSData.init(contentsOfFile: path)! as Data
         let dict = try! JSONSerialization.jsonObject(with: data, options: .mutableContainers) as! Dictionary<String,Any>
         let arr = dict["glyphs"] as! Array<Dictionary<String,Any>>

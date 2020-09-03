@@ -13,7 +13,7 @@ class ContactorInfoTableView: BaseTableView {
     var contentsArr: Array<String> = []
     var viewModel: ContactorInfoViewModel? {
         didSet {
-            if let a = viewModel?.employeeModel.phone, let b = UserInfo.shared.userData?.data.emp_phone, a == b {
+            if let a = viewModel?.employeeModel.phone, let b = USERDEFAULT.object(forKey: "phone") as? String, a == b {
                 self.tableFooterView = footerV
             } else {
                 self.tableFooterView = (viewModel?.employeeModel.isFriend ?? false) ? footerV : footerV2
@@ -73,7 +73,7 @@ class ContactorInfoTableView: BaseTableView {
         register(ContactInfoAlisaCell.self, forCellReuseIdentifier: "ContactInfoAlisaCell")
         contentsArr.append(viewModel?.employeeModel.phone ?? "")
         contentsArr.append(viewModel?.employeeModel.department ?? "")
-        if let a = viewModel?.employeeModel.phone, let b = UserInfo.shared.userData?.data.emp_phone, a == b {
+        if let a = viewModel?.employeeModel.phone, let b = USERDEFAULT.object(forKey: "phone") as? String, a == b {
             
         } else {
             self.tableFooterView = (viewModel?.employeeModel.isFriend ?? false) ? footerV : footerV2

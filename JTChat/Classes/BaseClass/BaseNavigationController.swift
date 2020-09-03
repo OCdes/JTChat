@@ -13,12 +13,12 @@ class BaseNavigationController: UINavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let attributes = [
-            NSAttributedString.Key.foregroundColor : HEX_FFF,
+//            NSAttributedString.Key.foregroundColor : HEX_FFF,
             NSAttributedString.Key.font : UIFont.systemFont(ofSize: 18)
         ]
         UINavigationBar.appearance().titleTextAttributes = attributes
         UINavigationBar.appearance().shadowImage = UIImage()
-        self.navigationBar.setBackgroundImage(UIImage.imageWith(color: HEX_ThemeBlack), for: UIBarMetrics.default)
+//        self.navigationBar.setBackgroundImage(UIImage.imageWith(color: HEX_ThemeBlack), for: UIBarMetrics.default)
         // Do any additional setup after loading the view.
     }
     

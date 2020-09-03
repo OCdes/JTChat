@@ -93,7 +93,7 @@ class SocketManager: NSObject {
         socketData.eventType = .EventTypeDefault
         socketData.packageType = .PackageTypeInitial
         socketData.fileSuffix = ""
-        socketData.placeId = data?.PlaceID ?? 0
+        socketData.placeId = (USERDEFAULT.object(forKey: "placeID") ?? "0") as! Int
         socketData.transType = .TransTypeByteStream
         socketData.contentString = UDID
         socketManager?.write(socketData.getFullData(), withTimeout: -1, tag: 0)
@@ -129,7 +129,7 @@ class SocketManager: NSObject {
         socketData.eventType = .EventTypeDefault
         socketData.packageType = PackageType.PackageTypeHeartBeat
         socketData.fileSuffix = ""
-        socketData.placeId = data?.PlaceID ?? 0
+        socketData.placeId = (USERDEFAULT.object(forKey: "placeID") ?? "0") as! Int
         socketData.transType = TransType.TransTypeByteStream
         socketData.contentString = UDID
         socketManager?.write(socketData.getFullData(), withTimeout: -1, tag: 0)

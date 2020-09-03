@@ -18,7 +18,7 @@ class GroupMemTableView: BaseTableView {
         delegate = self
         dataSource = self
         register(GroupMemCell.self, forCellReuseIdentifier: "GroupMemCell")
-        if UserInfo.shared.accontStr == vm.model.creator {
+        if ((USERDEFAULT.object(forKey: "phone") ?? "") as? String) == vm.model.creator {
             let longPress = UILongPressGestureRecognizer.init(target: self, action: #selector(longPress(ge:)))
             self.addGestureRecognizer(longPress)
         }

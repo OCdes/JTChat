@@ -26,7 +26,7 @@ class MessageAttriManager: NSObject {
             }
         }
         let attribu = NSMutableAttributedString.init(string: content)
-        let path = Bundle.main.path(forResource: "iconName", ofType: "json")!
+        let path = JTBundleTool.bundle.path(forResource: "iconName", ofType: "json")!
         let data = (NSData.init(contentsOfFile: path)!) as Data
         let dict = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? Dictionary<String, Any>
         for emStr in emojiStrs.reversed() {

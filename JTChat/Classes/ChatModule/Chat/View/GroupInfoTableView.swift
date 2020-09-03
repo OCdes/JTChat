@@ -23,7 +23,7 @@ class GroupInfoTableView: BaseTableView {
         register(GroupEditStyleCell.self, forCellReuseIdentifier: "GroupEditStyleCell")
         register(GroupMemberCell.self, forCellReuseIdentifier: "GroupMemberCell")
         _ = viewModel.subject.subscribe(onNext: { [weak self](a) in
-            if self!.viewModel.model.creator == UserInfo.shared.accontStr {
+            if self!.viewModel.model.creator == ((USERDEFAULT.object(forKey: "phone") ?? "") as? String) {
                 self!.dataArr = ["群聊名称","群成员","","添加成员","群管理","退出群聊"]
             } else {
                 self!.dataArr = ["群聊名称","群成员",""]

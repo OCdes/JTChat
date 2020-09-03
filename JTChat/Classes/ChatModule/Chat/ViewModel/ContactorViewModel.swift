@@ -38,14 +38,20 @@ class ContactorViewModel: BaseViewModel {
     
     func refreshData(scrollView: UIScrollView) {
         sectionModel = ContactDataModel.init()
-        let employeeDict: Dictionary<String, Any> = USERDEFAULT.object(forKey: "cemployeeDict") as! Dictionary<String, Any>
-            let arr: Array<Any> = employeeDict["data"] as! Array
-        self.employeeArr = JSONDeserializer<ContactorModel>.deserializeModelArrayFrom(array: arr)! as? Array<ContactorModel>
-        let deDict: Dictionary<String, Any> = USERDEFAULT.object(forKey: "cdepartmentDict") as! Dictionary<String, Any>
-            let deArr: Array<Any> = deDict["data"] as! Array
-        self.departmentArr = JSONDeserializer<DepartmentModel>.deserializeModelArrayFrom(array: deArr)! as? Array<DepartmentModel>
-        self.listChangeWithType(b: self.typeChange)
-        self.employeePersistence()
+        let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POSST_FETCHEMPLOYEETOCHAT, params: [:], success: { [weak self](msg, code, response, data) in
+            scrollView.jt_endRefresh()
+            let arr: Array<Any> = (data["data"] ?? data["Data"]) as! Array
+            self!.employeeArr = JSONDeserializer<ContactorModel>.deserializeModelArrayFrom(array: arr)! as? Array<ContactorModel>
+            let deDict: Dictionary<String, Any> = USERDEFAULT.object(forKey: "cdepartmentDict") as! Dictionary<String, Any>
+                let deArr: Array<Any> = deDict["data"] as! Array
+            self!.departmentArr = JSONDeserializer<DepartmentModel>.deserializeModelArrayFrom(array: deArr)! as? Array<DepartmentModel>
+            self!.listChangeWithType(b: self!.typeChange)
+            self!.employeePersistence()
+        }) { (errorInfo) in
+            scrollView.jt_endRefresh()
+            SVProgressHUD.showError(withStatus: (errorInfo.message.count>0 ? errorInfo.message : "未知错误"))
+        }
+        
     }
     
     func employeePersistence() {
@@ -102,11 +108,12 @@ class ContactorViewModel: BaseViewModel {
                 if model.deptParentID.count > 0 {
                 } else {
                     handleSubdepartmentArr(m: m)
-                    sectionModel.subdepartmentArr.append(m)
-                    sectionModel.subEmployeeArr.append(contentsOf: m.subEmployeeArr)
+                    if m.subEmployeeArr.count > 0 {
+                        sectionModel.subdepartmentArr.append(m)
+                        sectionModel.subEmployeeArr.append(contentsOf: m.subEmployeeArr)
+                    }
                 }
             })
-            //            dealSectionModel(m: sectionModel!)
         }
         self.subject.onNext("")
     }

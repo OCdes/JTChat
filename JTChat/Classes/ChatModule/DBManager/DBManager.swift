@@ -23,7 +23,7 @@ open class DBManager: NSObject {
     
     private func initChatListDataBase() {
         let docPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first ?? ""
-        let filePath = "\(docPath)/\(UserInfo.shared.placeData?.data.placeDetail.placeID ?? "")\(UserInfo.shared.userData?.data.emp_phone ?? "")chatList.sqlite"
+        let filePath = "\(docPath)/\(USERDEFAULT.object(forKey: "placeID") ?? "")\(USERDEFAULT.object(forKey: "phone") ?? "")chatList.sqlite"
         dbQueue = FMDatabaseQueue.init(path: filePath)
     }
     

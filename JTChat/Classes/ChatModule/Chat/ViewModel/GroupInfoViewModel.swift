@@ -47,7 +47,7 @@ class GroupInfoViewModel: BaseViewModel {
     }
     
     func leaveGroup() {
-        _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_REMOVEMEMFROMGROUP, params: ["topicGroupID" : groupID, "memberPhone":UserInfo.shared.accontStr], success: { (msg, code, response, data) in
+        _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_REMOVEMEMFROMGROUP, params: ["topicGroupID" : groupID, "memberPhone":(USERDEFAULT.object(forKey: "phone") ?? "")], success: { (msg, code, response, data) in
             SVPShowSuccess(content: "退出成功")
             DBManager.manager.deletRecentChat(byPhone: "", byTopicID: self.groupID)
             self.navigationVC?.popToRootViewController(animated: true)

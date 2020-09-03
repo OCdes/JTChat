@@ -63,12 +63,9 @@ class ChatViewModel: BaseViewModel {
             model.senderPhone = cmodel.phone
             model.senderAvanter = cmodel.avatarUrl
             model.topic_group = cmodel.topicGroupID
-            let userModel = UserInfo.shared.userData?.data
-            if let um = userModel {
-                model.receiver = um.emp_stageName ?? ""
-                model.receiverPhone = um.emp_phone ?? ""
-                model.receiverAvanter = um.emp_avatar ?? ""
-            }
+            model.receiver = ""
+            model.receiverPhone = USERDEFAULT.object(forKey: "phone") as! String
+            model.receiverAvanter = ""
             DBManager.manager.getChatLog(model: model, page: page, nums: page == 1 ? 0 : self.totalTimeArr.count) { [weak self](arr) in
                 self!.first = false
                 scrollView.jt_endRefresh()

@@ -34,6 +34,7 @@ class ChatVC: BaseViewController, InputToolViewDelegate {
                 self.title = cm.nickname
             }
         }
+        JTManager.manager.updateUnreadedCount()
     }
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidAppear(animated)

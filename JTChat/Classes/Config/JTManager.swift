@@ -12,6 +12,7 @@ import UIKit
 public protocol JTChatDelegate: NSObjectProtocol {
     
     func JTChatNeedToSendMessage(data: Data)
+    func JTChatNeedUpdateReadedCount()
 }
 
 open class JTManager: NSObject {
@@ -153,6 +154,11 @@ open class JTManager: NSObject {
         }
     }
     
+    func updateUnreadedCount() {
+        if let de = self.delegate {
+            de.JTChatNeedUpdateReadedCount()
+        }
+    }
 }
 
 

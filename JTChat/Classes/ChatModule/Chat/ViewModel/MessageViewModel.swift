@@ -17,8 +17,16 @@ class MessageViewModel: BaseViewModel {
     @objc dynamic var groupNum: Int = 0
     override init() {
         super.init()
+        
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(updateRecentList), name: NotificationHelper.kChatOnlineNotiName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateRecentList), name: NotificationHelper.kReLoginName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(getAllRecentContactor), name: NotificationHelper.kChatOnGroupNotiName, object: nil)
+    }
+    
+    @objc func getAllRecentContactor() {
         let sub1 = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_CHATFRIENDSlIST, params: [:], success: { (msg, code, reponse, data) in
-//            
+            //
         }) { (errorInfo) in
             SVPShowError(content: errorInfo.message)
         }
@@ -37,10 +45,9 @@ class MessageViewModel: BaseViewModel {
                 m.isReaded = true
                 DBManager.manager.addRecentChat(model: m)
             }
+            self.updateRecentList()
         })
         
-        NotificationCenter.default.addObserver(self, selector: #selector(updateRecentList), name: NotificationHelper.kChatOnlineNotiName, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateRecentList), name: NotificationHelper.kReLoginName, object: nil)
     }
     
     @objc func updateRecentList() {

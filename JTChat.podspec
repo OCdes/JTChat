@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JTChat'
-  s.version          = '0.5.0'
+  s.version          = '0.5.1'
   s.summary          = '精特聊天演示'
 
 # This description is used to generate tags and improve search results.

@@ -27,8 +27,11 @@ class ChatViewModel: BaseViewModel {
     @objc func updateData() {
         refreshData(scrollView: UIScrollView())
         let model = self.appendArr.last
-        if let m = model {
-            DBManager.manager.updateRecentChat(model: m)
+        if let m = model, let d = USERDEFAULT.object(forKey: "currentID") as? String {
+            if (m.senderPhone == d && m.topic_group.count == 0) || m.topic_group == d {
+                DBManager.manager.updateRecentChat(model: m)
+            }
+            
         }
     }
     
@@ -93,8 +96,12 @@ class ChatViewModel: BaseViewModel {
                 
             }
             if let m = self.originArr.last {
-                m.isReaded = true
-                DBManager.manager.updateRecentChat(model: m)
+                if let d = USERDEFAULT.object(forKey: "currentID") as? String {
+                    if (m.senderPhone == d && m.topic_group.count == 0) || m.topic_group == d {
+                        m.isReaded = true
+                        DBManager.manager.updateRecentChat(model: m)
+                    }
+                }
             }
         }
         

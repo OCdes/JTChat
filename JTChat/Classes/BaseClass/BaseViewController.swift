@@ -14,9 +14,9 @@ open class BaseViewController: UIViewController , UINavigationControllerDelegate
         return UIStatusBarStyle.lightContent
     }
     
-    open override var prefersStatusBarHidden: Bool {
-        return true
-    }
+//    open override var prefersStatusBarHidden: Bool {
+//        return true
+//    }
     
     lazy var backBtn: UIButton = {
         var btn = UIButton(frame: CGRect(x: 0, y: 0, width: 30, height: 40))
@@ -77,12 +77,9 @@ open class BaseViewController: UIViewController , UINavigationControllerDelegate
         if (self.navigationController?.viewControllers.count ?? 1) > 2 {
             
             self.navigationItem.leftBarButtonItems = [UIBarButtonItem.init(customView: backBtn), fixItem, UIBarButtonItem.init(customView: closeBtn)]
-            self.hidesBottomBarWhenPushed = true
         } else if ((self.navigationController?.viewControllers.count ?? 1) > 1) {
             self.navigationItem.leftBarButtonItems = [fixItem, UIBarButtonItem.init(customView: backBtn)]
-            self.hidesBottomBarWhenPushed = true
         } else {
-            self.hidesBottomBarWhenPushed = false
         }
         
         UIBarButtonItem.appearance().setBackButtonTitlePositionAdjustment(UIOffset(horizontal: 5, vertical: 0),for: UIBarMetrics.default)

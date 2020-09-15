@@ -13,7 +13,7 @@ PODS:
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
   - HandyJSON (5.0.2)
-  - JTChat (0.4.9):
+  - JTChat (0.5.0):
     - ALQRCode
     - CocoaAsyncSocket
     - EmptyDataSet-Swift
@@ -108,7 +108,7 @@ SPEC CHECKSUMS:
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
-  JTChat: a82a10200846bdd64299793225503b61c2588e1b
+  JTChat: 66d0d7aab551e821d37e79b5448c29132382bf15
   KeychainSwift: c46e1438d121e47459fb304ac88c5e058a2a91ed
   Kingfisher: 1acb67597a520c2d0310677e66d6e0af455ef757
   MJRefresh: 6afc955813966afb08305477dd7a0d9ad5e79a16

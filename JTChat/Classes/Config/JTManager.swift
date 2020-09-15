@@ -48,6 +48,11 @@ open class JTManager: NSObject {
             USERDEFAULT.set(isAutoResizeBottom, forKey: "isAutoResizeBottom")
         }
     }
+    @objc open var isHideBottom: Bool = false {
+        didSet {
+            USERDEFAULT.set(isHideBottom, forKey: "isHideBottom")
+        }
+    }
     @objc open var placeID: Int = 0 {
         didSet {
             USERDEFAULT.set(placeID, forKey: "placeID")
@@ -116,6 +121,10 @@ open class JTManager: NSObject {
         mmodel.receiverPhone = (USERDEFAULT.object(forKey: "phone") ?? "") as! String
         mmodel.receiverAvanter = ""
         mmodel.isReaded = false
+        let m = DBManager.manager.getRecent(byPhone: nil, byTopicID: mmodel.topic_group)
+        if m.topicGroupID.count == 0 {
+            NotificationCenter.default.post(name: NotificationHelper.kChatOnGroupNotiName, object: nil)
+        }
         let _ = DBManager.manager.AddChatLog(model: mmodel)
         NotificationCenter.default.post(name: NotificationHelper.kChatOnlineNotiName, object: nil)
     }

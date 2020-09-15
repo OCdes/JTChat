@@ -12,7 +12,7 @@ import ALQRCode
 open class MessageListVC: BaseViewController {
     var viewModel: MessageViewModel = MessageViewModel()
     lazy var scrollView: RecentDialogView = {
-        let tv = RecentDialogView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: self.view.frame.height-45), viewModel: self.viewModel)
+        let tv = RecentDialogView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: (kScreenHeight-49-45-(kScreenHeight>=750 ? 122 : 64))), viewModel: self.viewModel)
         return tv
     }()
     var previousBtn: UIButton?
@@ -30,6 +30,7 @@ open class MessageListVC: BaseViewController {
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.navigationBar.isTranslucent = false
+        self.viewModel.getAllRecentContactor()
         self.viewModel.getMessageList(scrollView: self.scrollView)
     }
     

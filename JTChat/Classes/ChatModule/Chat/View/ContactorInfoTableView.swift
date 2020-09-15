@@ -71,7 +71,11 @@ class ContactorInfoTableView: BaseTableView {
         register(ContactorInfoCell.self, forCellReuseIdentifier: "ContactorInfoCell")
         register(ContactInfoDetailCell.self, forCellReuseIdentifier: "ContactInfoDetailCell")
         register(ContactInfoAlisaCell.self, forCellReuseIdentifier: "ContactInfoAlisaCell")
-        contentsArr.append(viewModel?.employeeModel.phone ?? "")
+        if let phone = viewModel?.employeeModel.phone, phone.count > 7 {
+            contentsArr.append("\(phone.prefix(3))****\(phone.suffix(4))")
+        } else {
+            contentsArr.append("")
+        }
         contentsArr.append(viewModel?.employeeModel.department ?? "")
         if let a = viewModel?.employeeModel.phone, let b = USERDEFAULT.object(forKey: "phone") as? String, a == b {
             

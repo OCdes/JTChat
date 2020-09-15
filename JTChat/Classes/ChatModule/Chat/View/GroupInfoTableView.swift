@@ -26,7 +26,7 @@ class GroupInfoTableView: BaseTableView {
             if self!.viewModel.model.creator == ((USERDEFAULT.object(forKey: "phone") ?? "") as? String) {
                 self!.dataArr = ["群聊名称","群成员","","添加成员","群管理","退出群聊"]
             } else {
-                self!.dataArr = ["群聊名称","群成员",""]
+                self!.dataArr = ["群聊名称","群成员","","退出群聊"]
             }
             self!.model = self!.viewModel.model
             self!.reloadData()
@@ -94,16 +94,22 @@ extension GroupInfoTableView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if self.model.membersList.count == 0 {
+            return 
+        }
         let str = dataArr[indexPath.section]
         switch str {
         case "群聊名称":
-            let vc = TextEditVC()
-            vc.groupName = self.model.topicGroupName
-            _ = vc.subject.subscribe(onNext: { [weak self](str) in
-                self!.viewModel.groupName = str
-                self!.viewModel.updateInfo()
-            })
-            self.viewModel.navigationVC?.pushViewController(vc, animated: true)
+            if self.viewModel.model.creator == ((USERDEFAULT.object(forKey: "phone") ?? "") as? String) {
+                let vc = TextEditVC()
+                vc.groupName = self.model.topicGroupName
+                _ = vc.subject.subscribe(onNext: { [weak self](str) in
+                    self!.viewModel.refreshData()
+                })
+                vc.model = self.model
+                self.viewModel.navigationVC?.pushViewController(vc, animated: true)
+            }
+            
             print(str)
         case "群成员":
             let vc = GroupMemVC()

@@ -10,6 +10,7 @@ import UIKit
 import RxSwift
 class TextEditVC: BaseViewController {
     var subject: PublishSubject<String> = PublishSubject<String>()
+    var model: GroupInfoModel = GroupInfoModel()
     var groupName: String = "" {
         didSet {
             self.textf.text = groupName
@@ -50,9 +51,20 @@ class TextEditVC: BaseViewController {
     }
     
     @objc func doneBtnClick() {
-        if let str = self.textf.text, str.count > 0, str != self.groupName {
+        if let str = self.textf.text, str.count > 0, str != self.model.topicGroupName {
             self.textf.resignFirstResponder()
-            self.subject.onNext(str)
+            _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_UPDATEGROUPINFO, params: ["topicGroupID":model.topicGroupID,"topicGroupName":str,"topicGroupDesc":model.topicGroupDesc], success: { (msg, code, response, data) in
+                SVPShowSuccess(content: "修改成功")
+                let m = GroupInfoModel()
+                m.topicGroupID = self.model.topicGroupID
+                m.topicGroupName = self.model.topicGroupName
+                m.topicGroupDesc = self.model.topicGroupDesc
+                DBManager.manager.updateGroupInfo(model: m)
+                self.subject.onNext("")
+                self.navigationController?.popViewController(animated: true)
+            }, fail: { (errorinfo) in
+                SVPShowError(content: errorinfo.message)
+            })
         }
         
     }

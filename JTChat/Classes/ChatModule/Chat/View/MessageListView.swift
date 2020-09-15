@@ -37,7 +37,8 @@ extension MessageListView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: MessageListCell = tableView.dequeueReusableCell(withIdentifier: "MessageListCell", for: indexPath) as! MessageListCell
-        cell.model = dataArr[indexPath.row]
+        let m = dataArr[indexPath.row]
+        cell.model = m
         return cell
     }
     
@@ -83,7 +84,7 @@ class MessageListCell: BaseTableCell {
             nameLa.text = model!.topicGroupName.count > 0 ? model!.topicGroupName : model!.nickname
             dateLa.text = model!.createTime
             messageLa.text = model!.packageType == 2 ? "[图片]" : model!.msgContent
-            redDot.isHidden = model!.isReaded
+            redDot.isHidden = (model!.isReaded || !(model!.unreadCount > 0))
             redDot.text = model!.unreadCount >= 99 ? "99+" : "\(model!.unreadCount)"
         }
     }

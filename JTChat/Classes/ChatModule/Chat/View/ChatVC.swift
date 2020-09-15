@@ -25,19 +25,12 @@ class ChatVC: BaseViewController, InputToolViewDelegate {
     var toolBottomConstrait: Constraint?
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let m = self.viewModel.contactor {
-            if m.topicGroupID.count > 0 {
-                let cm = DBManager.manager.getRecent(byPhone: nil, byTopicID: m.topicGroupID)
-                self.title = cm.topicGroupName
-            } else {
-                let cm = DBManager.manager.getRecent(byPhone: m.phone, byTopicID: nil)
-                self.title = cm.nickname
-            }
-        }
         JTManager.manager.updateUnreadedCount()
+        
     }
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        USERDEFAULT.removeObject(forKey: "currentID")
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -85,6 +78,17 @@ class ChatVC: BaseViewController, InputToolViewDelegate {
 
     func bindModel() {
         viewModel.navigationVC = self.navigationController
+        if let m = self.viewModel.contactor {
+            if m.topicGroupID.count > 0 {
+                let cm = DBManager.manager.getRecent(byPhone: nil, byTopicID: m.topicGroupID)
+                self.title = cm.topicGroupName
+                USERDEFAULT.set(m.topicGroupID, forKey: "currentID")
+            } else {
+                let cm = DBManager.manager.getRecent(byPhone: m.phone, byTopicID: nil)
+                self.title = cm.nickname
+                USERDEFAULT.set(m.phone, forKey: "currentID")
+            }
+        }
         self.toolView.viewModel = viewModel
         let _ = self.tableView.jt_addRefreshHeaderWithNoText {
             self.viewModel.page += 1

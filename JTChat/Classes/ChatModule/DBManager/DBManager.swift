@@ -105,12 +105,17 @@ open class DBManager: NSObject {
                         let insertSQL = "INSERT INTO RecentChatList (sender,sender_phone,sender_avantar,package_type,package_content,create_time,topic_group,topic_group_name,creator,is_read, unread_count) VALUES(?,?,?,?,?,?,?,?,?,?,?)"
                         
                         if model.createTime.count > 0 {
-                            let format = DateFormatter()
-                            format.dateFormat = "yyyy-MM-dd HH:mm:ss"
-                            if let date = format.date(from: model.createTime) {
-                                let timeInterval = date.timeIntervalSince1970
-                                db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname, model.friendPhone, model.avatar, model.packageType, model.msgContent,timeInterval, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
+                            if model.createTime.contains(":") {
+                                let format = DateFormatter()
+                                format.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                                if let date = format.date(from: model.createTime) {
+                                    let timeInterval = date.timeIntervalSince1970
+                                    db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname, model.friendPhone, model.avatar, model.packageType, model.msgContent,timeInterval, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
+                                }
+                            } else {
+                                db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname, model.friendPhone, model.avatar, model.packageType, model.msgContent,(Int(model.createTime) ?? 0)/1000, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
                             }
+                            
                         } else if model.timeStamp > 0 {
                             db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname, model.friendPhone, model.avatar, model.packageType, model.msgContent,model.timeStamp, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
                         } else {
@@ -123,6 +128,14 @@ open class DBManager: NSObject {
                     db.close()
                 }
             })
+        } else {
+            if model.topicGroupID.count > 0 {
+                let m = GroupInfoModel()
+                m.topicGroupName = model.topicGroupName
+                m.topicGroupID = model.topicGroupID
+                updateGroupInfo(model: m)
+            }
+            
         }
     }
     
@@ -150,38 +163,47 @@ open class DBManager: NSObject {
     func updateRecentChat(model: MessageModel) {
         let m = getRecent(byPhone: model.topic_group.count > 0 ? "" : model.senderPhone, byTopicID: model.topic_group)
         if m.friendPhone.count > 0 {
-            dbQueue?.inDatabase({ (db) in
-                if db.open() {
-                    let updateSQL = "UPDATE RecentChatList SET package_type=\(model.packageType),package_content='\(model.msgContent)',topic_group='\(model.topic_group)',create_time=\(model.timeStamp),is_read=\(model.isReaded),unread_count=\(model.isReaded ? 0 : m.unreadCount+1) WHERE sender_phone='\(model.senderPhone)'"
-                    db.executeUpdate(updateSQL, withArgumentsIn: [])
-                    db.close()
+            if m.nickname.count > 0 {
+                dbQueue?.inDatabase({ (db) in
+                    if db.open() {
+                        let updateSQL = "UPDATE RecentChatList SET package_type=\(model.packageType),package_content='\(model.msgContent)',topic_group='\(model.topic_group)',create_time=\(model.timeStamp),is_read=\(model.isReaded),unread_count=\(model.isReaded ? 0 : m.unreadCount+1) WHERE sender_phone='\(model.senderPhone)'"
+                        db.executeUpdate(updateSQL, withArgumentsIn: [])
+                        db.close()
+                    }
+                })
+            } else {
+                let m = getContactor(phone: model.senderPhone)
+                if m.phone.count > 0 && m.nickName.count > 0 {
+                    let fm = FriendModel()
+                    fm.nickname = m.nickName
+                    fm.friendPhone = m.phone
+                    fm.avatar = m.avatarUrl
+                    fm.isReaded = model.isReaded
+                    fm.createTime = model.creatTime
+                    fm.timeStamp = model.timeStamp
+                    fm.topicGroupID = model.topic_group
+                    fm.packageType = model.packageType
+                    fm.msgContent = model.msgContent
+                    fm.unreadCount = model.isReaded ? 0 : 1
+                    addRecentChat(model: fm)
                 }
-            })
+            }
+            
         } else if m.topicGroupID.count > 0 {
-            dbQueue?.inDatabase({ (db) in
-                if db.open() {
-                    let updateSQL = "UPDATE RecentChatList SET package_type=\(model.packageType),package_content='\(model.msgContent)',topic_group='\(m.topicGroupID)',create_time=\(model.timeStamp),is_read=\(model.isReaded),unread_count=\(model.isReaded ? 0 : m.unreadCount+1) WHERE topic_group='\(model.topic_group)'"
-                    db.executeUpdate(updateSQL, withArgumentsIn: [])
-                    db.close()
-                }
-            })
+            if m.topicGroupName.count > 0 {
+                dbQueue?.inDatabase({ (db) in
+                    if db.open() {
+                        let updateSQL = "UPDATE RecentChatList SET package_type=\(model.packageType),package_content='\(model.msgContent)',topic_group='\(m.topicGroupID)',create_time=\(model.timeStamp),is_read=\(model.isReaded),unread_count=\(model.isReaded ? 0 : m.unreadCount+1) WHERE topic_group='\(model.topic_group)'"
+                        db.executeUpdate(updateSQL, withArgumentsIn: [])
+                        db.close()
+                    }
+                })
+            } else {
+                updateRecentChat(model: model)
+            }
+            
         } else {
             print("当前对话人未存入表")
-            let m = getContactor(phone: model.senderPhone)
-            if m.phone.count > 0 {
-                let fm = FriendModel()
-                fm.nickname = m.nickName
-                fm.friendPhone = m.phone
-                fm.avatar = m.avatarUrl
-                fm.isReaded = model.isReaded
-                fm.createTime = model.creatTime
-                fm.timeStamp = model.timeStamp
-                fm.topicGroupID = model.topic_group
-                fm.packageType = model.packageType
-                fm.msgContent = model.msgContent
-                fm.unreadCount = model.isReaded ? 0 : 1
-                addRecentChat(model: fm)
-            }
         }
     }
     

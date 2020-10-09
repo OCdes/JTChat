@@ -8,7 +8,7 @@
 
 import UIKit
 import RxSwift
-class ChatTableView: BaseTableView {
+class ChatTableView: UITableView {
     var dataArr: Array<MessageSectionModel> = []
     var viewModel: ChatViewModel?
     var tapSubject: PublishSubject<Any> = PublishSubject<Any>()
@@ -19,32 +19,36 @@ class ChatTableView: BaseTableView {
         separatorStyle = .none
         delegate = self
         dataSource = self
+        if #available(iOS 11.0, *) {
+            contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
+        } else {
+            // Fallback on earlier versions
+            if #available(iOS 13.0, *) {
+                automaticallyAdjustsScrollIndicatorInsets = true
+            } else {
+                // Fallback on earlier versions
+            }
+        }
         register(ChatTableLeftCell.self, forCellReuseIdentifier: "ChatTableLeftCell")
         register(ChatTableRightCell.self, forCellReuseIdentifier: "ChatTableRightCell")
         let _ = viewModel?.subject.subscribe(onNext: { [weak self](count) in
-            let numOfSection = self!.numberOfSections(in: self!)
-            self!.dataArr = (self!.viewModel?.dataArr ?? [])
-            self!.reloadData()
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.init(uptimeNanoseconds: 3)) {
-                if self!.viewModel!.page > 1 {
-                    let offsection = self!.dataArr.count - numOfSection
-                    let offrow = self!.numberOfRows(inSection: offsection > 0 ? offsection-1 : offsection)
-                    self!.scrollToRow(at: IndexPath(row: offrow > 0 ? offrow-1 : offrow, section: offsection > 0 ? offsection-1 : offsection), at: .top, animated: false)
-                } else {
-                    self!.scrollTo(offsetY: self!.contentSize.height, animated: false)
-                }
-            }
+            self?.dataArr = (self!.viewModel?.dataArr ?? [])
+            self?.reloadData()
         })
         addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(tableViewTap)))
     }
     
     func scrollTo(offsetY:CGFloat, animated: Bool?) {
-//        self.setContentOffset(CGPoint(x: 0, y: self.contentOffset.y-offsetY), animated: animated ?? false)
         if self.dataArr.count > 0 {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: 2)) {
                 let section = self.numberOfSections(in: self)
-                let rows = self.numberOfRows(inSection: section > 0 ? section-1 : 0)
-                self.scrollToRow(at: IndexPath(row: rows>0 ? rows-1 : 0, section: section > 0 ? section-1 : 0), at: .bottom, animated: animated ?? false)
+                if section > 0 {
+                    let rows = self.dataArr[section-1].rowsArr.count-1
+                    if rows > 0 {
+                        self.scrollToRow(at: IndexPath(row: rows-1, section:section-1), at: .bottom, animated: animated ?? false)
+                    }
+                }
+
             }
         }
     }
@@ -69,6 +73,11 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == self.dataArr.count-1  {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.init(uptimeNanoseconds: 1)) {
+                self.scrollTo(offsetY: self.contentSize.height, animated: false)
+            }
+        }
         return dataArr[section].rowsArr.count
     }
     
@@ -79,12 +88,14 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
             cell.model = model
             let longpress = UILongPressGestureRecognizer.init(target: self, action: #selector(longPress(long:)))
             cell.contentLa.addGestureRecognizer(longpress)
+            cell.contentLa.isUserInteractionEnabled = true
             return cell
         } else {
             let cell: ChatTableLeftCell = tableView.dequeueReusableCell(withIdentifier: "ChatTableLeftCell", for: indexPath) as! ChatTableLeftCell
             cell.model = model
             let longpress = UILongPressGestureRecognizer.init(target: self, action: #selector(longPress(long:)))
             cell.contentLa.addGestureRecognizer(longpress)
+            cell.contentLa.isUserInteractionEnabled = true
             return cell
         }
     }
@@ -151,7 +162,7 @@ class ChatTableLeftCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.senderPhone)
-            portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: UIImage(named: "approvalPortrait"))
+            portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             if model.packageType == 1 {
                 contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
                 imgv.isHidden = true
@@ -167,7 +178,7 @@ class ChatTableLeftCell: BaseTableCell {
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
         pv.layer.cornerRadius = 18
-        pv.image = UIImage(named: "approvalPortrait")
+        pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
     lazy var contentV: UIView = {
@@ -269,7 +280,7 @@ class ChatTableRightCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.receiverPhone)
-            portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: UIImage(named: "approvalPortrait"))
+            portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             if model.packageType == 1 {
                 contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
                 imgv.isHidden = true
@@ -285,7 +296,7 @@ class ChatTableRightCell: BaseTableCell {
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
         pv.layer.cornerRadius = 18
-        pv.image = UIImage(named: "approvalPortrait")
+        pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
     lazy var contentV: UIView = {

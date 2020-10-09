@@ -42,7 +42,7 @@ extension BaseCollectionView: EmptyDataSetSource, EmptyDataSetDelegate {
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        let img = UIImage.init(named: "emptyPlaceholder")
+        let img = JTBundleTool.getBundleImg(with:"emptyPlaceholder")
         return img
     }
     

@@ -24,7 +24,15 @@ class RecentDialogView: UIScrollView {
         self.contentSize = CGSize(width: kScreenWidth*2, height: frame.height)
         self.isScrollEnabled = false
         addSubview(personalListView)
+//        personalListView.snp_makeConstraints { (make) in
+//            make.left.top.bottom.equalTo(self)
+//            make.width.equalTo(kScreenWidth)
+//        }
         addSubview(groupListView)
+//        groupListView.snp_makeConstraints { (make) in
+//            make.right.top.bottom.equalTo(self)
+//            make.width.equalTo(kScreenWidth)
+//        }
         _ = viewModel.subject.subscribe(onNext: { [weak self](a) in
             self!.personalListView.dataArr = self!.viewModel.personalListArr
             self!.groupListView.dataArr = self!.viewModel.groupListArr

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GroupManagerTableView: BaseTableView {
+class GroupManagerTableView: UITableView {
     var dataArr: Array<String> = ["解散群组"]
     var viewModel: GroupInfoViewModel?
     init(frame: CGRect, style: UITableView.Style, viewModel vm: GroupInfoViewModel) {
@@ -16,6 +16,16 @@ class GroupManagerTableView: BaseTableView {
         viewModel = vm
         delegate = self
         dataSource = self
+        if #available(iOS 11.0, *) {
+            contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
+        } else {
+            // Fallback on earlier versions
+            if #available(iOS 13.0, *) {
+                automaticallyAdjustsScrollIndicatorInsets = true
+            } else {
+                // Fallback on earlier versions
+            }
+        }
         register(UITableViewCell.self, forCellReuseIdentifier: "UITableViewCell")
     }
     

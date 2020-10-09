@@ -14,18 +14,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-//        let tabVC = UITabBarController.init()
-//        let messageVc = MessageListVC()
-//        let messageNav = UINavigationController.init(rootViewController: messageVc)
-//
-//
-        let contactorVc = ConntactersVC()
-//        let contactorNav = UINavigationController.init(rootViewController: contactorVc)
-//        tabVC.viewControllers = [messageNav, contactorNav]
+        JTManager.manager.url = "https://reapi.hzjtyh.com"
+        JTManager.manager.placeID = 2040
+        JTManager.manager.jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN1c3RvbSI6eyJ1c2VyT3BlbklEIjoiIiwibWVyY2hhbnRJRCI6MTAzNywicGhvbmUiOiIxNTY2OTAxOTU1NyIsInBsYWNlSUQiOjIwNDAsInZlcnNpb25ObyI6IjEuMC45IiwidGVybWluYWxUeXBlIjoiQXBwIn19.eyJzdWIiOiLmjojmnYNBUFDnq6_ku6TniYwiLCJpc3MiOiLnsr7nibnlqLHmsYfmnInpmZDlhazlj7giLCJleHAiOjE2MDIzMjM1MTEsImlhdCI6MTYwMjIzNzExMSwianRpIjoiYjg5MzIxN2VjNTE5NDM2YThmNzUwNmI1MGNjMTRiMmQifQ.ZEyj0MTIuwmMvF6zrx8mgnJyxC_K9V8CBFptbRepzW8"
+        setRootVC()
         return true
     }
     
-    
+    @objc func setRootVC() {
+        let tabVC = UITabBarController.init()
+        let messageVc = MessageListVC()
+        let messageNav = UINavigationController.init(rootViewController: messageVc)
+        messageNav.tabBarItem = UITabBarItem.init(title: "消息", image: nil, tag: 0)
+
+        let contactorVc = ConntactersVC()
+        let contactorNav = UINavigationController.init(rootViewController: contactorVc)
+        contactorNav.tabBarItem = UITabBarItem.init(title: "联系人", image: nil, tag: 1)
+        tabVC.viewControllers = [messageNav, contactorNav]
+        self.window = UIWindow.init(frame: UIScreen.main.bounds)
+        self.window?.rootViewController = tabVC
+    }
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

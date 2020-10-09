@@ -11,13 +11,24 @@ import ALQRCode
 open class ConntactersVC: BaseViewController  {
     var viewModel: ContactorViewModel = ContactorViewModel.init()
     lazy var tableView:ContactersTableView = {
-        let tv = ContactersTableView.init(frame: CGRect.zero, style: .grouped, viewModel: self.viewModel)
+        let tv = ContactersTableView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: kScreenHeight), style: .grouped, viewModel: self.viewModel)
         return tv
     }()
+    
+    open override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isTranslucent = false
+    }
+    
+    open override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.navigationBar.isTranslucent = true
+    }
     
     open override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "联系人"
+        self.viewModel.typeEnable = false
         setNav()
         initView()
         bindModel()
@@ -27,7 +38,7 @@ open class ConntactersVC: BaseViewController  {
     override func setNav() {
         super.setNav()
         let btn = UIButton.init(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
-        btn.setImage(UIImage(named: "addFriend"), for: .normal)
+        btn.setImage(JTBundleTool.getBundleImg(with:"addFriend"), for: .normal)
         let _ = btn.rx.controlEvent(.touchUpInside).subscribe(onNext: { [weak self](a) in
             let scan = ALScannerQRCodeVC.init()
             scan.scannerQRCodeDone = {[weak self](result) in
@@ -49,12 +60,16 @@ open class ConntactersVC: BaseViewController  {
     
     func bindModel() {
         viewModel.navigationVC = self.navigationController
-        let _ = tableView.jt_addRefreshHeader {
-            self.viewModel.refreshData(scrollView: self.tableView)
+        let _ = tableView.jt_addRefreshHeader {[weak self]() in
+            self!.viewModel.refreshData(scrollView: self!.tableView)
         }
         self.tableView.jt_startRefresh()
     }
-
+    
+    deinit {
+        print("联系人销毁了")
+    }
+    
     /*
     // MARK: - Navigation
 

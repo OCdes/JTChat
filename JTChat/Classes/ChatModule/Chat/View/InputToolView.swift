@@ -37,6 +37,8 @@ class InputToolView: UIView {
         tv.layer.masksToBounds = true
         tv.delegate = self
         tv.returnKeyType = .send
+        tv.inputAccessoryView = nil
+        tv.reloadInputViews()
         return tv
     }()
     
@@ -50,22 +52,22 @@ class InputToolView: UIView {
     
     lazy var typeBtn: UIButton = {
         let vb = UIButton()
-        vb.setImage(UIImage(named: "voiceicon"), for: .normal)
-        vb.setImage(UIImage(named: "texticon"), for: .selected)
+        vb.setImage(JTBundleTool.getBundleImg(with:"voiceicon"), for: .normal)
+        vb.setImage(JTBundleTool.getBundleImg(with:"texticon"), for: .selected)
         return vb
     }()
     
     lazy var emojBtn: UIButton = {
         let eb = UIButton()
-        eb.setImage(UIImage(named: "emojicon"), for: .normal)
-        eb.setImage(UIImage(named: "texticon"), for: .selected)
+        eb.setImage(JTBundleTool.getBundleImg(with:"emojicon"), for: .normal)
+        eb.setImage(JTBundleTool.getBundleImg(with:"texticon"), for: .selected)
         eb.addTarget(self, action: #selector(emojiBtnClicked(btn:)), for: .touchUpInside)
         return eb
     }()
     
     lazy var moreBtn: UIButton = {
         let mb = UIButton()
-        mb.setImage(UIImage(named: "moreicon"), for: .normal)
+        mb.setImage(JTBundleTool.getBundleImg(with:"moreicon"), for: .normal)
         mb.addTarget(self, action: #selector(moreBtnClicked(btn:)), for: .touchUpInside)
         return mb
     }()
@@ -212,16 +214,18 @@ class InputToolView: UIView {
     }
     
     @objc func keyboardWillShow(noti: Notification) {
+        self.textV.reloadInputViews()
         let dict = noti.userInfo as! Dictionary<String, Any>
         let endFrame = dict["UIKeyboardFrameEndUserInfoKey"] as! CGRect
+        print(dict)
         if self.bottomUpDistance <= endFrame.height {
             self.bottomUpDistance = endFrame.height
             self.keyboardHeight = endFrame.height
             if let de = delegate {
-                de.keyboardChangeFrame(inY: endFrame.height+textHeight)
+                de.keyboardChangeFrame(inY: endFrame.height+textHeight-49)
             }
             self.toolV.snp_updateConstraints { (make) in
-                make.bottom.equalTo(self).offset(-endFrame.height)
+                make.bottom.equalTo(self).offset(-(endFrame.height-49))
             }
         }
     }
@@ -379,15 +383,16 @@ extension InputToolView: UITextViewDelegate {
             _ = CGRect(x: 0, y: kScreenHeight-(62+(kiPhoneXOrXS ? 122 : 64)), width: kScreenWidth, height: (kiPhoneXOrXS ? 96 : 62))
             previousOffsetY = 0
         }
-        if self.previousOffsetY <= 72 && previousOffsetY > 19.09375 {
+        print(self.previousOffsetY)
+        if self.previousOffsetY <= 72 && previousOffsetY > 19.1 {
             textHeight = previousOffsetY - 19.09375
             if let de = delegate {
-                de.keyboardChangeFrame(inY: previousOffsetY - 19.09375 + (self.isTyping ? keyboardHeight : bottomHeight))
+                de.keyboardChangeFrame(inY: textHeight + (self.isTyping ? keyboardHeight-44 : bottomHeight))
             }
-        } else if previousOffsetY >= 0 && previousOffsetY < 19.09375 {
+        } else if previousOffsetY >= 0 && previousOffsetY <= 19.1 {
             textHeight = previousOffsetY
             if let de = delegate {
-                de.keyboardChangeFrame(inY: previousOffsetY + (self.isTyping ? keyboardHeight : bottomHeight))
+                de.keyboardChangeFrame(inY:(self.isTyping ? keyboardHeight-44 : bottomHeight))
             }
         }
     }

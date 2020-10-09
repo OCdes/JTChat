@@ -8,16 +8,17 @@
 
 import UIKit
 
-class ContactorInfoTableView: BaseTableView {
+class ContactorInfoTableView: UITableView {
     var titlesArr: Array<String> = ["手机","部门"]
-    var contentsArr: Array<String> = []
+    var contentsArr: Array<String> = ["",""]
     var viewModel: ContactorInfoViewModel? {
         didSet {
-            if let a = viewModel?.employeeModel.phone, let b = UserInfo.shared.userData?.data.emp_phone, a == b {
+            if let a = viewModel?.employeeModel.phone, let b = USERDEFAULT.object(forKey: "phone") as? String, a == b {
                 self.tableFooterView = footerV
             } else {
                 self.tableFooterView = (viewModel?.employeeModel.isFriend ?? false) ? footerV : footerV2
             }
+            contentsArr[1] = viewModel?.employeeModel.department ?? ""
             self.reloadData()
         }
     }
@@ -31,7 +32,7 @@ class ContactorInfoTableView: BaseTableView {
         let _ = messageBtn.rx.tap.subscribe(onNext: { [weak self](e) in
             let vc = ChatVC()
             vc.viewModel.contactor = self!.viewModel?.employeeModel
-            vc.title = self!.viewModel?.employeeModel.nickName
+            vc.title = self!.viewModel!.employeeModel.nickName
             self!.viewModel?.navigationVC?.pushViewController(vc, animated: true)
         })
         fv.addSubview(messageBtn)
@@ -67,13 +68,25 @@ class ContactorInfoTableView: BaseTableView {
         viewModel = vm
         delegate = self
         dataSource = self
+        if #available(iOS 11.0, *) {
+            contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
+        } else {
+            // Fallback on earlier versions
+            if #available(iOS 13.0, *) {
+                automaticallyAdjustsScrollIndicatorInsets = true
+            } else {
+                // Fallback on earlier versions
+            }
+        }
         backgroundColor = HEX_COLOR(hexStr: "#F5F6F8")
         register(ContactorInfoCell.self, forCellReuseIdentifier: "ContactorInfoCell")
         register(ContactInfoDetailCell.self, forCellReuseIdentifier: "ContactInfoDetailCell")
         register(ContactInfoAlisaCell.self, forCellReuseIdentifier: "ContactInfoAlisaCell")
-        contentsArr.append(viewModel?.employeeModel.phone ?? "")
-        contentsArr.append(viewModel?.employeeModel.department ?? "")
-        if let a = viewModel?.employeeModel.phone, let b = UserInfo.shared.userData?.data.emp_phone, a == b {
+        if let phone = viewModel?.employeeModel.phone, phone.count > 7 {
+            contentsArr[0] = "\(phone.prefix(3))****\(phone.suffix(4))"
+        }
+        
+        if let a = viewModel?.employeeModel.phone, let b = USERDEFAULT.object(forKey: "phone") as? String, a == b {
             
         } else {
             self.tableFooterView = (viewModel?.employeeModel.isFriend ?? false) ? footerV : footerV2
@@ -122,7 +135,7 @@ extension ContactorInfoTableView: UITableViewDelegate, UITableViewDataSource {
             cell.titleLa.text = titlesArr[indexPath.row]
             cell.contentLa.text = contentsArr[indexPath.row]
             cell.contentLa.textColor = titlesArr[indexPath.row] == "手机" ? HEX_COLOR(hexStr: "#3F80CB") : HEX_333
-            cell.accessoryType = titlesArr[indexPath.row] == "部门" ? .disclosureIndicator : .none
+            cell.accessoryType = titlesArr[indexPath.row] == "部门" ? .none : .none
             return cell
         default:
             let cell: ContactorInfoCell = tableView.dequeueReusableCell(withIdentifier: "ContactorInfoCell", for: indexPath) as! ContactorInfoCell

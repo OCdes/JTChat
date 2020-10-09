@@ -59,7 +59,7 @@ extension NewFeatureCollectionView: UICollectionViewDelegate, UICollectionViewDa
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: NewFeatureItem = collectionView.dequeueReusableCell(withReuseIdentifier: "NewFeatureItem", for: indexPath) as! NewFeatureItem
-        cell.imgv.image = UIImage(named: dataArr[indexPath.item])
+        cell.imgv.image = JTBundleTool.getBundleImg(with: dataArr[indexPath.item])
         return cell
     }
     

@@ -56,7 +56,7 @@ let currentNetworkEv: NetworkEnvironment = .NetworkEnvironmentProduct
 
 let networkTimeout: TimeInterval = 20
 
-var netBaseUrl: String = "http://192.168.0.82:14002"
+var netBaseUrl: String = USERDEFAULT.object(forKey: "baseURL") as! String
 
 func urlByNetworkEnv(env: NetworkEnvironment)->String{
     var urlStr = BASE_URL
@@ -125,12 +125,17 @@ class NetServiceManager: NSObject {
     
     public func requestByType(requestType: RequestType, url: String, params: [String: Any], success: @escaping RequestSuccess, fail: @escaping RequestFail)->PublishSubject<Any> {
         let sub: PublishSubject = PublishSubject<Any>()
-        if let a = UserInfo.shared.userData?.parameter.jwt {
+        if let a = USERDEFAULT.object(forKey: "jwt") {
             self.header["jwt"] = a
         }
+        var mparam: Dictionary<String, Any> = params
+        if let a = USERDEFAULT.object(forKey: "ctoken") {
+            mparam["AccessToken"] = a
+        }
+        print(mparam)
         switch requestType {
         case .RequestTypeGet:
-            self.GET(requestType: requestType, url: url, params: params, success: { (msg, code, response, data) in
+            self.GET(requestType: requestType, url: url, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -138,7 +143,7 @@ class NetServiceManager: NSObject {
                 fail(errorInfo)
             }
         case .RequestTypePost:
-            self.POST(requestType: requestType, url: url, params: params, success: { (msg, code, response, data) in
+            self.POST(requestType: requestType, url: url, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -146,7 +151,7 @@ class NetServiceManager: NSObject {
                 fail(errorInfo)
             }
         case .RequestTypeUpload:
-            self.POST(requestType: requestType, url: url, params: params, success: { (msg, code, response, data) in
+            self.POST(requestType: requestType, url: url, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -154,7 +159,7 @@ class NetServiceManager: NSObject {
                 fail(errorInfo)
             }
         case .RequestTypeDownload:
-            self.GET(requestType: requestType, url: url, params: params, success: { (msg, code, response, data) in
+            self.GET(requestType: requestType, url: url, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -167,14 +172,18 @@ class NetServiceManager: NSObject {
     
     public func requestByType(requestType: RequestType, api: String, params: [String: Any], success: @escaping RequestSuccess, fail: @escaping RequestFail)->PublishSubject<Any> {
         let sub: PublishSubject = PublishSubject<Any>()
-        if let a = UserInfo.shared.userData?.parameter.jwt {
+        if let a = USERDEFAULT.object(forKey: "jwt") {
             self.header["jwt"] = a
         }
+        var mparam: Dictionary<String, Any> = params
+        if let a = USERDEFAULT.object(forKey: "ctoken") {
+            mparam["AccessToken"] = a
+        }
         let uStr = urlByNetworkEnv(env: currentNetworkEv) + api
-        print("\(uStr)\(params)")
+        print("\(uStr)\(mparam)")
         switch requestType {
         case .RequestTypeGet:
-            self.GET(requestType: requestType, url: uStr, params: params, success: { (msg, code, response, data) in
+            self.GET(requestType: requestType, url: uStr, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -183,7 +192,7 @@ class NetServiceManager: NSObject {
             }
 
         case .RequestTypePost:
-            self.POST(requestType: requestType, url: uStr, params: params, success: { (msg, code, response, data) in
+            self.POST(requestType: requestType, url: uStr, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -192,7 +201,7 @@ class NetServiceManager: NSObject {
             }
 
         case .RequestTypeUpload:
-            self.POST(requestType: requestType, url: uStr, params: params, success: { (msg, code, response, data) in
+            self.POST(requestType: requestType, url: uStr, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -200,7 +209,7 @@ class NetServiceManager: NSObject {
                 fail(errorInfo)
             }
         case .RequestTypeDownload:
-            self.GET(requestType: requestType, url: uStr, params: params, success: { (msg, code, response, data) in
+            self.GET(requestType: requestType, url: uStr, params: mparam, success: { (msg, code, response, data) in
                 success(msg,code,response,data)
                 sub.onNext(data)
                 sub.dispose()
@@ -237,7 +246,7 @@ extension NetServiceManager {
     }
     
     func UploadImage(images: [UIImage], api: String, param: Dictionary<String, Any>, isShowHUD: Bool, progressBlock: @escaping NetworkProgress, successBlock:@escaping RequestSuccess,faliedBlock:@escaping RequestFail) {
-        if let a = UserInfo.shared.userData?.parameter.jwt {
+        if let a = USERDEFAULT.object(forKey: "jwt") {
             self.header["jwt"] = a
             self.header["content-type"] = "multipart/form-data"
         }
@@ -322,11 +331,11 @@ extension NetServiceManager {
     
      /** 处理请求成功数据*/
     private func handleRequestSuccess(value: Any, data: Dictionary<String , Any>, successBlock: RequestSuccess,faliedBlock: RequestFail){
-        let code: Int = (data["error_code"] ?? (data["code"] ?? data["status"] ?? "101")) as! Int
-        let msg: String = (data["msg"] ?? data["Msg"] ?? data["message"] ?? "未知错误") as! String
+        let code: Int = (data["error_code"] ?? (data["code"] ?? data["status"] ?? data["ErrCode"] ?? "101" )) as! Int
+        let msg: String = (data["msg"] ?? data["Msg"] ?? data["message"] ?? data["ErrMsg"] ?? "未知错误") as! String
         if code == REQUEST_SUCCESSFUL {
             successBlock(msg,code,value as AnyObject,data)
-        } else if code == 501 {
+        } else if code == 501 || code == 6601 {
             RootConfig.reLogin()
         } else {
             var errorInfo = AFSErrorInfo();

@@ -8,6 +8,7 @@
 
 import UIKit
 import JTChat
+import Alamofire
 class ViewController: UIViewController {
 
     override func viewDidLoad() {

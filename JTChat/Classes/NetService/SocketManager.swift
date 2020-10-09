@@ -93,7 +93,7 @@ class SocketManager: NSObject {
         socketData.eventType = .EventTypeDefault
         socketData.packageType = .PackageTypeInitial
         socketData.fileSuffix = ""
-        socketData.placeId = data?.PlaceID ?? 0
+        socketData.placeId = (USERDEFAULT.object(forKey: "placeID") ?? "0") as! Int
         socketData.transType = .TransTypeByteStream
         socketData.contentString = UDID
         socketManager?.write(socketData.getFullData(), withTimeout: -1, tag: 0)
@@ -101,39 +101,7 @@ class SocketManager: NSObject {
     }
     
     func sendMessage(targetModel: ContactorModel?, msg: String?, suffix: String?) {
-        if let cmodel = targetModel, (cmodel.phone.count > 0 || cmodel.topicGroupID.count > 0){
-            let model = MessageModel()
-            model.sender = cmodel.nickName
-            model.senderPhone = cmodel.phone
-            model.senderAvanter = cmodel.avatarUrl
-            model.msgContent = msg ?? ""
-            model.packageType = (suffix ?? "").count > 0 ? 2 : 1
-            model.topic_group = cmodel.topicGroupID
-            model.timeStamp = Date().timeIntervalSince1970
-            let userModel = UserInfo.shared.userData?.data
-            if let um = userModel {
-                model.receiver = um.emp_stageName ?? ""
-                model.receiverPhone = um.emp_phone ?? ""
-                model.receiverAvanter = um.emp_avatar ?? ""
-            }
-            model.isRemote = false
-            model.isReaded = true
-            let _ = DBManager.manager.AddChatLog(model: model)
-            
-            let socketData = SocketDataManager()
-            let data = UserInfo.shared.userData?.data
-            socketData.fromUserId = data?.emp_phone ?? ""
-            socketData.targetUserId = cmodel.topicGroupID.count > 0 ? cmodel.topicGroupID : cmodel.phone
-            socketData.eventType = cmodel.topicGroupID.count > 0 ? .EventTypeGroupChat : .EventTypeLineChat
-            socketData.packageType = .PackageTypeData
-            socketData.fileSuffix = suffix ?? ""
-            socketData.placeId = data?.PlaceID ?? 0
-            socketData.transType = (suffix ?? "").count > 0 ? .TransTypeFileStream : .TransTypeByteStream
-            socketData.contentString = (socketData.transType == .TransTypeFileStream) ? (ChatimagManager.manager.GetImageDataBy(MD5Str: msg ?? "").base64EncodedString()) : (msg ?? "")
-            socketManager?.write(socketData.getFullData(), withTimeout: -1, tag: 0)
-        } else {
-            SVPShowError(content: "当前用户无效")
-        }
+        JTManager.shareManager().sendMessage(targetModel: targetModel, msg: msg, suffix: suffix)
     }
     
     func play() {
@@ -161,7 +129,7 @@ class SocketManager: NSObject {
         socketData.eventType = .EventTypeDefault
         socketData.packageType = PackageType.PackageTypeHeartBeat
         socketData.fileSuffix = ""
-        socketData.placeId = data?.PlaceID ?? 0
+        socketData.placeId = (USERDEFAULT.object(forKey: "placeID") ?? "0") as! Int
         socketData.transType = TransType.TransTypeByteStream
         socketData.contentString = UDID
         socketManager?.write(socketData.getFullData(), withTimeout: -1, tag: 0)
@@ -237,7 +205,7 @@ extension SocketManager: GCDAsyncSocketDelegate {
                     let popv = PopAlertView.init(frame: CGRect.zero)
                     popv.titleLa.text = (dict["sub_type"] as? String ) ?? ""
                     popv.contentLa.text = (dict["content"] as? String ) ?? ""
-                    popv.portraitV.image = UIImage(named: "remote_msg")
+                    popv.portraitV.image = JTBundleTool.getBundleImg(with:"remote_msg")
                     popv.show()
                 }
             }

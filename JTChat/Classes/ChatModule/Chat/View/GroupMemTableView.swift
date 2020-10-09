@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GroupMemTableView: BaseTableView {
+class GroupMemTableView: UITableView {
     var dataArr: Array<GroupMemberModel> = []
     var viewModel: GroupInfoViewModel?
     init(frame: CGRect, style: UITableView.Style, viewModel vm: GroupInfoViewModel) {
@@ -17,8 +17,18 @@ class GroupMemTableView: BaseTableView {
         dataArr = vm.model.membersList
         delegate = self
         dataSource = self
+        if #available(iOS 11.0, *) {
+            contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
+        } else {
+            // Fallback on earlier versions
+            if #available(iOS 13.0, *) {
+                automaticallyAdjustsScrollIndicatorInsets = true
+            } else {
+                // Fallback on earlier versions
+            }
+        }
         register(GroupMemCell.self, forCellReuseIdentifier: "GroupMemCell")
-        if UserInfo.shared.accontStr == vm.model.creator {
+        if ((USERDEFAULT.object(forKey: "phone") ?? "") as? String) == vm.model.creator {
             let longPress = UILongPressGestureRecognizer.init(target: self, action: #selector(longPress(ge:)))
             self.addGestureRecognizer(longPress)
         }
@@ -62,7 +72,7 @@ extension GroupMemTableView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let m = dataArr[indexPath.row]
         let cell: GroupMemCell = tableView.dequeueReusableCell(withIdentifier: "GroupMemCell", for: indexPath) as! GroupMemCell
-        cell.portraitV.kf.setImage(with: URL(string: m.avatar), placeholder: UIImage(named: "approvalPortrait"))
+        cell.portraitV.kf.setImage(with: URL(string: m.avatar), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
         cell.titleLa.text = m.nickname
         cell.markLa.isHidden = m.memberPhone != viewModel!.model.creator
         return cell

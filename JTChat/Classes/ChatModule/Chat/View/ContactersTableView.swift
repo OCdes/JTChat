@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ContactersTableView: BaseTableView {
+class ContactersTableView: UITableView {
     var viewModel: ContactorViewModel?
     var searchenable: Bool = true
     lazy var searchTf: UITextField = {
@@ -17,7 +17,7 @@ class ContactersTableView: BaseTableView {
         st.layer.cornerRadius = 15
         st.backgroundColor = HEX_FFF
         let sv = UIImageView.init(frame: CGRect(x: 0, y: 0, width: 18, height: 18))
-        sv.image = UIImage(named: "contacterSearch")
+        sv.image = JTBundleTool.getBundleImg(with:"contacterSearch")
         let lv = UIView.init(frame: CGRect(x: 0, y: 0, width: 40, height: 30))
         sv.center = lv.center
         lv.addSubview(sv)
@@ -34,6 +34,16 @@ class ContactersTableView: BaseTableView {
         separatorStyle = .none
         backgroundColor = HEX_COLOR(hexStr: "#F5F6F8")
         register(ContactersTableCell.self, forCellReuseIdentifier: "ContactersTableCell")
+        if #available(iOS 11.0, *) {
+            contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
+        } else {
+            // Fallback on earlier versions
+            if #available(iOS 13.0, *) {
+                automaticallyAdjustsScrollIndicatorInsets = true
+            } else {
+                // Fallback on earlier versions
+            }
+        }
         let _ = viewModel?.subject.subscribe(onNext: { [weak self](a) in
             self?.reloadData()
         })
@@ -46,11 +56,25 @@ class ContactersTableView: BaseTableView {
 }
 
 extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate  {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let m = viewModel?.sectionModel {
-            return m.employeeArr.count + m.subdepartmentArr.count
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        if (!viewModel!.typeChange) {
+            return viewModel?.pinyinArr.count ?? 0
         } else {
-            return 0
+            return 1;
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if (!viewModel!.typeChange) {
+            let arr = viewModel!.pinyinArr[section]
+            return arr.count
+        } else {
+            if let m = viewModel?.sectionModel {
+                return m.employeeArr.count + m.subdepartmentArr.count
+            } else {
+                return 0
+            }
         }
     }
     
@@ -58,64 +82,95 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
         let cell: ContactersTableCell = tableView.dequeueReusableCell(withIdentifier: "ContactersTableCell", for: indexPath) as! ContactersTableCell
         var portraitUrlString = ""
         var titleString = ""
-        if let m = viewModel?.sectionModel {
-            if indexPath.row < m.employeeArr.count {
-                portraitUrlString = m.employeeArr[indexPath.row].avatarUrl
-                titleString = m.employeeArr[indexPath.row].nickName
-                if portraitUrlString.count > 0 {
-                    cell.portraitV.kf.setImage(with: URL.init(string: portraitUrlString), placeholder: UIImage.init(named: "approvalPortrait"))
+        if viewModel!.typeChange {
+            if let m = viewModel?.sectionModel {
+                if indexPath.row < m.employeeArr.count {
+                    portraitUrlString = m.employeeArr[indexPath.row].avatarUrl
+                    titleString = m.employeeArr[indexPath.row].nickName
+                    if portraitUrlString.count > 0 {
+                        cell.portraitV.kf.setImage(with: URL.init(string: portraitUrlString), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+                    } else {
+                        cell.portraitV.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
+                    }
                 } else {
-                    cell.portraitV.image = UIImage(named: "approvalPortrait")
+                    //                portraitUrlString = m.subdepartmentArr[indexPath.row - m.employeeArr.count].
+                    titleString = m.subdepartmentArr[indexPath.row - m.employeeArr.count].departmentName
                 }
-            } else {
-                //                portraitUrlString = m.subdepartmentArr[indexPath.row - m.employeeArr.count].
-                titleString = m.subdepartmentArr[indexPath.row - m.employeeArr.count].departmentName
             }
+        } else {
+            titleString = viewModel!.pinyinArr[indexPath.section][indexPath.row].nickName
         }
         cell.titleLa.text = titleString
         
         return cell
     }
     
-    
-    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 64
     }
     
+    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        if !viewModel!.typeChange {
+            return viewModel!.indexTitles
+        } else {
+            return []
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        if !viewModel!.typeChange {
+            let v: UIView = UIView.init(frame: CGRect(x: 0, y: 0, width: frame.width, height: 30))
+            let la: UILabel = UILabel.init(frame: CGRect(x: 15, y: 0, width: frame.width, height: 30))
+            la.textColor = HEX_333
+            la.font = UIFont.systemFont(ofSize: 12)
+            la.text = viewModel!.indexTitles[section]
+            v.addSubview(la)
+            return v
+        }
+        return UIView()
+    }
+    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return searchenable ? 50 : 0.01
+        if !viewModel!.typeChange {
+            return 30
+        } else {
+            return 0.01
+        }
+        
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 0.01
     }
     
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let v = UIView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: 50))
-        v.addSubview(searchTf)
-        return searchenable ? v : nil
-    }
-    
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return nil
+        return UIView()
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let m = viewModel?.sectionModel {
-            if indexPath.row < m.employeeArr.count {
-                let mm = ContactorInfoViewModel()
-                mm.employeeModel = m.employeeArr[indexPath.row]
-                let vc = ContacterInfoVC()
-                vc.viewModel = mm
-                viewModel?.navigationVC?.pushViewController(vc, animated: true)
-            } else {
-                let mm = ContactorViewModel()
-                mm.sectionModel = m.subdepartmentArr[indexPath.row-m.employeeArr.count]
-                let vc = SubDepartmentVC.init()
-                vc.viewModel = mm
-                vc.title = mm.sectionModel.departmentName
-                viewModel?.navigationVC?.pushViewController(vc, animated: true)
+        if !viewModel!.typeChange {
+            let m = viewModel!.pinyinArr[indexPath.section][indexPath.row]
+            let mm = ContactorInfoViewModel()
+            mm.employeeModel = m
+            let vc = ContacterInfoVC()
+            vc.viewModel = mm
+            viewModel?.navigationVC?.pushViewController(vc, animated: true)
+        } else {
+            if let m = viewModel?.sectionModel {
+                if indexPath.row < m.employeeArr.count {
+                    let mm = ContactorInfoViewModel()
+                    mm.employeeModel = m.employeeArr[indexPath.row]
+                    let vc = ContacterInfoVC()
+                    vc.viewModel = mm
+                    viewModel?.navigationVC?.pushViewController(vc, animated: true)
+                } else {
+                    let mm = ContactorViewModel()
+                    mm.sectionModel = m.subdepartmentArr[indexPath.row-m.employeeArr.count]
+                    let vc = SubDepartmentVC.init()
+                    vc.viewModel = mm
+                    vc.title = mm.sectionModel.departmentName
+                    viewModel?.navigationVC?.pushViewController(vc, animated: true)
+                }
             }
         }
     }
@@ -125,7 +180,7 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
 class ContactersTableCell: BaseTableCell {
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
-        pv.image = UIImage(named: "groupicon")
+        pv.image = JTBundleTool.getBundleImg(with:"groupicon")
         pv.layer.cornerRadius = 19
         pv.layer.masksToBounds = true
         return pv

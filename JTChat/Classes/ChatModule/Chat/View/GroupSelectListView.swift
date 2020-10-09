@@ -8,7 +8,7 @@
 
 import UIKit
 import RxSwift
-class GroupSelectListView: BaseTableView {
+class GroupSelectListView: UITableView {
     var dataArr: Array<Any> = [] {
         didSet {
             self.reloadData()
@@ -21,6 +21,16 @@ class GroupSelectListView: BaseTableView {
         viewModel = vm
         delegate = self
         dataSource = self
+        if #available(iOS 11.0, *) {
+            contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
+        } else {
+            // Fallback on earlier versions
+            if #available(iOS 13.0, *) {
+                automaticallyAdjustsScrollIndicatorInsets = true
+            } else {
+                // Fallback on earlier versions
+            }
+        }
         tintColor = HEX_LightBlue
         register(GroupSelectListCell.self, forCellReuseIdentifier: "GroupSelectListCell")
         _ = viewModel?.rx.observe(Array<Any>.self, "dataArr").subscribe(onNext: { [weak self](arr) in
@@ -103,7 +113,7 @@ extension GroupSelectListView: UITableViewDelegate, UITableViewDataSource {
 class GroupSelectListCell: BaseTableCell {
     var fmodel: FriendModel? {
         didSet {
-            portraitV.kf.setImage(with: URL(string: fmodel!.avatar), placeholder: UIImage(named: "approvalPortrait"))
+            portraitV.kf.setImage(with: URL(string: fmodel!.avatar), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             titleLa.text = fmodel!.nickname
             seleBtn.isSelected = fmodel!.isSelected
         }
@@ -116,14 +126,14 @@ class GroupSelectListCell: BaseTableCell {
     
     lazy var seleBtn: UIButton = {
         let sb = UIButton()
-        sb.setImage(UIImage(named: "employee_selected"), for: .selected)
-        sb.setImage(UIImage(named: "employee_not_selected"), for: .normal)
+        sb.setImage(JTBundleTool.getBundleImg(with:"employee_selected"), for: .selected)
+        sb.setImage(JTBundleTool.getBundleImg(with:"employee_not_selected"), for: .normal)
         return sb
     }()
     
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
-        pv.image = UIImage(named: "groupicon")
+        pv.image = JTBundleTool.getBundleImg(with:"groupicon")
         pv.layer.cornerRadius = 19
         pv.layer.masksToBounds = true
         return pv

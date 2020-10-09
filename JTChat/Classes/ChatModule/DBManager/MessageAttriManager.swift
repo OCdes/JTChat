@@ -13,6 +13,11 @@ class MessageAttriManager: NSObject {
     func exchange(content: String) -> NSAttributedString {
         let characters = (content as NSString).components(separatedBy: "[")
         var emojiStrs:Array<String> = []
+        let regularExp = try! NSRegularExpression(pattern: "\\[\\u4E00-\\u9FA5\\]", options: [])
+        let matches = regularExp.matches(in: content, options: [], range: NSRange(location: 0, length: content.count))
+        for match in matches {
+            print(NSStringFromRange(match.range))
+        }
         for str in characters {
             if str.count > 0 {
                 let arr = (str as NSString).components(separatedBy: "]")
@@ -26,27 +31,35 @@ class MessageAttriManager: NSObject {
             }
         }
         let attribu = NSMutableAttributedString.init(string: content)
-        let path = Bundle.main.path(forResource: "iconName", ofType: "json")!
+        let path = JTBundleTool.bundle.path(forResource: "iconName", ofType: "json")!
         let data = (NSData.init(contentsOfFile: path)!) as Data
         let dict = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? Dictionary<String, Any>
+        
         for emStr in emojiStrs.reversed() {
-            var ranges = Array<NSRange>()
-            _ = findAimstrAllRange(baseStr: content as NSString, aimStr: "[\(emStr)]", baseRange: NSRange.init(location: 0, length: content.count), result: &ranges)
-            for range in ranges.reversed() {
-                if let name = dict?["\(emStr)"] {
-                    let attac = NSTextAttachment()
-                    attac.image = UIImage(named: (name as! String))
-                    attac.bounds = CGRect(x: 0, y: -5, width: 20, height: 20)
-                    let att = NSMutableAttributedString.init(string: " ")
-                    att.append(NSAttributedString.init(attachment: attac))
-                    attribu.replaceCharacters(in: range, with: att)
+            if let name = dict?["\(emStr)"] {
+                while attribu.string.contains(emStr) {
+                    var ranges = Array<NSRange>()
+                    _ = findAimstrAllRange(baseStr: attribu.string as NSString, aimStr: "[\(emStr)]", baseRange: NSRange.init(location: 0, length: attribu.string.count), result: &ranges)
+                    if let range = ranges.first {
+                        let attac = NSTextAttachment()
+                        attac.image = JTBundleTool.getBundleImg(with:(name as! String))
+                        attac.bounds = CGRect(x: 0, y: -5, width: 20, height: 20)
+                        let att = NSMutableAttributedString.init(string: "")
+                        att.append(NSAttributedString.init(attachment: attac))
+                        attribu.replaceCharacters(in: range, with: att)
+                    }
                 }
             }
+            
         }
         let paragraphyStyle = NSMutableParagraphStyle.init()
         attribu.addAttributes([NSAttributedString.Key.paragraphStyle : paragraphyStyle, NSAttributedString.Key.kern : 0.3, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 16)], range: NSRange.init(location: 0, length: attribu.length))
         
         return attribu
+    }
+    
+    func emojiString() {
+        
     }
     
     func findAimstrAllRange(baseStr : NSString, aimStr: String, baseRange : NSRange, result : inout Array<NSRange>) -> Array<NSRange> {

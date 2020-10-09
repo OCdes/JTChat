@@ -8,10 +8,9 @@
 
 import UIKit
 import SnapKit
-import IQKeyboardManagerSwift
-class ChatVC: BaseViewController, InputToolViewDelegate {
+class ChatVC: BaseViewController,InputToolViewDelegate {
     var viewModel: ChatViewModel = ChatViewModel()
-    lazy var tableView: ChatTableView = {
+    fileprivate lazy var tableView: ChatTableView = {
         let tv = ChatTableView.init(frame: CGRect.zero, style: .grouped, viewModel: self.viewModel)
         return tv
     }()
@@ -26,20 +25,12 @@ class ChatVC: BaseViewController, InputToolViewDelegate {
     var toolBottomConstrait: Constraint?
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        IQKeyboardManager.shared.enable = false
-        if let m = self.viewModel.contactor {
-            if m.topicGroupID.count > 0 {
-                let cm = DBManager.manager.getRecent(byPhone: nil, byTopicID: m.topicGroupID)
-                self.title = cm.topicGroupName
-            } else {
-                let cm = DBManager.manager.getRecent(byPhone: m.phone, byTopicID: nil)
-                self.title = cm.nickname
-            }
-        }
+        JTManager.manager.updateUnreadedCount()
+        
     }
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        IQKeyboardManager.shared.enable = true
+        USERDEFAULT.removeObject(forKey: "currentID")
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,7 +42,7 @@ class ChatVC: BaseViewController, InputToolViewDelegate {
     
     func setNavItem() {
         let btn = UIButton.init(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
-        btn.setImage(UIImage(named: "whiteMore"), for: .normal)
+        btn.setImage(JTBundleTool.getBundleImg(with:"whiteMore"), for: .normal)
         let _ = btn.rx.controlEvent(.touchUpInside).subscribe(onNext: { [weak self](a) in
             if self!.viewModel.contactor!.topicGroupID.count > 0 {
                 let vc = GroupInfoVC()
@@ -75,7 +66,7 @@ class ChatVC: BaseViewController, InputToolViewDelegate {
         view.addSubview(tableView)
         tableView.snp_makeConstraints { (make) in
             make.top.left.right.equalTo(view)
-            self.bottomConstrait = make.bottom.equalTo(view).offset(kiPhoneXOrXS ? -96 : -62).constraint
+            self.bottomConstrait = make.bottom.equalTo(view).offset(kiPhoneXOrXS ? -62 : -62).constraint
         }
         view.addSubview(toolView)
         toolView.snp_makeConstraints { (make) in
@@ -87,10 +78,21 @@ class ChatVC: BaseViewController, InputToolViewDelegate {
 
     func bindModel() {
         viewModel.navigationVC = self.navigationController
+        if let m = self.viewModel.contactor {
+            if m.topicGroupID.count > 0 {
+                let cm = DBManager.manager.getRecent(byPhone: nil, byTopicID: m.topicGroupID)
+                self.title = cm.topicGroupName
+                USERDEFAULT.set(m.topicGroupID, forKey: "currentID")
+            } else {
+                let cm = DBManager.manager.getRecent(byPhone: m.phone, byTopicID: nil)
+                self.title = cm.nickname
+                USERDEFAULT.set(m.phone, forKey: "currentID")
+            }
+        }
         self.toolView.viewModel = viewModel
-        let _ = self.tableView.jt_addRefreshHeaderWithNoText {
-            self.viewModel.page += 1
-            self.viewModel.refreshData(scrollView: self.tableView)
+        let _ = self.tableView.jt_addRefreshHeaderWithNoText { [weak self]() in
+            self!.viewModel.page += 1
+            self!.viewModel.refreshData(scrollView: self!.tableView)
         }
         self.viewModel.refreshData(scrollView: self.tableView)
 
@@ -100,12 +102,19 @@ class ChatVC: BaseViewController, InputToolViewDelegate {
     }
 
     func keyboardChangeFrame(inY: CGFloat) {
-        self.bottomConstrait?.updateOffset(amount:  -62-inY)
-        self.tableView.scrollTo(offsetY: -(inY-previousOffsetY), animated: true)
-        previousOffsetY = inY
+        self.tableView.snp_updateConstraints { (make) in
+            make.bottom.equalTo(-62-inY);
+        }
+//        self.bottomConstrait?.updateOffset(amount:  -62-inY)
+//        self.tableView.scrollTo(offsetY: -(inY), animated: true)
+        self.tableView.reloadData()
+    }
+
+    deinit {
+        print("聊天销毁了")
     }
     
-
+    
     /*
     // MARK: - Navigation
 

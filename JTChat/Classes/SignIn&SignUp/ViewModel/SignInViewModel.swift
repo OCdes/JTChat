@@ -90,13 +90,15 @@ class SignInViewModel: BaseViewModel {
     func login() {
         SVPNoUserinteractShow(content: "登录中...")
         let _ = NetServiceManager.manager.requestByType(requestType: RequestType.RequestTypePost, api: POST_LOGIN, params: ["phone":accountStr,"password":passwordStr,"appID":"3","deviceID":UDID,"systemOS":"ios","versionNo":APP_VER], success: { (msg, code, response, data) in
-            
+            print(data)
             if code == REQUEST_SUCCESSFUL {
                 
                 UserInfo.shared.saveConstanceUserInfoData(data)
                 SVPShowSuccess(content: "登录成功")
-               
                 SocketManager.manager.creatSocketConnect()
+                let paradict = data["parameter"] as! Dictionary<String, Any>
+                JTManager.manager.jwt = paradict["jwt"] as! String
+//                UIApplication.shared.delegate?.perform(Selector.init(("setRootVC")))
             } else {
                 SVPShowError(content: msg)
             }

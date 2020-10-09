@@ -38,7 +38,7 @@ class GroupSelectViewModel: BaseViewModel {
     func refreshData() {
         let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_CHATFRIENDSlIST, params: [:], success: { [weak self](msg, code, reponse, data) in
             
-            let arr = JSONDeserializer<FriendModel>.deserializeModelArrayFrom(array: (data["data"] as! Array<Dictionary<String, Any>>))! as! Array<FriendModel>
+            let arr = JSONDeserializer<FriendModel>.deserializeModelArrayFrom(array: ((data["data"] ?? data["Data"]) as! Array<Dictionary<String, Any>>))! as! Array<FriendModel>
             if self!.selePhones.count > 0 {
                 for m in arr {
                     m.isSelected = self!.selePhones.contains(m.friendPhone)
@@ -87,7 +87,7 @@ class GroupSelectViewModel: BaseViewModel {
             }
             _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_CREATGROUP, params: ["topicGroupName":str,"topicGroupDesc":""], success: { [weak self](msg, code, reponse, data) in
                 
-                self!.fmodel = JSONDeserializer<FriendModel>.deserializeFrom(dict: (data["data"] as! Dictionary<String,Any>))!
+                self!.fmodel = JSONDeserializer<FriendModel>.deserializeFrom(dict: ((data["data"] ?? data["Data"]) as! Dictionary<String,Any>))!
                 self!.topicGroupID = self!.fmodel.topicGroupID
                 self!.topicGroupName = self!.fmodel.topicGroupName
                 DBManager.manager.addRecentChat(model: self!.fmodel)

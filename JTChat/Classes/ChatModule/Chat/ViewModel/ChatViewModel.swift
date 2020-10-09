@@ -26,9 +26,17 @@ class ChatViewModel: BaseViewModel {
     
     @objc func updateData() {
         refreshData(scrollView: UIScrollView())
-        let model = self.appendArr.last
-        if let m = model {
-            DBManager.manager.updateRecentChat(model: m)
+        clearRedPot()
+    }
+    
+    func clearRedPot() {
+        if let m = self.originArr.last {
+            if let d = USERDEFAULT.object(forKey: "currentID") as? String {
+                if (m.senderPhone == d && m.topic_group.count == 0) || m.topic_group == d {
+                    m.isReaded = true
+                    DBManager.manager.updateRecentChat(model: m)
+                }
+            }
         }
     }
     
@@ -36,7 +44,6 @@ class ChatViewModel: BaseViewModel {
         SocketManager.manager.sendMessage(targetModel: contactor, msg: msg, suffix: nil)
         sendCount += 1
         page = 1
-        refreshData(scrollView: UIScrollView())
     }
     func sendPicture(photos:[YPMediaItem]) {
         for item in photos {
@@ -50,10 +57,10 @@ class ChatViewModel: BaseViewModel {
             case .video(v: _):
                 SVPShow(content: "")
             default: break
-                
+
             }
-            
-            
+
+
         }
     }
     func refreshData(scrollView: UIScrollView) {
@@ -63,12 +70,10 @@ class ChatViewModel: BaseViewModel {
             model.senderPhone = cmodel.phone
             model.senderAvanter = cmodel.avatarUrl
             model.topic_group = cmodel.topicGroupID
-            let userModel = UserInfo.shared.userData?.data
-            if let um = userModel {
-                model.receiver = um.emp_stageName ?? ""
-                model.receiverPhone = um.emp_phone ?? ""
-                model.receiverAvanter = um.emp_avatar ?? ""
-            }
+            model.receiver = ""
+            model.receiverPhone = USERDEFAULT.object(forKey: "phone") as! String
+            model.receiverAvanter = ""
+            let semaphore = DispatchSemaphore(value: 0)
             DBManager.manager.getChatLog(model: model, page: page, nums: page == 1 ? 0 : self.totalTimeArr.count) { [weak self](arr) in
                 self!.first = false
                 scrollView.jt_endRefresh()
@@ -93,14 +98,11 @@ class ChatViewModel: BaseViewModel {
                 } else {
                     scrollView.jt_endRefresh()
                 }
-                
+                semaphore.signal()
             }
-            if let m = self.originArr.last {
-                m.isReaded = true
-                DBManager.manager.updateRecentChat(model: m)
-            }
+            semaphore.wait()
+            clearRedPot()
         }
-        
     }
     
     private func dealSectionData() {

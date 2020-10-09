@@ -22,10 +22,12 @@ class ContactorViewModel: BaseViewModel {
     var locationCollection: UILocalizedIndexedCollation!
     var subject = PublishSubject<Any>.init()
     var sureSubject = PublishSubject<Any>.init()
-    var typeChange: Bool = true// false个人 true部门切换
+    var typeChange: Bool = false// false个人 true部门切换
     var typeEnable: Bool = false//是否允许切换
     var expendIndexPath: NSIndexPath?
     var selectenable: Bool = true//是否可选
+    var pinyinArr: [Array<ContactorModel>] = []
+    var indexTitles: Array<String> = []
     override init() {
         super.init()
         self.locationCollection = UILocalizedIndexedCollation.current()
@@ -38,32 +40,34 @@ class ContactorViewModel: BaseViewModel {
     
     func refreshData(scrollView: UIScrollView) {
         sectionModel = ContactDataModel.init()
-        let subject1 = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POSST_FETCHEMPLOYEETOCHAT, params: [:], success: { (msg, code, response, data) in
-            
-        }) { (errorInfo) in
-            SVProgressHUD.showError(withStatus: (errorInfo.message.count>0 ? errorInfo.message : "未知错误"))
-        }
-        
-        let subject2 = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_DEPARTMENTDATA, params: ["":""], success: { (msg, code, response, data) in
-            
-        }) { (errorInfo) in
-            
-        }
-        
-        _ = Observable.zip(subject1, subject2).subscribe(onNext: { [weak self](employeeData, departmentData) in
-//            print(employeeData, departmentData)
+        let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POSST_FETCHEMPLOYEETOCHAT, params: [:], success: { [weak self](msg, code, response, data) in
             scrollView.jt_endRefresh()
-            let employeeDict: Dictionary<String, Any> = employeeData as! Dictionary<String, Any>
-            //            let dict: Dictionary<String, Any> = employeeDict["data"] as! Dictionary<String, Any>
-            let arr: Array<Any> = employeeDict["data"] as! Array
+            let arr: Array<Any> = (data["data"] ?? data["Data"]) as! Array
             self!.employeeArr = JSONDeserializer<ContactorModel>.deserializeModelArrayFrom(array: arr)! as? Array<ContactorModel>
-            let deDict: Dictionary<String, Any> = departmentData as! Dictionary<String, Any>
-            let deArr: Array<Any> = deDict["data"] as! Array
-            self!.departmentArr = JSONDeserializer<DepartmentModel>.deserializeModelArrayFrom(array: deArr)! as? Array<DepartmentModel>
+            self!.matchAllEmployee(with: self!.employeeArr!)
+//            let deDict: Dictionary<String, Any> = USERDEFAULT.object(forKey: "cdepartmentDict") as! Dictionary<String, Any>
+//                let deArr: Array<Any> = deDict["data"] as! Array
+//            self!.departmentArr = JSONDeserializer<DepartmentModel>.deserializeModelArrayFrom(array: deArr)! as? Array<DepartmentModel>
             self!.listChangeWithType(b: self!.typeChange)
             self!.employeePersistence()
-        })
-        
+        }) { (errorInfo) in
+            scrollView.jt_endRefresh()
+            SVProgressHUD.showError(withStatus: (errorInfo.message.count>0 ? errorInfo.message : "未知错误"))
+        }
+    }
+    
+    func matchAllEmployee(with arr: Array<ContactorModel>) {
+        if let earr = JTManager.manager.employeeDict["data"] as? Array<Dictionary<String, Any>> {
+            for emodel in arr {
+                for dict in earr {
+                    if let jn = dict["jobNumber"] as? String, jn == emodel.jobNumber {
+                        if let dd = dict["department"] as? String {
+                            emodel.department = dd
+                        }
+                    }
+                }
+            }
+        }
     }
     
     func employeePersistence() {
@@ -79,31 +83,32 @@ class ContactorViewModel: BaseViewModel {
         sectionModel.subEmployeeArr = []
         if b == false {
             let indexCount = self.locationCollection.sectionTitles.count
+            self.indexTitles = Array(self.locationCollection.sectionTitles)
             for _ in 0..<indexCount {
-                let m = ContactDataModel.init()
-                sectionModel.pinyinArr.append(m)
+                self.pinyinArr.append(Array())
             }
             for em in self.employeeArr ?? [] {
                 let seciotnNumber = self.locationCollection.section(for: em, collationStringSelector: #selector(getter: ContactorModel.nickName))
                 em.isSelected = selectIDArr.contains(em.phone)
-                sectionModel.pinyinArr[seciotnNumber].employeeArr.append(em )
+                self.pinyinArr[seciotnNumber].append(em )
             }
             for i in 0..<indexCount {
-                let sortedPersonArr:Array<Any> = self.locationCollection.sortedArray(from: sectionModel.pinyinArr[i].employeeArr, collationStringSelector: #selector(getter: ContactorModel.nickName))
-                self.sectionModel.pinyinArr[i].employeeArr = sortedPersonArr as!Array<ContactorModel>
+                let sortedPersonArr:Array<Any> = self.locationCollection.sortedArray(from: self.pinyinArr[i], collationStringSelector: #selector(getter: ContactorModel.nickName))
+                self.pinyinArr[i] = sortedPersonArr as!Array<ContactorModel>
             }
             
             var tempArray = [Int]()
-            for (i, em) in sectionModel.pinyinArr.enumerated() {
-                if em.employeeArr.count == 0 {
+            for (i, em) in self.pinyinArr.enumerated() {
+                if em.count == 0 {
                     tempArray.append(i)
                 } else {
-                    sectionModel.pinyinArr[i].departmentName = self.locationCollection.sectionTitles[i]
+                    
                 }
             }
             
             for i in tempArray.reversed() {
-                sectionModel.pinyinArr.remove(at: i)
+                self.pinyinArr.remove(at: i)
+                self.indexTitles.remove(at: i)
             }
         } else {
             self.employeeArr?.forEach({ (model) in
@@ -120,11 +125,12 @@ class ContactorViewModel: BaseViewModel {
                 if model.deptParentID.count > 0 {
                 } else {
                     handleSubdepartmentArr(m: m)
-                    sectionModel.subdepartmentArr.append(m)
-                    sectionModel.subEmployeeArr.append(contentsOf: m.subEmployeeArr)
+                    if m.subEmployeeArr.count > 0 {
+                        sectionModel.subdepartmentArr.append(m)
+                        sectionModel.subEmployeeArr.append(contentsOf: m.subEmployeeArr)
+                    }
                 }
             })
-            //            dealSectionModel(m: sectionModel!)
         }
         self.subject.onNext("")
     }

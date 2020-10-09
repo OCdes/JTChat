@@ -26,9 +26,22 @@ class GroupChatSelectVC: BaseViewController {
     }
     
     func initView() {
+        
+        let btn = UIButton()
+        btn.setTitle("点击取消", for: .normal)
+        btn.setTitleColor(HEX_999, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        btn.backgroundColor = HEX_COLOR(hexStr: "#f2f2f2")
+        btn.addTarget(self, action: #selector(dismissClicked), for: .touchUpInside)
+        view.addSubview(btn)
+        btn.snp_makeConstraints { (make) in
+            make.top.right.left.equalTo(view)
+            make.height.equalTo(44)
+        }
+        
         view.addSubview(self.tableView)
         self.tableView.snp_makeConstraints { (make) in
-            make.edges.equalTo(UIEdgeInsets.zero)
+            make.edges.equalTo(UIEdgeInsets(top: 44, left: 0, bottom: 0, right: 0))
         }
         
         view.addSubview(seleView)
@@ -36,6 +49,10 @@ class GroupChatSelectVC: BaseViewController {
             make.left.bottom.right.equalTo(view)
             make.top.equalTo(self.tableView.snp_bottom)
         }
+    }
+    
+    @objc func dismissClicked() {
+        self.dismiss(animated: true, completion: nil)
     }
     
     func bindModel() {

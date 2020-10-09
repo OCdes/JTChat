@@ -17,30 +17,38 @@ class MessageViewModel: BaseViewModel {
     @objc dynamic var groupNum: Int = 0
     override init() {
         super.init()
-        let sub1 = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_CHATFRIENDSlIST, params: [:], success: { (msg, code, reponse, data) in
-//            
-        }) { (errorInfo) in
-            SVPShowError(content: errorInfo.message)
-        }
-        let sub2 = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_CHATGROUPlIST, params: [:], success: { (msg, code, response, data) in
-            
-        }) { (errorInfo) in
-            SVPShowError(content: errorInfo.message)
-        }
-        let _ = Observable.zip(sub1, sub2).subscribe(onNext: { (data1, data2) in
-            let dict1 = data1 as! Dictionary<String, Any>
-            let dict2 = data2 as! Dictionary<String, Any>
-            var arr1: Array<FriendModel> = JSONDeserializer<FriendModel>.deserializeModelArrayFrom(array: (dict1["data"] as! Array<Dictionary<String, Any>>))! as! Array<FriendModel>
-            let arr2: Array<FriendModel> = JSONDeserializer<FriendModel>.deserializeModelArrayFrom(array: (dict2["data"] as! Array<Dictionary<String, Any>>))! as! Array<FriendModel>
-            arr1.append(contentsOf: arr2)
-            for m in arr1 {
-                m.isReaded = true
-                DBManager.manager.addRecentChat(model: m)
-            }
-        })
+        
         
         NotificationCenter.default.addObserver(self, selector: #selector(updateRecentList), name: NotificationHelper.kChatOnlineNotiName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateRecentList), name: NotificationHelper.kReLoginName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(getAllRecentContactor), name: NotificationHelper.kChatOnGroupNotiName, object: nil)
+    }
+    
+    @objc func getAllRecentContactor() {
+//        let sub1 = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_CHATFRIENDSlIST, params: [:], success: { (msg, code, reponse, data) in
+//            //
+//        }) { (errorInfo) in
+//            SVPShowError(content: errorInfo.message)
+//        }
+//        let sub2 = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_CHATGROUPlIST, params: [:], success: { (msg, code, response, data) in
+//
+//        }) { (errorInfo) in
+//            SVPShowError(content: errorInfo.message)
+//        }
+//        let _ = Observable.zip(sub1, sub2).subscribe(onNext: { [weak self](data1, data2) in
+//            let dict1 = data1 as! Dictionary<String, Any>
+//            let dict2 = data2 as! Dictionary<String, Any>
+//            var arr1: Array<FriendModel> = JSONDeserializer<FriendModel>.deserializeModelArrayFrom(array: ((dict1["data"] ?? dict1["Data"]) as! Array<Dictionary<String, Any>>))! as! Array<FriendModel>
+//            let arr2: Array<FriendModel> = JSONDeserializer<FriendModel>.deserializeModelArrayFrom(array: ((dict2["data"] ?? dict2["Data"]) as! Array<Dictionary<String, Any>>))! as! Array<FriendModel>
+//            arr1.append(contentsOf: arr2)
+//
+//            for m in arr1 {
+//                m.isReaded = true
+//                DBManager.manager.addRecentChat(model: m)
+//            }
+//            self!.updateRecentList()
+//        })
+        
     }
     
     @objc func updateRecentList() {
@@ -48,6 +56,8 @@ class MessageViewModel: BaseViewModel {
     }
     
     func getMessageList(scrollView: UIScrollView) {
+        self.personalListArr = []
+        self.groupListArr = []
         DBManager.manager.getRecentList { [weak self](arr1, arr2) in
             self!.personalListArr = arr1
             self!.groupListArr = arr2

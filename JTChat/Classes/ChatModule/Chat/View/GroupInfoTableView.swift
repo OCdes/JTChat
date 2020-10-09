@@ -8,8 +8,8 @@
 
 import UIKit
 
-class GroupInfoTableView: BaseTableView {
-    var dataArr: Array<String> = ["群聊名称","群成员","","添加成员","群管理","退出群聊"]
+class GroupInfoTableView: UITableView {
+    var dataArr: Array<String> = ["群聊名称","群成员","","退出群聊"]
     var viewModel: GroupInfoViewModel = GroupInfoViewModel()
     var model: GroupInfoModel = GroupInfoModel()
     init(frame: CGRect, style: UITableView.Style, viewModel vm: GroupInfoViewModel) {
@@ -18,15 +18,27 @@ class GroupInfoTableView: BaseTableView {
         separatorStyle = .none
         delegate = self
         dataSource = self
+        isUserInteractionEnabled = false
+        if #available(iOS 11.0, *) {
+            contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
+        } else {
+            // Fallback on earlier versions
+            if #available(iOS 13.0, *) {
+                automaticallyAdjustsScrollIndicatorInsets = true
+            } else {
+                // Fallback on earlier versions
+            }
+        }
         backgroundColor = HEX_F5F5F5
         register(GroupSigleTextCell.self, forCellReuseIdentifier: "GroupSigleTextCell")
         register(GroupEditStyleCell.self, forCellReuseIdentifier: "GroupEditStyleCell")
         register(GroupMemberCell.self, forCellReuseIdentifier: "GroupMemberCell")
         _ = viewModel.subject.subscribe(onNext: { [weak self](a) in
-            if self!.viewModel.model.creator == UserInfo.shared.accontStr {
+            self!.isUserInteractionEnabled = true
+            if self!.viewModel.model.creator == ((USERDEFAULT.object(forKey: "phone") ?? "") as? String) {
                 self!.dataArr = ["群聊名称","群成员","","添加成员","群管理","退出群聊"]
             } else {
-                self!.dataArr = ["群聊名称","群成员",""]
+                self!.dataArr = ["群聊名称","群成员","","退出群聊"]
             }
             self!.model = self!.viewModel.model
             self!.reloadData()
@@ -94,16 +106,22 @@ extension GroupInfoTableView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if self.model.membersList.count == 0 {
+            return 
+        }
         let str = dataArr[indexPath.section]
         switch str {
         case "群聊名称":
-            let vc = TextEditVC()
-            vc.groupName = self.model.topicGroupName
-            _ = vc.subject.subscribe(onNext: { [weak self](str) in
-                self!.viewModel.groupName = str
-                self!.viewModel.updateInfo()
-            })
-            self.viewModel.navigationVC?.pushViewController(vc, animated: true)
+            if self.viewModel.model.creator == ((USERDEFAULT.object(forKey: "phone") ?? "") as? String) {
+                let vc = TextEditVC()
+                vc.groupName = self.model.topicGroupName
+                _ = vc.subject.subscribe(onNext: { [weak self](str) in
+                    self!.viewModel.refreshData()
+                })
+                vc.model = self.model
+                self.viewModel.navigationVC?.pushViewController(vc, animated: true)
+            }
+            
             print(str)
         case "群成员":
             let vc = GroupMemVC()

@@ -11,12 +11,11 @@ import UIKit
 import RxSwift
 import RxCocoa
 import Moya
-import IQKeyboardManagerSwift
 import SVProgressHUD
 import HandyJSON
 import Kingfisher
 
-
+let USERDEFAULT = UserDefaults.standard
 //屏幕尺寸
 let kScreenWidth: CGFloat = UIScreen.main.bounds.width
 let kScreenHeight: CGFloat = UIScreen.main.bounds.height
@@ -24,7 +23,7 @@ let kScreenHeight: CGFloat = UIScreen.main.bounds.height
 let kTabbarHidden: Bool = true
 let kTabBarHeight: CGFloat = 49
 //机型判断
-let kiPhoneXOrXS: Bool = kScreenHeight >= 812
+let kiPhoneXOrXS: Bool = USERDEFAULT.bool(forKey: "isAutoResizeBottom") ?? false
 let kiPhonePlus: Bool = kScreenHeight == 736 && kScreenWidth == 414
 let kiPhonoe678: Bool = kScreenHeight == 667 && kScreenWidth == 375
 let kiPhone45SC: Bool = kScreenHeight == 480 && kScreenHeight == 320
@@ -35,7 +34,7 @@ struct NotificationHelper {
 }
 //设备ID
 let UDID = UDIDManager.getUDID()
-let APP_VER = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
+let APP_VER = JTBundleTool.bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
 //--------------------------- 全局函数 -------------------------
 //获取十六进制颜色
 func HEX_COLOR(hexStr x: String)->UIColor {
@@ -163,15 +162,15 @@ let HEX_FFF = HEX_COLOR(hexStr: "#FFFFFF")
 let HEX_LightBlue = HEX_COLOR(hexStr: "#408CE2")
 let HEX_ThemeBlack = HEX_COLOR(hexStr: "#1A1C29")
 let HEX_F5F5F5 = HEX_COLOR(hexStr: "#f5f5f5")
-let PLACEHOLDERIMG = UIImage(named: "placeHolder")
+let PLACEHOLDERIMG = JTBundleTool.getBundleImg(with:"placeHolder")
 
-let USERDEFAULT = UserDefaults.standard
+
 
 let APPWINDOW: UIWindow = (UIApplication.shared.delegate?.window!)!
 //云端地址
 let URL_CLOUD = "https://cloud.hzjtyh.com"
-public var BASE_URL = UserInfo.shared.placeData?.data.placeInfo.agentUrl ?? ""
-public let ACCESS_TOKEN = UserInfo.shared.userData?.parameter.jwt
+public var BASE_URL = (USERDEFAULT.object(forKey: "baseURL") as? String) ?? ""
+public let ACCESS_TOKEN = USERDEFAULT.object(forKey: "jwt") as! String
 //请求状态码
 //NOTE:网络请求状态码
 let REQUEST_SUCCESSFUL: Int = 0

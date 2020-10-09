@@ -14,7 +14,7 @@ PODS:
   - FMDB/standard (2.7.5)
   - HandyJSON (5.0.2)
   - IQKeyboardManagerSwift (6.5.6)
-  - JTChat (0.2.0):
+  - JTChat (0.5.1):
     - ALQRCode
     - CocoaAsyncSocket
     - EmptyDataSet-Swift
@@ -32,9 +32,9 @@ PODS:
     - SVProgressHUD
     - YPImagePicker
   - KeychainSwift (18.0.0)
-  - Kingfisher (5.15.0):
-    - Kingfisher/Core (= 5.15.0)
-  - Kingfisher/Core (5.15.0)
+  - Kingfisher (5.15.5):
+    - Kingfisher/Core (= 5.15.5)
+  - Kingfisher/Core (5.15.5)
   - MJRefresh (3.5.0)
   - Moya (13.0.1):
     - Moya/Core (= 13.0.1)
@@ -47,7 +47,7 @@ PODS:
   - Nimble-Snapshots/Core (6.3.0):
     - FBSnapshotTestCase (~> 2.0)
     - Nimble (~> 7.0)
-  - PryntTrimmerView (4.0.0)
+  - PryntTrimmerView (4.0.2)
   - Quick (1.2.0)
   - Result (4.1.0)
   - RxCocoa (5.1.1):
@@ -59,8 +59,8 @@ PODS:
   - SnapKit (4.0.1)
   - SteviaLayout (4.7.3)
   - SVProgressHUD (2.2.5)
-  - YPImagePicker (4.3.1):
-    - PryntTrimmerView (~> 4.0.0)
+  - YPImagePicker (4.4.0):
+    - PryntTrimmerView (~> 4.0.2)
     - SteviaLayout (~> 4.7.3)
 
 DEPENDENCIES:
@@ -112,14 +112,14 @@ SPEC CHECKSUMS:
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
   IQKeyboardManagerSwift: c7df9d2deb356c04522f5c4b7b6e4ce4d8ed94fe
-  JTChat: f29fa476ef922c7216a499b814ddc2ff3ad6fc28
+  JTChat: 40d25f299b947a92ebb1e930703d7447fb613086
   KeychainSwift: c46e1438d121e47459fb304ac88c5e058a2a91ed
-  Kingfisher: 1acb67597a520c2d0310677e66d6e0af455ef757
+  Kingfisher: e3ec347a5ab8817b7585ef46923a2d2b9a7d8fbe
   MJRefresh: 6afc955813966afb08305477dd7a0d9ad5e79a16
   Moya: f4a4b80ff2f8a4ffc208dfb31cd91636622fee6e
   Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
   Nimble-Snapshots: f5459b5b091678dc942d03ec4741cacb58ba4a52
-  PryntTrimmerView: 67e67573ffd4c073f1308effa66aefd0cfa667a0
+  PryntTrimmerView: 6a43cc90df5d99addeabd33d4ba09b1365322130
   Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
   Result: bd966fac789cc6c1563440b348ab2598cc24d5c7
   RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
@@ -128,7 +128,7 @@ SPEC CHECKSUMS:
   SnapKit: 0de968a9fec17499afa29683b05d0c775b6d1c29
   SteviaLayout: c2ecdcff57d44e38fd2f65e54ad52aeae28ca0c4
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
-  YPImagePicker: 08bbb809ed62bf4149fc015c97249eb4b9463ff9
+  YPImagePicker: 15aed8bcaa4dad976e11b6114126d731a2f9f3c9
 
 PODFILE CHECKSUM: 481aa88242888c51864b90d6718a618d4abbc885
 

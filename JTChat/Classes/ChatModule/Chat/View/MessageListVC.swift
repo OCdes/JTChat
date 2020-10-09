@@ -12,7 +12,7 @@ import ALQRCode
 open class MessageListVC: BaseViewController {
     var viewModel: MessageViewModel = MessageViewModel()
     lazy var scrollView: RecentDialogView = {
-        let tv = RecentDialogView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: self.view.frame.height-45), viewModel: self.viewModel)
+        let tv = RecentDialogView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: (kScreenHeight-49-45-(kScreenHeight>=750 ? 122 : 64))), viewModel: self.viewModel)
         return tv
     }()
     var previousBtn: UIButton?
@@ -29,13 +29,19 @@ open class MessageListVC: BaseViewController {
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.viewModel.getMessageList(scrollView: self.scrollView)
+        self.navigationController?.navigationBar.isTranslucent = false
+        self.viewModel.getAllRecentContactor()
+    }
+    
+    open override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.navigationBar.isTranslucent = true
     }
     
     override func setNav() {
         super.setNav()
         let addBtn = UIButton.init(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
-        addBtn.setImage(UIImage(named:"addCircle"), for: .normal)
+        addBtn.setImage(JTBundleTool.getBundleImg(with:"addCircle"), for: .normal)
         let _ = addBtn.rx.controlEvent(.touchUpInside).subscribe(onNext: { (a) in
             let alert = DialogAlertView.init(frame: CGRect.zero)
             _ = alert.subject.subscribe(onNext: { (i) in
@@ -64,7 +70,7 @@ open class MessageListVC: BaseViewController {
     
     func initView() {
         let btn = UIButton.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth/2, height: 45))
-        btn.setImage(UIImage(named: "createMessage"), for: .normal)
+        btn.setImage(JTBundleTool.getBundleImg(with:"createMessage"), for: .normal)
         btn.setTitle("    聊天", for: .normal)
         btn.setTitleColor(HEX_COLOR(hexStr: "#4F525B"), for: .normal)
         btn.setTitleColor(HEX_LightBlue, for: .selected)
@@ -75,7 +81,7 @@ open class MessageListVC: BaseViewController {
         previousBtn = btn
         view.addSubview(btn)
         let btn2 = UIButton.init(frame: CGRect(x: kScreenWidth/2, y: 0, width: kScreenWidth/2, height: 45))
-        btn2.setImage(UIImage(named: "createGroup"), for: .normal)
+        btn2.setImage(JTBundleTool.getBundleImg(with:"createGroup"), for: .normal)
         btn2.setTitle("    群聊", for: .normal)
         btn2.setTitleColor(HEX_COLOR(hexStr: "#4F525B"), for: .normal)
         btn2.setTitleColor(HEX_LightBlue, for: .selected)

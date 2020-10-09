@@ -18,7 +18,7 @@ class EmojiKeyboardView: UIView {
     var sendSubject: PublishSubject<Any> = PublishSubject<Any>()
     lazy var deletBtn: UIButton = {
         let db = UIButton()
-        db.setImage(UIImage(named: "deleteKey"), for: .normal)
+        db.setImage(JTBundleTool.getBundleImg(with:"deleteKey"), for: .normal)
         db.backgroundColor = HEX_FFF
         db.layer.cornerRadius = 3
         db.layer.masksToBounds = true
@@ -169,7 +169,7 @@ extension EmojiKeyboardView: UICollectionViewDelegate, UICollectionViewDataSourc
 class EmojiItem: BaseCollectionCell {
     var dict: Dictionary<String, Any>? {
         didSet {
-            imgv.image = UIImage(named: dict!["font_class"] as! String)
+            imgv.image = JTBundleTool.getBundleImg(with: dict!["font_class"] as! String)
         }
     }
     lazy var imgv: UIImageView = {

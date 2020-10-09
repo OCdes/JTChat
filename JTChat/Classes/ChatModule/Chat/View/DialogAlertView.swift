@@ -56,7 +56,7 @@ class DialogAlertView: UIView {
         addSubview(animateV)
         for i in 0..<btnArr.count {
             let btn = UIButton.init(frame: CGRect(x: 0, y: 44*i, width: 135, height: 44))
-            btn.setImage(UIImage(named: imageArr[i]), for: .normal)
+            btn.setImage(JTBundleTool.getBundleImg(with:imageArr[i]), for: .normal)
             btn.setTitle(btnArr[i], for: .normal)
             btn.titleLabel?.font = UIFont.systemFont(ofSize: 16)
             btn.setTitleColor(HEX_COLOR(hexStr: "#3F80CB"), for: .normal)

@@ -14,13 +14,13 @@ open class BaseViewController: UIViewController , UINavigationControllerDelegate
         return UIStatusBarStyle.lightContent
     }
     
-    open override var prefersStatusBarHidden: Bool {
-        return true
-    }
+//    open override var prefersStatusBarHidden: Bool {
+//        return true
+//    }
     
     lazy var backBtn: UIButton = {
         var btn = UIButton(frame: CGRect(x: 0, y: 0, width: 30, height: 40))
-        btn.setImage(UIImage.init(named: "whitNavBack"), for: .normal)
+        btn.setImage(JTBundleTool.getBundleImg(with:"whitNavBack"), for: .normal)
         btn.addTarget(self, action: #selector(backClicked), for: .touchUpInside)
         return btn
     }()
@@ -28,28 +28,32 @@ open class BaseViewController: UIViewController , UINavigationControllerDelegate
     lazy var markV: WaterMarkView = {
         var f = self.view.frame
         f.origin.y = 0
-        let mv = WaterMarkView.init(frame: f, text: UserInfo.shared.userData?.data.emp_phone ?? "")
+        let mv = WaterMarkView.init(frame: f, text: (USERDEFAULT.object(forKey: "phone") as? String) ?? "")
 //        mv.isHidden = true
         return mv
     }()
     
     lazy var closeBtn: UIButton = {
         var btn = UIButton(frame: CGRect(x: 0, y: 0, width: 30, height: 40))
-        btn.setImage(UIImage.init(named: "backToHome"), for: .normal)
+        btn.setImage(JTBundleTool.getBundleImg(with:"backToHome"), for: .normal)
         btn.addTarget(self, action: #selector(backToHome), for: .touchUpInside)
         return btn
     }()
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if (UserInfo.shared.userData?.data.emp_phone) != nil {
-            if UserInfo.shared.placeData?.data.placeDetail.isShowWatermark ?? false {
+        if (USERDEFAULT.object(forKey: "phone")) != nil {
+            if USERDEFAULT.bool(forKey: "isWaterShow") {
                 view.addSubview(self.markV)
             }
         }
+        self.navigationController?.navigationBar.isTranslucent = false
     }
     
-    
+    open override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.navigationBar.isTranslucent = true
+    }
     
     open override func viewDidLoad() {
         super.viewDidLoad()
@@ -73,12 +77,9 @@ open class BaseViewController: UIViewController , UINavigationControllerDelegate
         if (self.navigationController?.viewControllers.count ?? 1) > 2 {
             
             self.navigationItem.leftBarButtonItems = [UIBarButtonItem.init(customView: backBtn), fixItem, UIBarButtonItem.init(customView: closeBtn)]
-            self.hidesBottomBarWhenPushed = true
         } else if ((self.navigationController?.viewControllers.count ?? 1) > 1) {
             self.navigationItem.leftBarButtonItems = [fixItem, UIBarButtonItem.init(customView: backBtn)]
-            self.hidesBottomBarWhenPushed = true
         } else {
-            self.hidesBottomBarWhenPushed = false
         }
         
         UIBarButtonItem.appearance().setBackButtonTitlePositionAdjustment(UIOffset(horizontal: 5, vertical: 0),for: UIBarMetrics.default)

@@ -14,7 +14,7 @@ PODS:
   - FMDB/standard (2.7.5)
   - HandyJSON (5.0.2)
   - IQKeyboardManagerSwift (6.5.6)
-  - JTChat (0.5.1):
+  - JTChat (0.6.0):
     - ALQRCode
     - CocoaAsyncSocket
     - EmptyDataSet-Swift
@@ -112,7 +112,7 @@ SPEC CHECKSUMS:
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
   IQKeyboardManagerSwift: c7df9d2deb356c04522f5c4b7b6e4ce4d8ed94fe
-  JTChat: 40d25f299b947a92ebb1e930703d7447fb613086
+  JTChat: a4d0aa246968c3fffb2de415005dbdae491d5c06
   KeychainSwift: c46e1438d121e47459fb304ac88c5e058a2a91ed
   Kingfisher: e3ec347a5ab8817b7585ef46923a2d2b9a7d8fbe
   MJRefresh: 6afc955813966afb08305477dd7a0d9ad5e79a16

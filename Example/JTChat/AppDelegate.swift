@@ -14,9 +14,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        JTManager.manager.url = "https://reapi.hzjtyh.com"
+        JTManager.manager.url = "https://api.hzjtyh.com"
         JTManager.manager.placeID = 2040
-        JTManager.manager.jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN1c3RvbSI6eyJ1c2VyT3BlbklEIjoiIiwibWVyY2hhbnRJRCI6MTAzNywicGhvbmUiOiIxNTY2OTAxOTU1NyIsInBsYWNlSUQiOjIwNDAsInZlcnNpb25ObyI6IjEuMC45IiwidGVybWluYWxUeXBlIjoiQXBwIn19.eyJzdWIiOiLmjojmnYNBUFDnq6_ku6TniYwiLCJpc3MiOiLnsr7nibnlqLHmsYfmnInpmZDlhazlj7giLCJleHAiOjE2MDIzMjM1MTEsImlhdCI6MTYwMjIzNzExMSwianRpIjoiYjg5MzIxN2VjNTE5NDM2YThmNzUwNmI1MGNjMTRiMmQifQ.ZEyj0MTIuwmMvF6zrx8mgnJyxC_K9V8CBFptbRepzW8"
+//        JTManager.manager.jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN1c3RvbSI6eyJ1c2VyT3BlbklEIjoiIiwibWVyY2hhbnRJRCI6MTAzNywicGhvbmUiOiIxNTY2OTAxOTU1NyIsInBsYWNlSUQiOjIwNDAsInZlcnNpb25ObyI6IjEuMC45IiwidGVybWluYWxUeXBlIjoiQXBwIn19.eyJzdWIiOiLmjojmnYNBUFDnq6_ku6TniYwiLCJpc3MiOiLnsr7nibnlqLHmsYfmnInpmZDlhazlj7giLCJleHAiOjE2MDIzMjM1MTEsImlhdCI6MTYwMjIzNzExMSwianRpIjoiYjg5MzIxN2VjNTE5NDM2YThmNzUwNmI1MGNjMTRiMmQifQ.ZEyj0MTIuwmMvF6zrx8mgnJyxC_K9V8CBFptbRepzW8"
+        JTManager.manager.ctoken = "7a79f50d35c44a2cbd6d82eb6c253573"
+        JTManager.manager.phone = "15838916550"
         setRootVC()
         return true
     }
@@ -31,6 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let contactorNav = UINavigationController.init(rootViewController: contactorVc)
         contactorNav.tabBarItem = UITabBarItem.init(title: "联系人", image: nil, tag: 1)
         tabVC.viewControllers = [messageNav, contactorNav]
+        tabVC.edgesForExtendedLayout = UIRectEdge.all
         self.window = UIWindow.init(frame: UIScreen.main.bounds)
         self.window?.rootViewController = tabVC
     }

@@ -60,6 +60,7 @@ open class BaseViewController: UIViewController , UINavigationControllerDelegate
         view.backgroundColor = UIColor.white
         // Do any additional setup after loading the view.
         self.navigationController?.delegate = self as UINavigationControllerDelegate
+        edgesForExtendedLayout = UIRectEdge.bottom
         self.setNav()
         if #available(iOS 11.0, *)  {
         } else {

@@ -53,11 +53,25 @@ class ContactorInfoTableView: UITableView {
         messageBtn.setTitle("添加好友", for: .normal)
         messageBtn.setTitleColor(HEX_FFF, for: .normal)
         let _ = messageBtn.rx.tap.subscribe(onNext: { [weak self](e) in
-            self!.viewModel?.addFriend(friendNickname: nil, friendPhone: nil, friendAvatar: nil, result: { [weak self](b) in
-                if b {
-                    self!.tableFooterView = self!.footerV
+            if JTManager.manager.addFriendSilence {
+                self!.viewModel?.addFriend(friendNickname: nil, friendPhone: nil, friendAvatar: nil, remark: "", result: { [weak self](b) in
+                    if b {
+                        self!.tableFooterView = self!.footerV
+                    }
+                })
+            } else {
+                let alertv = FriendAddAlertView.init(frame: CGRect.zero)
+                alertv.model = self!.viewModel!.employeeModel
+                _ = alertv.sureSubject.subscribe { [weak self](a) in
+                    self!.viewModel?.addFriend(friendNickname: nil, friendPhone: nil, friendAvatar: nil, remark: a, result: { [weak self](b) in
+                        if b {
+                            self!.tableFooterView = self!.footerV
+                        }
+                    })
                 }
-            })
+                alertv.show()
+            }
+            
             })
         fv.addSubview(messageBtn)
         return fv

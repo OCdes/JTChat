@@ -17,6 +17,7 @@ open class ConntactersVC: BaseViewController  {
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.viewModel.refreshData(scrollView: self.tableView)
         self.navigationController?.navigationBar.isTranslucent = false
     }
     
@@ -42,7 +43,22 @@ open class ConntactersVC: BaseViewController  {
         let _ = btn.rx.controlEvent(.touchUpInside).subscribe(onNext: { [weak self](a) in
             let scan = ALScannerQRCodeVC.init()
             scan.scannerQRCodeDone = {[weak self](result) in
-                self!.viewModel.addFriend()
+                if let rs = result,let phone = (rs as NSString).components(separatedBy: "_").last {
+                    if JTManager.manager.addFriendSilence {
+                        self!.viewModel.addFriend(friendNickname: nil, friendPhone: result, friendAvatar: nil, remark: "", result: { (b) in
+                        })
+                    } else {
+                        let model = ContactorModel()
+                        model.phone = phone
+                        let alertv = FriendAddAlertView.init(frame: CGRect.zero)
+                        alertv.model = model
+                        _ = alertv.sureSubject.subscribe { [weak self](a) in
+                            self!.viewModel.addFriend(friendNickname: nil, friendPhone: nil, friendAvatar: nil, remark: a, result: { (b) in
+                            })
+                        }
+                        alertv.show()
+                    }
+                }
             }
             self!.navigationController?.present(scan, animated: true, completion: nil)
         })
@@ -54,7 +70,7 @@ open class ConntactersVC: BaseViewController  {
     func initView() {
         view.addSubview(tableView)
         tableView.snp_makeConstraints { (make) in
-            make.edges.equalTo(UIEdgeInsets.zero)
+            make.edges.equalTo(UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
         }
     }
     
@@ -63,7 +79,6 @@ open class ConntactersVC: BaseViewController  {
         let _ = tableView.jt_addRefreshHeader {[weak self]() in
             self!.viewModel.refreshData(scrollView: self!.tableView)
         }
-        self.tableView.jt_startRefresh()
     }
     
     deinit {

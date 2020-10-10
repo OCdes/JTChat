@@ -11,20 +11,38 @@ import UIKit
 class ContactersTableView: UITableView {
     var viewModel: ContactorViewModel?
     var searchenable: Bool = true
-    lazy var searchTf: UITextField = {
-        let st = UITextField.init(frame: CGRect(x: 15, y: 10, width: kScreenWidth-30, height: 30))
-        st.delegate = self
-        st.layer.cornerRadius = 15
-        st.backgroundColor = HEX_FFF
-        let sv = UIImageView.init(frame: CGRect(x: 0, y: 0, width: 18, height: 18))
-        sv.image = JTBundleTool.getBundleImg(with:"contacterSearch")
-        let lv = UIView.init(frame: CGRect(x: 0, y: 0, width: 40, height: 30))
-        sv.center = lv.center
-        lv.addSubview(sv)
-        st.leftView = lv
-        st.leftViewMode = .always
-        st.placeholder = "搜索"
-        return st
+    var headerV: UIView = {
+        let hv = UIView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: 64))
+        hv.backgroundColor = HEX_FFF
+        let imgv = UIImageView()
+        imgv.image = JTBundleTool.getBundleImg(with: "newFriendsApply")
+        hv.addSubview(imgv)
+        imgv.snp_makeConstraints { (make) in
+            make.left.equalTo(hv).offset(11.5)
+            make.top.equalTo(hv).offset(13)
+            make.bottom.equalTo(hv).offset(-13)
+            make.width.equalTo(imgv.snp_height)
+        }
+        let titleLa = UILabel()
+        titleLa.textColor = HEX_333
+        titleLa.text = "新的朋友"
+        hv.addSubview(titleLa)
+        titleLa.snp_makeConstraints { (make) in
+            make.left.equalTo(imgv.snp_right).offset(20)
+            make.centerY.equalTo(imgv)
+            make.right.equalTo(hv).offset(-42)
+        }
+        return hv
+    }()
+    var redDot: UILabel = {
+        let rd = UILabel()
+        rd.layer.cornerRadius = 8
+        rd.layer.masksToBounds = true
+        rd.textColor = HEX_FFF
+        rd.font = UIFont.systemFont(ofSize: 10)
+        rd.textAlignment = .center
+        rd.backgroundColor = UIColor.red
+        return rd
     }()
     init(frame: CGRect, style: UITableView.Style, viewModel vm: ContactorViewModel) {
         super.init(frame: frame, style: style)
@@ -33,6 +51,20 @@ class ContactersTableView: UITableView {
         dataSource = self
         separatorStyle = .none
         backgroundColor = HEX_COLOR(hexStr: "#F5F6F8")
+        self.headerV.addSubview(self.redDot)
+        let btn = UIButton()
+        btn.addTarget(self, action: #selector(goToApplyList), for: .touchUpInside)
+        self.headerV.addSubview(btn)
+        btn.snp_makeConstraints { (make) in
+            make.edges.equalTo(self.headerV)
+        }
+        self.redDot.snp_makeConstraints { (make) in
+            make.right.equalTo(self.headerV).offset(-10)
+            make.centerY.equalTo(self.headerV)
+            make.height.equalTo(16)
+            make.width.lessThanOrEqualTo(50)
+            make.width.greaterThanOrEqualTo(16)
+        }
         register(ContactersTableCell.self, forCellReuseIdentifier: "ContactersTableCell")
         if #available(iOS 11.0, *) {
             contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
@@ -45,8 +77,23 @@ class ContactersTableView: UITableView {
             }
         }
         let _ = viewModel?.subject.subscribe(onNext: { [weak self](a) in
+            let count = self!.viewModel!.addApplyData.count
+            if count > 0 {
+                self!.redDot.isHidden = false
+                self!.redDot.text = count > 99 ? "99+" : "\(count)"
+                self!.tableHeaderView = self!.headerV
+            } else {
+                self!.redDot.isHidden = true
+                self!.tableHeaderView = UIView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: 0.01))
+            }
             self?.reloadData()
         })
+    }
+    
+    @objc func goToApplyList() {
+        let vc = AddFriendApplyVC.init()
+        vc.viewModel.dataArr = self.viewModel!.addApplyData
+        self.viewModel?.navigationVC?.pushViewController(vc, animated: true)
     }
     
     required init?(coder: NSCoder) {
@@ -98,10 +145,11 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
                 }
             }
         } else {
-            titleString = viewModel!.pinyinArr[indexPath.section][indexPath.row].nickName
+            let mm = viewModel!.pinyinArr[indexPath.section][indexPath.row]
+            titleString = mm.nickName
+            cell.portraitV.kf.setImage(with: URL(string: mm.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
         }
         cell.titleLa.text = titleString
-        
         return cell
     }
     
@@ -180,7 +228,6 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
 class ContactersTableCell: BaseTableCell {
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
-        pv.image = JTBundleTool.getBundleImg(with:"groupicon")
         pv.layer.cornerRadius = 19
         pv.layer.masksToBounds = true
         return pv

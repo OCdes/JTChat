@@ -397,8 +397,10 @@ let POST_FETCHRESULTOFTICKET = "/v1/ticket/ticketOrderPaymentResult"
 let POST_CHATFRIENDSlIST = "/v1/chat/getMyChatFriends"
 ///获取讨论组列表
 let POST_CHATGROUPlIST = "/v1/chat/getMyChatTopicGroups"
-///添加好友
+///静默添加好友
 let POST_ADDFRIEND = "/v1/chat/addFriend"
+///申请添加好友
+let POST_APPLYADDFRIEND = "/v1/chat/addNewFriend"
 ///创建讨论组
 let POST_CREATGROUP = "/v1/chat/createTopicGroup"
 ///为讨论组添加组员
@@ -417,3 +419,10 @@ let POSST_FETCHEMPLOYEETOCHAT = "/v1/chat/getPlaceChatEmployees"
 let POST_DETAILOFCHATEMPLOYEE = "/v1/chat/getChatEmployeeDetail"
 ///解绑设备
 let POST_UNBINDDEVICE = "/v1/workbench/unbindDeviceId"
+///好友申请信息
+let POST_ADDAPPLY = "/v1/chat/getApplyFriendList"
+///删除好友
+let POST_DELETFRIEND = "/v1/chat/removeFriend"
+///好友申请信息处理
+let POST_DEALFRIENDAPPLY = "/v1/chat/applyFriendHandle"
+

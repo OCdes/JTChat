@@ -148,8 +148,8 @@ open class DBManager: NSObject {
                         
                         
                     }
-                    db.close()
                 }
+                db.close()
                 semaphore.signal()
             })
             semaphore.wait()
@@ -178,13 +178,36 @@ open class DBManager: NSObject {
             dbQueue?.inDatabase({ (db) in
                 if db.open() {
                     db.executeUpdate(deletSQL, withArgumentsIn: [])
-                    db.close()
                 }
+                db.close()
                 semaphore.signal()
             })
             semaphore.wait()
         } else {
             print("移除最近联系人/群组 错误")
+        }
+    }
+    
+    func deletChat(in friendPhone: String, or groupID: String) {
+        var deletSQL = ""
+        if (friendPhone.count > 0) {
+            deletSQL = "DELETE FROM RecentChatList WHERE sender_phone = '\(friendPhone)' and receiver_phone = '\(JTManager.manager.phone)'"
+        } else if (groupID.count > 0 ) {
+            deletSQL = "DELETE FROM RecentChatList WHERE topic_group = '\(groupID)' and topic_group = '\(groupID)'"
+        }
+        
+        if deletSQL.count > 0 {
+            let semaphore = DispatchSemaphore(value: 0)
+            dbQueue?.inDatabase({ (db) in
+                if db.open() {
+                    db.executeUpdate(deletSQL, withArgumentsIn: [])
+                }
+                db.close()
+                semaphore.signal()
+            })
+            semaphore.wait()
+        } else {
+            print("移除最近联系人/群组会话 错误")
         }
     }
     
@@ -197,8 +220,8 @@ open class DBManager: NSObject {
                     if db.open() {
                         let updateSQL = "UPDATE RecentChatList SET package_type=\(model.packageType),package_content='\(model.msgContent)',topic_group='\(model.topic_group)',create_time=\(model.timeStamp),is_read=\(model.isReaded),unread_count=\(model.isReaded ? 0 : m.unreadCount+1) WHERE sender_phone='\(model.senderPhone)'"
                         db.executeUpdate(updateSQL, withArgumentsIn: [])
-                        db.close()
                     }
+                    db.close()
                     semaphore.signal()
                 })
                 semaphore.wait()
@@ -227,8 +250,8 @@ open class DBManager: NSObject {
                     if db.open() {
                         let updateSQL = "UPDATE RecentChatList SET package_type=\(model.packageType),package_content='\(model.msgContent)',topic_group='\(m.topicGroupID)',create_time=\(model.timeStamp),is_read=\(model.isReaded),unread_count=\(model.isReaded ? 0 : m.unreadCount+1) WHERE topic_group='\(model.topic_group)'"
                         db.executeUpdate(updateSQL, withArgumentsIn: [])
-                        db.close()
                     }
+                    db.close()
                     semaphore.signal()
                 })
                 semaphore.wait()
@@ -248,8 +271,8 @@ open class DBManager: NSObject {
                 if db.open() {
                     let updateSQL = "UPDATE RecentChatList SET topic_group_name='\(model.topicGroupName)' WHERE topic_group='\(model.topicGroupID)'"
                     db.executeUpdate(updateSQL, withArgumentsIn: [])
-                    db.close()
                 }
+                db.close()
                 semaphore.signal()
             })
             semaphore.wait()
@@ -280,8 +303,8 @@ open class DBManager: NSObject {
                                 model.unreadCount = rSet["unread_count"] as! Int
                             }
                         }
-                        db.close()
                     }
+                    db.close()
                     semaphore.signal()
                 })
                 semaphore.wait()
@@ -300,8 +323,8 @@ open class DBManager: NSObject {
                                 model.unreadCount = rSet["unread_count"] as! Int
                             }
                         }
-                        db.close()
                     }
+                    db.close()
                     semaphore.signal()
                 })
                 semaphore.wait()
@@ -391,8 +414,8 @@ open class DBManager: NSObject {
                     print("----------MD5:\(msgStr)")
                     b = db.executeUpdate(insertSQL, withArgumentsIn: [model.sender,model.senderPhone,model.senderAvanter,model.receiver,model.receiverPhone,model.receiverAvanter,model.packageType,msgStr,model.timeStamp,model.topic_group,model.estimate_height,model.estimate_width,model.isRemote,model.isReaded])
                 }
-                db.close()
             }
+            db.close()
             semaphore.signal()
         })
         semaphore.wait()
@@ -410,8 +433,8 @@ open class DBManager: NSObject {
                         let contactorInsetSQL = "INSERT INTO ContactorList (nick_name,avantar,phone) VALUES(?,?,?)"
                         db.executeUpdate(contactorInsetSQL, withArgumentsIn: [model.nickName,model.avatarUrl,model.phone])
                     }
-                    db.close()
                 }
+                db.close()
                 semaphore.signal()
             })
             semaphore.wait()
@@ -433,8 +456,8 @@ open class DBManager: NSObject {
                             model.phone = rs["phone"] as! String
                         }
                     }
-                    db.close()
                 }
+                db.close()
                 semaphore.signal()
             })
             semaphore.wait()
@@ -563,10 +586,10 @@ open class DBManager: NSObject {
                                 }
                             }
                         }
-                        db.close()
                         arr = arr.reversed()
                         resultBlock(arr)
                     }
+                    db.close()
                     semaphore.signal()
                 })
                 semaphore.wait()

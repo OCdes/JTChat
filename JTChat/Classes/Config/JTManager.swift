@@ -74,6 +74,8 @@ open class JTManager: NSObject {
         }
     }
     
+    @objc open var addFriendSilence: Bool = false
+    
     @objc open class func shareManager()->JTManager {
         return manager
     }

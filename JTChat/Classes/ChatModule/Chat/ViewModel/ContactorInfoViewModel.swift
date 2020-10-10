@@ -26,14 +26,37 @@ class ContactorInfoViewModel: BaseViewModel {
         }
     }
     
-    func addFriend(friendNickname: String?, friendPhone: String?, friendAvatar: String?, result: @escaping ((_ b: Bool)->Void)) {
-        let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_ADDFRIEND, params: ["friendNickname":friendNickname ?? employeeModel.nickName,"friendPhone":friendPhone ?? employeeModel.phone,"friendAvatar":friendAvatar ?? employeeModel.avatarUrl], success: { (msg, code, response, data) in
-            SVPShowSuccess(content: "好友添加成功")
-            result(true)
-        }) { (errorInfo) in
-            SVPShowError(content: errorInfo.message.count > 0 ? errorInfo.message : "好友添加失败")
-            result(false)
+    func addFriend(friendNickname: String?, friendPhone: String?, friendAvatar: String?, remark: String?, result: @escaping ((_ b: Bool)->Void)) {
+        if JTManager.manager.addFriendSilence {
+            let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_ADDFRIEND, params: ["friendNickname":friendNickname ?? employeeModel.nickName,"friendPhone":friendPhone ?? employeeModel.phone,"friendAvatar":friendAvatar ?? employeeModel.avatarUrl], success: { (msg, code, response, data) in
+                SVPShowSuccess(content: "好友添加成功")
+                result(true)
+            }) { (errorInfo) in
+                SVPShowError(content: errorInfo.message.count > 0 ? errorInfo.message : "好友添加失败")
+                result(false)
+            }
+        } else {
+            let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_APPLYADDFRIEND, params: ["friendPhone":friendPhone ?? employeeModel.phone,"remark":remark ?? ""]) { (msg, code, response, data) in
+                SVPShowSuccess(content: "好友添加申请已发出,等待对方验证通过")
+                result(false)
+            } fail: { (errorInfo) in
+                SVPShowError(content: errorInfo.message.count > 0 ? errorInfo.message : "好友添加失败")
+                result(false)
+            }
+            
         }
+        
+    }
+    
+    func deletFriend(friendPhone: String) {
+        _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_DELETFRIEND, params: ["friendPhone":friendPhone], success: { (msg, code, response, data) in
+            DBManager.manager.deletRecentChat(byPhone: friendPhone, byTopicID: "")
+            
+            SVPShowSuccess(content: msg)
+            self.navigationVC?.popToRootViewController(animated: true)
+        }, fail: { (errorInfo) in
+            SVPShowError(content: errorInfo.message.count>0 ? errorInfo.message : "移除好友失败")
+        })
     }
     
     

@@ -45,7 +45,7 @@ class ChatTableView: UITableView {
                 if section > 0 {
                     let rows = self.dataArr[section-1].rowsArr.count-1
                     if rows > 0 {
-                        self.scrollToRow(at: IndexPath(row: rows-1, section:section-1), at: .bottom, animated: animated ?? false)
+                        self.scrollToRow(at: IndexPath(row: rows-1, section:section-1), at: .middle, animated: animated ?? false)
                     }
                 }
 
@@ -73,9 +73,11 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == self.dataArr.count-1  {
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.init(uptimeNanoseconds: 1)) {
-                self.scrollTo(offsetY: self.contentSize.height, animated: false)
+        if self.viewModel!.page == 1 {
+            if section == self.dataArr.count-1  {
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.init(uptimeNanoseconds: 1)) {
+                    self.scrollTo(offsetY: self.contentSize.height, animated: false)
+                }
             }
         }
         return dataArr[section].rowsArr.count

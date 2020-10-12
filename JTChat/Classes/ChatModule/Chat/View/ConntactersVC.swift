@@ -43,9 +43,9 @@ open class ConntactersVC: BaseViewController  {
         let _ = btn.rx.controlEvent(.touchUpInside).subscribe(onNext: { [weak self](a) in
             let scan = ALScannerQRCodeVC.init()
             scan.scannerQRCodeDone = {[weak self](result) in
-                if let rs = result,let phone = (rs as NSString).components(separatedBy: "_").last {
+                if let rs = result,let phone = (rs as NSString).components(separatedBy: "_").first {
                     if JTManager.manager.addFriendSilence {
-                        self!.viewModel.addFriend(friendNickname: nil, friendPhone: result, friendAvatar: nil, remark: "", result: { (b) in
+                        self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: "", result: { (b) in
                         })
                     } else {
                         let model = ContactorModel()
@@ -53,7 +53,7 @@ open class ConntactersVC: BaseViewController  {
                         let alertv = FriendAddAlertView.init(frame: CGRect.zero)
                         alertv.model = model
                         _ = alertv.sureSubject.subscribe { [weak self](a) in
-                            self!.viewModel.addFriend(friendNickname: nil, friendPhone: nil, friendAvatar: nil, remark: a, result: { (b) in
+                            self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: a, result: { (b) in
                             })
                         }
                         alertv.show()

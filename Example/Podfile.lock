@@ -14,7 +14,7 @@ PODS:
   - FMDB/standard (2.7.5)
   - HandyJSON (5.0.2)
   - IQKeyboardManagerSwift (6.5.6)
-  - JTChat (0.6.1):
+  - JTChat (0.6.2):
     - ALQRCode
     - CocoaAsyncSocket
     - EmptyDataSet-Swift
@@ -32,9 +32,9 @@ PODS:
     - SVProgressHUD
     - YPImagePicker
   - KeychainSwift (18.0.0)
-  - Kingfisher (5.15.5):
-    - Kingfisher/Core (= 5.15.5)
-  - Kingfisher/Core (5.15.5)
+  - Kingfisher (5.15.6):
+    - Kingfisher/Core (= 5.15.6)
+  - Kingfisher/Core (5.15.6)
   - MJRefresh (3.5.0)
   - Moya (13.0.1):
     - Moya/Core (= 13.0.1)
@@ -112,9 +112,9 @@ SPEC CHECKSUMS:
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
   IQKeyboardManagerSwift: c7df9d2deb356c04522f5c4b7b6e4ce4d8ed94fe
-  JTChat: 57c65457f88a657c3e2e9743ef05b85bb4285f9f
+  JTChat: 58fb443c5837e86f906dae33fca5f37ccd53e05c
   KeychainSwift: c46e1438d121e47459fb304ac88c5e058a2a91ed
-  Kingfisher: e3ec347a5ab8817b7585ef46923a2d2b9a7d8fbe
+  Kingfisher: b3554e7bf6106115b44e8795300bad580ef2fdc7
   MJRefresh: 6afc955813966afb08305477dd7a0d9ad5e79a16
   Moya: f4a4b80ff2f8a4ffc208dfb31cd91636622fee6e
   Nimble: 051e3d8912d40138fa5591c78594f95fb172af37

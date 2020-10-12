@@ -17,7 +17,7 @@ public protocol InputToolViewDelegate: NSObjectProtocol {
 class InputToolView: UIView {
     private var previousOffsetY: CGFloat = 0
     private var bottomHeight = kScreenWidth-90
-    private var bottomOffset: CGFloat = kiPhoneXOrXS ? 34 : 0
+    private var bottomOffset: CGFloat = 0
     var bottomUpDistance: CGFloat = 0
     var subject: PublishSubject<CGFloat> = PublishSubject<CGFloat>()
     lazy var emojiView: EmojiKeyboardView = {
@@ -133,13 +133,16 @@ class InputToolView: UIView {
                     if let start = characters.lastIndex(of: "["), let end = characters.lastIndex(of: "]"), end-start > 1 {
                         let range = NSRange.init(location: start, length: end-start+1)
                         self!.textV.text = (str as NSString).replacingCharacters(in: range, with: "")
+                        self!.frameChage(newStr: self!.textV.text)
                     } else {
                         let range = NSRange.init(location: str.count, length: 1)
                         self!.textV.text = (str as NSString).replacingCharacters(in: range, with: "")
+                        self!.frameChage(newStr: self!.textV.text)
                     }
                 } else {
-                    let range = NSRange.init(location: str.count, length: 1)
+                    let range = NSRange.init(location: str.count-1, length: 1)
                     self!.textV.text = (str as NSString).replacingCharacters(in: range, with: "")
+                    self!.frameChage(newStr: self!.textV.text)
                 }
             }
         })
@@ -222,10 +225,10 @@ class InputToolView: UIView {
             self.bottomUpDistance = endFrame.height
             self.keyboardHeight = endFrame.height
             if let de = delegate {
-                de.keyboardChangeFrame(inY: endFrame.height+textHeight-49)
+                de.keyboardChangeFrame(inY: endFrame.height+textHeight-(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) :(49+(kiPhoneXOrXS ? 34 : 0))))
             }
             self.toolV.snp_updateConstraints { (make) in
-                make.bottom.equalTo(self).offset(-(endFrame.height-49))
+                make.bottom.equalTo(self).offset(-(endFrame.height-(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) :(49+(kiPhoneXOrXS ? 34 : 0)))))
             }
         }
     }
@@ -239,7 +242,7 @@ class InputToolView: UIView {
                 make.bottom.equalTo(self).offset(-self.bottomOffset)
             }
             if let de = delegate {
-                de.keyboardChangeFrame(inY: textHeight > 19 ? (self.bottomOffset+textHeight) : (kiPhoneXOrXS ? 34 : 0))
+                de.keyboardChangeFrame(inY: self.bottomOffset+textHeight)
             }
             
         }
@@ -319,7 +322,6 @@ class InputToolView: UIView {
         if let de = self.delegate {
             de.keyboardChangeFrame(inY: self.bottomOffset+textHeight)
         }
-        
     }
     
     func resignActive() {
@@ -374,7 +376,7 @@ extension InputToolView: UITextViewDelegate {
     }
     
     func frameChage(newStr: String) {
-        let width = kScreenWidth-120
+        let width = kScreenWidth-135
         if newStr.count > 0  {
             let context = NSStringDrawingContext()
             let height = (newStr as NSString).boundingRect(with: CGSize(width: width, height: CGFloat(MAXFLOAT)), options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 16)], context: context).height
@@ -387,12 +389,17 @@ extension InputToolView: UITextViewDelegate {
         if self.previousOffsetY <= 72 && previousOffsetY > 19.1 {
             textHeight = previousOffsetY - 19.09375
             if let de = delegate {
-                de.keyboardChangeFrame(inY: textHeight + (self.isTyping ? keyboardHeight-44 : bottomHeight))
+                de.keyboardChangeFrame(inY: textHeight + (self.isTyping ? keyboardHeight-49-(kiPhoneXOrXS ? 34 : 0) : bottomHeight))
             }
-        } else if previousOffsetY >= 0 && previousOffsetY <= 19.1 {
-            textHeight = previousOffsetY
+        } else if previousOffsetY > 0 && previousOffsetY <= 19.1 {
+            textHeight = previousOffsetY - 19.09375
             if let de = delegate {
-                de.keyboardChangeFrame(inY:(self.isTyping ? keyboardHeight-44 : bottomHeight))
+                de.keyboardChangeFrame(inY:(self.isTyping ? keyboardHeight-49-(kiPhoneXOrXS ? 34 : 0) : bottomHeight))
+            }
+        } else {
+            textHeight = 0
+            if let de = delegate {
+                de.keyboardChangeFrame(inY:(self.isTyping ? keyboardHeight-49-(kiPhoneXOrXS ? 34 : 0) : bottomHeight))
             }
         }
     }

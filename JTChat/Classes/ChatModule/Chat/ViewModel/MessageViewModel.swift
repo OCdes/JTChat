@@ -74,7 +74,24 @@ class MessageViewModel: BaseViewModel {
             self!.subject.onNext("")
         }
     }
-    func addFriend() {
+    func addFriend(friendNickname: String?, friendPhone: String, friendAvatar: String?, remark: String?, result: @escaping ((_ b: Bool)->Void)) {
+        if JTManager.manager.addFriendSilence {
+            let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_ADDFRIEND, params: ["friendNickname":"","friendPhone":friendPhone,"friendAvatar":friendAvatar ?? ""], success: { (msg, code, response, data) in
+                SVPShowSuccess(content: "好友添加成功")
+                result(true)
+            }) { (errorInfo) in
+                SVPShowError(content: errorInfo.message.count > 0 ? errorInfo.message : "好友添加失败")
+                result(false)
+            }
+        } else {
+            let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_APPLYADDFRIEND, params: ["friendPhone":friendPhone,"remark":remark ?? ""]) { (msg, code, response, data) in
+                SVPShowSuccess(content: "好友添加申请已发出,等待对方验证通过")
+                result(false)
+            } fail: { (errorInfo) in
+                
+            }
+            
+        }
         
     }
     deinit {

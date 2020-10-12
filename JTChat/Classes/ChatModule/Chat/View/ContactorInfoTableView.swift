@@ -137,7 +137,7 @@ extension ContactorInfoTableView: UITableViewDelegate, UITableViewDataSource {
         switch indexPath.section {
         case 0:
             let cell: ContactInfoDetailCell = tableView.dequeueReusableCell(withIdentifier: "ContactInfoDetailCell", for: indexPath) as! ContactInfoDetailCell
-            cell.portraitV.kf.setImage(with: URL(string: viewModel?.employeeModel.avatarUrl ?? ""), placeholder: PLACEHOLDERIMG)
+            cell.portraitV.kf.setImage(with: URL(string: viewModel?.employeeModel.avatarUrl ?? ""), placeholder: JTBundleTool.getBundleImg(with: "approvalPortrait"))
             cell.nameLa.text = viewModel?.employeeModel.nickName ?? ""
             return cell
         case 1:

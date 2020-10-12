@@ -65,6 +65,7 @@ class ChatViewModel: BaseViewModel {
     }
     func refreshData(scrollView: UIScrollView) {
         if let cmodel = contactor {
+            self.appendArr = []
             let model = MessageModel()
             model.sender = cmodel.nickName
             model.senderPhone = cmodel.phone

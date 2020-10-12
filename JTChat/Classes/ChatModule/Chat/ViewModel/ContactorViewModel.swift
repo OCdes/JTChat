@@ -225,7 +225,8 @@ class ContactorViewModel: BaseViewModel {
                 SVPShowSuccess(content: "好友添加申请已发出,等待对方验证通过")
                 result(false)
             } fail: { (errorInfo) in
-                
+                SVPShowError(content: errorInfo.message.count > 0 ? errorInfo.message : "好友添加失败")
+                result(false)
             }
             
         }

@@ -54,7 +54,22 @@ open class MessageListVC: BaseViewController {
                 case 1:
                     let scan = ALScannerQRCodeVC.init()
                     scan.scannerQRCodeDone = {[weak self](result) in
-                        self!.viewModel.addFriend()
+                        if let rs = result,let phone = (rs as NSString).components(separatedBy: "_").first {
+                            if JTManager.manager.addFriendSilence {
+                                self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: "", result: { (b) in
+                                })
+                            } else {
+                                let model = ContactorModel()
+                                model.phone = phone
+                                let alertv = FriendAddAlertView.init(frame: CGRect.zero)
+                                alertv.model = model
+                                _ = alertv.sureSubject.subscribe { [weak self](a) in
+                                    self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: a, result: { (b) in
+                                    })
+                                }
+                                alertv.show()
+                            }
+                        }
                     }
                     self.navigationController?.present(scan, animated: true, completion: nil)
                 default: break

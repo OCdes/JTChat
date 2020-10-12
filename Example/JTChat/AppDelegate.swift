@@ -16,9 +16,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         JTManager.manager.url = "https://api.hzjtyh.com"
         JTManager.manager.placeID = 2040
+        JTManager.manager.isHideBottom = false
 //        JTManager.manager.jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN1c3RvbSI6eyJ1c2VyT3BlbklEIjoiIiwibWVyY2hhbnRJRCI6MTAzNywicGhvbmUiOiIxNTY2OTAxOTU1NyIsInBsYWNlSUQiOjIwNDAsInZlcnNpb25ObyI6IjEuMC45IiwidGVybWluYWxUeXBlIjoiQXBwIn19.eyJzdWIiOiLmjojmnYNBUFDnq6_ku6TniYwiLCJpc3MiOiLnsr7nibnlqLHmsYfmnInpmZDlhazlj7giLCJleHAiOjE2MDIzMjM1MTEsImlhdCI6MTYwMjIzNzExMSwianRpIjoiYjg5MzIxN2VjNTE5NDM2YThmNzUwNmI1MGNjMTRiMmQifQ.ZEyj0MTIuwmMvF6zrx8mgnJyxC_K9V8CBFptbRepzW8"
-        JTManager.manager.ctoken = "7a79f50d35c44a2cbd6d82eb6c253573"
-        JTManager.manager.phone = "15838916550"
+        JTManager.manager.ctoken = "51eb8aff2d8149c2bd18d533c0515f94"//51eb8aff2d8149c2bd18d533c0515f94
+        JTManager.manager.phone = "13516776244"//13516776244
         setRootVC()
         return true
     }

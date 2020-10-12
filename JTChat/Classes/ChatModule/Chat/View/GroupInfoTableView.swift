@@ -66,6 +66,13 @@ extension GroupInfoTableView: UITableViewDelegate, UITableViewDataSource {
             let cell: GroupEditStyleCell = tableView.dequeueReusableCell(withIdentifier: "GroupEditStyleCell", for: indexPath) as! GroupEditStyleCell
             cell.tf.text = indexPath.section == 0 ? self.model.topicGroupName : "共\(self.model.membersList.count)人"
             cell.titleLa.text = dataArr[indexPath.section]
+            if indexPath.section == 0 {
+                if self.model.creator != JTManager.manager.phone {
+                    cell.accessoryType = .none
+                } else {
+                    cell.accessoryType = .disclosureIndicator
+                }
+            }
             return cell
         } else if (indexPath.section == 2) {
             let cell: GroupMemberCell = tableView.dequeueReusableCell(withIdentifier: "GroupMemberCell", for: indexPath) as! GroupMemberCell
@@ -107,12 +114,12 @@ extension GroupInfoTableView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if self.model.membersList.count == 0 {
-            return 
+            return
         }
         let str = dataArr[indexPath.section]
         switch str {
         case "群聊名称":
-            if self.viewModel.model.creator == ((USERDEFAULT.object(forKey: "phone") ?? "") as? String) {
+            if self.viewModel.model.creator == JTManager.manager.phone {
                 let vc = TextEditVC()
                 vc.groupName = self.model.topicGroupName
                 _ = vc.subject.subscribe(onNext: { [weak self](str) in

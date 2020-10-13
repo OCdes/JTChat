@@ -11,17 +11,45 @@ import UIKit
 class ContactersTableView: UITableView {
     var viewModel: ContactorViewModel?
     var searchenable: Bool = true
-    var headerV: UIView = {
-        let hv = UIView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: 64))
+    lazy var searchTf: UITextField = {
+        let stf = UITextField()
+        stf.textColor = HEX_333
+        stf.textAlignment = .center
+        let attach = NSTextAttachment.init()
+        attach.image = JTBundleTool.getBundleImg(with: "search")!
+        attach.bounds = CGRect(x: 0, y: 0, width: 16, height: 16)
+        let att = NSMutableAttributedString.init(attachment: attach)
+        att.append(NSAttributedString.init(string: "  搜索"))
+        stf.attributedPlaceholder = att
+        stf.delegate = self
+        stf.backgroundColor = HEX_COLOR(hexStr: "#e1e1e1")
+        stf.layer.cornerRadius = 7.5
+        stf.layer.masksToBounds = true
+        return stf
+    }()
+    lazy var headerV: UIView = {
+        let hv = UIView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: 128))
         hv.backgroundColor = HEX_FFF
+        hv.addSubview(self.searchTf)
+        self.searchTf.snp_makeConstraints { (make) in
+            make.edges.equalTo(UIEdgeInsets(top: 10, left: 10, bottom: 84, right: 10))
+        }
+        
+        let separatorLine = LineView.init(frame: CGRect.zero)
+        hv.addSubview(separatorLine)
+        separatorLine.snp_makeConstraints { (make) in
+            make.left.right.equalTo(hv)
+            make.top.equalTo(self.searchTf.snp_bottom).offset(10)
+            make.height.equalTo(10)
+        }
+        
         let imgv = UIImageView()
         imgv.image = JTBundleTool.getBundleImg(with: "newFriendsApply")
         hv.addSubview(imgv)
         imgv.snp_makeConstraints { (make) in
             make.left.equalTo(hv).offset(11.5)
-            make.top.equalTo(hv).offset(13)
-            make.bottom.equalTo(hv).offset(-13)
-            make.width.equalTo(imgv.snp_height)
+            make.top.equalTo(separatorLine.snp_bottom).offset(13)
+            make.size.equalTo(CGSize(width: 38, height: 38))
         }
         let titleLa = UILabel()
         titleLa.textColor = HEX_333
@@ -32,9 +60,18 @@ class ContactersTableView: UITableView {
             make.centerY.equalTo(imgv)
             make.right.equalTo(hv).offset(-42)
         }
+        hv.addSubview(self.redDot)
+        self.redDot.snp_makeConstraints { (make) in
+            make.right.equalTo(hv).offset(-10)
+            make.centerY.equalTo(titleLa)
+            make.height.equalTo(16)
+            make.width.lessThanOrEqualTo(50)
+            make.width.greaterThanOrEqualTo(16)
+        }
+        
         return hv
     }()
-    var redDot: UILabel = {
+    lazy var redDot: UILabel = {
         let rd = UILabel()
         rd.layer.cornerRadius = 8
         rd.layer.masksToBounds = true
@@ -42,8 +79,10 @@ class ContactersTableView: UITableView {
         rd.font = UIFont.systemFont(ofSize: 10)
         rd.textAlignment = .center
         rd.backgroundColor = UIColor.red
+        rd.isHidden = true
         return rd
     }()
+    
     init(frame: CGRect, style: UITableView.Style, viewModel vm: ContactorViewModel) {
         super.init(frame: frame, style: style)
         viewModel = vm
@@ -51,20 +90,14 @@ class ContactersTableView: UITableView {
         dataSource = self
         separatorStyle = .none
         backgroundColor = HEX_COLOR(hexStr: "#F5F6F8")
-        self.headerV.addSubview(self.redDot)
+        
         let btn = UIButton()
         btn.addTarget(self, action: #selector(goToApplyList), for: .touchUpInside)
         self.headerV.addSubview(btn)
         btn.snp_makeConstraints { (make) in
-            make.edges.equalTo(self.headerV)
+            make.edges.equalTo(UIEdgeInsets(top: 74, left: 0, bottom: 0, right: 0))
         }
-        self.redDot.snp_makeConstraints { (make) in
-            make.right.equalTo(self.headerV).offset(-10)
-            make.centerY.equalTo(self.headerV)
-            make.height.equalTo(16)
-            make.width.lessThanOrEqualTo(50)
-            make.width.greaterThanOrEqualTo(16)
-        }
+        
         register(ContactersTableCell.self, forCellReuseIdentifier: "ContactersTableCell")
         if #available(iOS 11.0, *) {
             contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
@@ -76,15 +109,14 @@ class ContactersTableView: UITableView {
                 // Fallback on earlier versions
             }
         }
+        self.tableHeaderView = self.headerV
         let _ = viewModel?.subject.subscribe(onNext: { [weak self](a) in
             let count = self!.viewModel!.addApplyData.count
             if count > 0 {
                 self!.redDot.isHidden = false
                 self!.redDot.text = count > 99 ? "99+" : "\(count)"
-                self!.tableHeaderView = self!.headerV
             } else {
                 self!.redDot.isHidden = true
-                self!.tableHeaderView = UIView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: 0.01))
             }
             self?.reloadData()
         })
@@ -92,7 +124,6 @@ class ContactersTableView: UITableView {
     
     @objc func goToApplyList() {
         let vc = AddFriendApplyVC.init()
-        vc.viewModel.dataArr = self.viewModel!.addApplyData
         self.viewModel?.navigationVC?.pushViewController(vc, animated: true)
     }
     
@@ -102,7 +133,7 @@ class ContactersTableView: UITableView {
     
 }
 
-extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate  {
+extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
     
     func numberOfSections(in tableView: UITableView) -> Int {
         if (!viewModel!.typeChange) {
@@ -221,6 +252,11 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
                 }
             }
         }
+    }
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        self.viewModel?.navigationVC?.pushViewController(ContactorResultVC(), animated: true)
+        return false
     }
     
 }

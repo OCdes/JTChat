@@ -231,7 +231,7 @@ let POST_DEPARTMENTDATA = "/v1/config/getPlaceDepartment"
 ///获取工作组已设置的菜单
 let POST_GROUPMENUS  = "/v1/workbench/getWorkgroupMenus"
 //获取所有工作组系统菜单
- let POST_ALLGROUPMENUS = "/v1/workbench/getSystemWorkbenchMenu"
+let POST_ALLGROUPMENUS = "/v1/workbench/getSystemWorkbenchMenu"
 //设置工作组菜单
 let POST_SETGROUPMENUS = "/v1/workbench/setWorkgroupMenus"
 //账单消费详情
@@ -382,7 +382,7 @@ let POST_GETROOMFORSURPLUS = "/v1/room/getRoomsWithCommitSurplus"
 let POST_DOCALLGIRL = "/v1/call/doCallGirl"
 /*-----------------------------------------月费----------------------------------------------*/
 //创建月费请求
- let POST_CREATMONTHFEEAPPLY = "/v1/recharge/createPreparePaymentQrcode"
+let POST_CREATMONTHFEEAPPLY = "/v1/recharge/createPreparePaymentQrcode"
 //查询月费结果
 let POST_QUERYMONTHFEERESULT = "/v1/recharge/queryPreparePaymentResult"
 //GPS签到
@@ -425,4 +425,6 @@ let POST_ADDAPPLY = "/v1/chat/getApplyFriendList"
 let POST_DELETFRIEND = "/v1/chat/removeFriend"
 ///好友申请信息处理
 let POST_DEALFRIENDAPPLY = "/v1/chat/applyFriendHandle"
+///我的申请
+let POST_FETCHMYADDAPPLY = "/v1/chat/getFriendApproveRecord"
 

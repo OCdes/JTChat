@@ -20,10 +20,16 @@ class AddFriendApplyVC: BaseViewController {
         self.tableView.snp_makeConstraints { (make) in
             make.edges.equalTo(UIEdgeInsets.zero)
         }
+        _ = self.tableView.jt_addRefreshHeader { [weak self]() in
+            self!.viewModel.refreshData(scrollView: self!.tableView)
+        }
+        self.tableView.jt_startRefresh()
         // Do any additional setup after loading the view.
     }
     
-
+    deinit {
+        print("申请列表销毁了")
+    }
     /*
     // MARK: - Navigation
 

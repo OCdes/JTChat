@@ -36,7 +36,6 @@ class ContactorResultVC: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.navigationBar.addSubview(self.cancleBtn)
         self.navigationController?.navigationBar.addSubview(self.searchTf)
     }
     

@@ -396,7 +396,7 @@ extension InputToolView: UITextViewDelegate {
             if let de = delegate {
                 de.keyboardChangeFrame(inY:(self.isTyping ? keyboardHeight-49-(kiPhoneXOrXS ? 34 : 0) : bottomHeight))
             }
-        } else {
+        } else if previousOffsetY == 0  {
             textHeight = 0
             if let de = delegate {
                 de.keyboardChangeFrame(inY:(self.isTyping ? keyboardHeight-49-(kiPhoneXOrXS ? 34 : 0) : bottomHeight))

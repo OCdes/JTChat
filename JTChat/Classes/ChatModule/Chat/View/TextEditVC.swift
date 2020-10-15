@@ -11,9 +11,17 @@ import RxSwift
 class TextEditVC: BaseViewController {
     var subject: PublishSubject<String> = PublishSubject<String>()
     var model: GroupInfoModel = GroupInfoModel()
+    var contactModel: ContactInfoModel = ContactInfoModel()
     var groupName: String = "" {
         didSet {
+            self.title = "修改群名"
             self.textf.text = groupName
+        }
+    }
+    var contacName: String = "" {
+        didSet {
+            self.title = "修改备注"
+            self.textf.text = contacName
         }
     }
     private lazy var textf: UITextField = {
@@ -29,7 +37,6 @@ class TextEditVC: BaseViewController {
     }()
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         // Do any additional setup after loading the view.
         
         view.addSubview(textf)
@@ -51,20 +58,33 @@ class TextEditVC: BaseViewController {
     }
     
     @objc func doneBtnClick() {
-        if let str = self.textf.text, str.count > 0, str != self.model.topicGroupName {
-            self.textf.resignFirstResponder()
-            _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_UPDATEGROUPINFO, params: ["topicGroupID":model.topicGroupID,"topicGroupName":str,"topicGroupDesc":model.topicGroupDesc], success: { (msg, code, response, data) in
-                SVPShowSuccess(content: "修改成功")
-                let m = GroupInfoModel()
-                m.topicGroupID = self.model.topicGroupID
-                m.topicGroupName = self.model.topicGroupName
-                m.topicGroupDesc = self.model.topicGroupDesc
-                DBManager.manager.updateGroupInfo(model: m)
-                self.subject.onNext("")
-                self.navigationController?.popViewController(animated: true)
-            }, fail: { (errorinfo) in
-                SVPShowError(content: errorinfo.message)
-            })
+        if self.model.topicGroupID.count > 0 {
+            if let str = self.textf.text, str.count > 0, str != self.model.topicGroupName {
+                self.textf.resignFirstResponder()
+                _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_UPDATEGROUPINFO, params: ["topicGroupID":model.topicGroupID,"topicGroupName":str,"topicGroupDesc":model.topicGroupDesc], success: { (msg, code, response, data) in
+                    SVPShowSuccess(content: "修改成功")
+                    let m = GroupInfoModel()
+                    m.topicGroupID = self.model.topicGroupID
+                    m.topicGroupName = self.model.topicGroupName
+                    m.topicGroupDesc = self.model.topicGroupDesc
+                    DBManager.manager.updateGroupInfo(model: m)
+                    self.subject.onNext("")
+                    self.navigationController?.popViewController(animated: true)
+                }, fail: { (errorinfo) in
+                    SVPShowError(content: errorinfo.message)
+                })
+            }
+        } else if self.contactModel.phone.count > 0 {
+            if let str = self.textf.text, str.count > 0, str != self.contactModel.nickName {
+                self.textf.resignFirstResponder()
+                let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_SETALIAS, params: ["friendPhone":self.contactModel.phone,"aliasName":str]) { (msg, code, response, data) in
+                    self.subject.onNext("")
+                    self.navigationController?.popViewController(animated: true)
+                } fail: { (errorInfo) in
+                    SVPShowError(content: errorInfo.message)
+                }
+
+            }
         }
         
     }

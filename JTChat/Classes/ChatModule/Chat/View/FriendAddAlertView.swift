@@ -8,7 +8,7 @@
 import UIKit
 import RxSwift
 class FriendAddAlertView: UIView {
-    var model: ContactorModel = ContactorModel() {
+    var model: ContactInfoModel = ContactInfoModel() {
         didSet {
             portraitv.kf.setImage(with: URL(string: model.avatarUrl) ,placeholder: JTBundleTool.getBundleImg(with: "approvalPortrait"))
             nameLa.text = model.nickName.count>0 ? model.nickName : model.phone

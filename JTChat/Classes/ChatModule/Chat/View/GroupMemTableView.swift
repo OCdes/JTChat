@@ -99,10 +99,9 @@ extension GroupMemTableView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let em = ContactorModel()
-        em.phone = dataArr[indexPath.row].memberPhone
+        let em = dataArr[indexPath.row]
         let mm = ContactorInfoViewModel()
-        mm.employeeModel = em
+        mm.employeeModel.phone = em.memberPhone
         let vc = ContacterInfoVC()
         vc.viewModel = mm
         viewModel?.navigationVC?.pushViewController(vc, animated: true)

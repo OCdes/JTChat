@@ -10,5 +10,7 @@ import UIKit
 import HandyJSON
 class BaseModel: HandyJSON {
     required init() {}
-    
+    func mapping(mapper: HelpingMapper) {
+        
+    }
 }

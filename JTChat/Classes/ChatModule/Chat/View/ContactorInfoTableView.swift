@@ -31,7 +31,10 @@ class ContactorInfoTableView: UITableView {
         messageBtn.setTitleColor(HEX_FFF, for: .normal)
         let _ = messageBtn.rx.tap.subscribe(onNext: { [weak self](e) in
             let vc = ChatVC()
-            vc.viewModel.contactor = self!.viewModel?.employeeModel
+            let cmodel = ContactorModel()
+            cmodel.phone = self!.viewModel!.employeeModel.phone
+            cmodel.nickName = self!.viewModel!.employeeModel.nickName
+            vc.viewModel.contactor = cmodel
             vc.title = self!.viewModel!.employeeModel.nickName
             self!.viewModel?.navigationVC?.pushViewController(vc, animated: true)
         })
@@ -142,7 +145,7 @@ extension ContactorInfoTableView: UITableViewDelegate, UITableViewDataSource {
             return cell
         case 1:
             let cell: ContactInfoAlisaCell = tableView.dequeueReusableCell(withIdentifier: "ContactInfoAlisaCell", for: indexPath) as! ContactInfoAlisaCell
-            cell.alisaLa.text = viewModel?.employeeModel.nickName ?? ""
+            cell.alisaLa.text = viewModel?.employeeModel.aliasName ?? (viewModel?.employeeModel.nickName ?? "")
             return cell
         case 2:
             let cell: ContactorInfoCell = tableView.dequeueReusableCell(withIdentifier: "ContactorInfoCell", for: indexPath) as! ContactorInfoCell
@@ -198,7 +201,17 @@ extension ContactorInfoTableView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        if indexPath.section == 1 {
+            if let vm = self.viewModel, vm.employeeModel.phone.count > 0, vm.employeeModel.isFriend {
+                let vc = TextEditVC()
+                vc.contacName = vm.employeeModel.aliasName.count > 0 ? vm.employeeModel.aliasName : vm.employeeModel.nickName
+                _ = vc.subject.subscribe(onNext: { [weak self](str) in
+                    self!.viewModel!.getDetail()
+                })
+                vc.contactModel = vm.employeeModel
+                self.viewModel?.navigationVC?.pushViewController(vc, animated: true)
+            }
+        }
     }
     
 }

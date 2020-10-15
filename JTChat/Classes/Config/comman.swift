@@ -23,7 +23,7 @@ let kScreenHeight: CGFloat = UIScreen.main.bounds.height
 let kTabbarHidden: Bool = true
 let kTabBarHeight: CGFloat = 49
 //机型判断
-let kiPhoneXOrXS: Bool = USERDEFAULT.bool(forKey: "isAutoResizeBottom") ?? false
+let kiPhoneXOrXS: Bool = kScreenHeight >= 812
 let kiPhonePlus: Bool = kScreenHeight == 736 && kScreenWidth == 414
 let kiPhonoe678: Bool = kScreenHeight == 667 && kScreenWidth == 375
 let kiPhone45SC: Bool = kScreenHeight == 480 && kScreenHeight == 320
@@ -427,4 +427,5 @@ let POST_DELETFRIEND = "/v1/chat/removeFriend"
 let POST_DEALFRIENDAPPLY = "/v1/chat/applyFriendHandle"
 ///我的申请
 let POST_FETCHMYADDAPPLY = "/v1/chat/getFriendApproveRecord"
-
+///设置好友别名
+let POST_SETALIAS = "/v1/chat/setFriendAliasName"

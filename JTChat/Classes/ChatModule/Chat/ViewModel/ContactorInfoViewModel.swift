@@ -11,14 +11,14 @@ import HandyJSON
 import RxSwift
 class ContactorInfoViewModel: BaseViewModel {
     var subject: PublishSubject<Any> = PublishSubject<Any>()
-    var employeeModel: ContactorModel = ContactorModel()
+    var employeeModel: ContactInfoModel = ContactInfoModel()
     
     func getDetail() {
         if employeeModel.phone.count > 0 {
             let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_DETAILOFCHATEMPLOYEE, params: ["targetPhone":employeeModel.phone], success: { [weak self](msg, code, response, data) in
                 
                 let dict = (data["data"] ?? data["Data"]) as! Dictionary<String, Any>
-                self!.employeeModel = JSONDeserializer<ContactorModel>.deserializeFrom(dict: dict)!
+                self!.employeeModel = JSONDeserializer<ContactInfoModel>.deserializeFrom(dict: dict)!
                 self!.subject.onNext("")
             }) { (errorInfo) in
                 
@@ -60,4 +60,19 @@ class ContactorInfoViewModel: BaseViewModel {
     }
     
     
+}
+
+class ContactInfoModel: BaseModel {
+    var defaultPhotoUrl: String = ""
+    var department: String = ""
+    var nickName: String = ""
+    var roleID: String = ""
+    var id: String = ""
+    var createTime: Int = 0
+    var gender: Int = 0
+    var aliasName: String = ""
+    var avatarUrl: String = ""
+    var isFriend: Bool = false
+    var jobNumber: String = ""
+    var phone: String = ""
 }

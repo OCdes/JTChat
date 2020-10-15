@@ -229,18 +229,21 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if !viewModel!.typeChange {
             let m = viewModel!.pinyinArr[indexPath.section][indexPath.row]
-            let mm = ContactorInfoViewModel()
-            mm.employeeModel = m
             let vc = ContacterInfoVC()
-            vc.viewModel = mm
+            vc.viewModel.employeeModel.phone = m.phone
+            vc.viewModel.employeeModel.avatarUrl = m.avatarUrl
+            vc.viewModel.employeeModel.nickName = m.nickName
+            vc.viewModel.employeeModel.aliasName = m.aliasName
             viewModel?.navigationVC?.pushViewController(vc, animated: true)
         } else {
             if let m = viewModel?.sectionModel {
                 if indexPath.row < m.employeeArr.count {
-                    let mm = ContactorInfoViewModel()
-                    mm.employeeModel = m.employeeArr[indexPath.row]
+                    let mm = m.employeeArr[indexPath.row]
                     let vc = ContacterInfoVC()
-                    vc.viewModel = mm
+                    vc.viewModel.employeeModel.phone = mm.phone
+                    vc.viewModel.employeeModel.avatarUrl = mm.avatarUrl
+                    vc.viewModel.employeeModel.nickName = mm.nickName
+                    vc.viewModel.employeeModel.aliasName = mm.aliasName
                     viewModel?.navigationVC?.pushViewController(vc, animated: true)
                 } else {
                     let mm = ContactorViewModel()

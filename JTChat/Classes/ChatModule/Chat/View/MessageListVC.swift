@@ -42,14 +42,14 @@ open class MessageListVC: BaseViewController {
         super.setNav()
         let addBtn = UIButton.init(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
         addBtn.setImage(JTBundleTool.getBundleImg(with:"addCircle"), for: .normal)
-        let _ = addBtn.rx.controlEvent(.touchUpInside).subscribe(onNext: { (a) in
+        let _ = addBtn.rx.controlEvent(.touchUpInside).subscribe(onNext: { [weak self](a) in
             let alert = DialogAlertView.init(frame: CGRect.zero)
             _ = alert.subject.subscribe(onNext: { (i) in
                 switch i {
                 case 0:
                     let vc = GroupChatSelectVC.init()
-                    vc.viewModel.navigationVC = self.navigationController
-                    self.present(vc, animated: true, completion: nil)
+                    vc.viewModel.navigationVC = self?.navigationController
+                    self?.present(vc, animated: true, completion: nil)
                     
                 case 1:
                     let scan = ALScannerQRCodeVC.init()
@@ -59,7 +59,7 @@ open class MessageListVC: BaseViewController {
                                 self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: "", result: { (b) in
                                 })
                             } else {
-                                let model = ContactorModel()
+                                let model = ContactInfoModel()
                                 model.phone = phone
                                 let alertv = FriendAddAlertView.init(frame: CGRect.zero)
                                 alertv.model = model
@@ -71,7 +71,7 @@ open class MessageListVC: BaseViewController {
                             }
                         }
                     }
-                    self.navigationController?.present(scan, animated: true, completion: nil)
+                    self?.navigationController?.present(scan, animated: true, completion: nil)
                 default: break
                     
                 }

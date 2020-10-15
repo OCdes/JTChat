@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import HandyJSON
 class ContactorModel: BaseModel {
     var avatarUrl: String = ""
     var createTime: String = ""
@@ -24,6 +24,16 @@ class ContactorModel: BaseModel {
     var roleID: String = ""
     var isSelected: Bool = false
     var topicGroupID: String = ""
+    var aliasName: String = ""
+    
+    override func mapping(mapper: HelpingMapper) {
+        mapper <<<
+            self.avatarUrl <-- "avatar"
+        mapper <<<
+            self.nickName <-- "nickname"
+        mapper <<<
+            self.phone <-- "friendPhone"
+    }
 }
 
 class ContactDataModel: BaseModel {

@@ -64,7 +64,9 @@ extension ContactorResultTableView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let m = dataArr[indexPath.row]
         let vc = ContacterInfoVC()
-        vc.viewModel.employeeModel = m
+        vc.viewModel.employeeModel.phone = m.phone
+        vc.viewModel.employeeModel.avatarUrl = m.avatarUrl
+        vc.viewModel.employeeModel.nickName = m.nickName
         self.viewModel?.navigationVC?.pushViewController(vc, animated: true)
     }
     

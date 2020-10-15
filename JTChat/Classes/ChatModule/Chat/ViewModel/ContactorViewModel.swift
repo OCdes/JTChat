@@ -41,7 +41,7 @@ class ContactorViewModel: BaseViewModel {
     
     func refreshData(scrollView: UIScrollView) {
         sectionModel = ContactDataModel.init()
-        let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POSST_FETCHEMPLOYEETOCHAT, params: [:], success: { [weak self](msg, code, response, data) in
+        let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_CHATFRIENDSlIST, params: [:], success: { [weak self](msg, code, response, data) in
             scrollView.jt_endRefresh()
             let arr: Array<Any> = (data["data"] ?? data["Data"]) as! Array
             self!.employeeArr = JSONDeserializer<ContactorModel>.deserializeModelArrayFrom(array: arr)! as? Array<ContactorModel>

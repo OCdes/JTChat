@@ -145,7 +145,7 @@ extension ContactorInfoTableView: UITableViewDelegate, UITableViewDataSource {
             return cell
         case 1:
             let cell: ContactInfoAlisaCell = tableView.dequeueReusableCell(withIdentifier: "ContactInfoAlisaCell", for: indexPath) as! ContactInfoAlisaCell
-            cell.alisaLa.text = viewModel?.employeeModel.aliasName ?? (viewModel?.employeeModel.nickName ?? "")
+            cell.alisaLa.text = viewModel!.employeeModel.aliasName.count > 0 ? viewModel!.employeeModel.aliasName : (viewModel?.employeeModel.nickName ?? "")
             return cell
         case 2:
             let cell: ContactorInfoCell = tableView.dequeueReusableCell(withIdentifier: "ContactorInfoCell", for: indexPath) as! ContactorInfoCell

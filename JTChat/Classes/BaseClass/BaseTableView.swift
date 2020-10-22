@@ -11,7 +11,8 @@ import SnapKit
 import Kingfisher
 import RxCocoa
 import RxSwift
-import EmptyDataSet_Swift
+
+//import EmptyDataSet_Swift
 @objc class BaseTableView: UITableView {
 
     override init(frame: CGRect, style: UITableView.Style) {
@@ -37,34 +38,34 @@ import EmptyDataSet_Swift
     
 }
 
-extension BaseTableView: EmptyDataSetSource, EmptyDataSetDelegate {
-    
+extension BaseTableView: DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
+
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
         let mstr = NSMutableAttributedString.init(string: "暂无数据")
         mstr.addAttributes([NSAttributedString.Key.foregroundColor : HEX_LightBlue, NSAttributedString.Key.font : UIFont.systemFont(ofSize: 16)], range: NSRange(location: 0, length: mstr.string.count))
         return mstr
     }
-    
+
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
         let img = JTBundleTool.getBundleImg(with:"emptyPlaceholder")
         return img
     }
-    
+
 //    func emptyDataSetShouldDisplay(_ scrollView: UIScrollView) -> Bool {
 //        return false
 //    }
-    
+
     func emptyDataSetShouldAllowTouch(_ scrollView: UIScrollView) -> Bool {
         return false
     }
-    
+
     func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
         return true
     }
-    
-    func emptyDataSet(_ scrollView: UIScrollView, didTapView view: UIView) {
+
+    func emptyDataSet(_ scrollView: UIScrollView, didTap view: UIView) {
         self.jt_startRefresh()
     }
-    
+
 }
 

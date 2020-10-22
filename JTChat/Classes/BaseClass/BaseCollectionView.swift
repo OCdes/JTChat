@@ -11,7 +11,7 @@ import SnapKit
 import Kingfisher
 import RxCocoa
 import RxSwift
-import EmptyDataSet_Swift
+
 @objc class BaseCollectionView: UICollectionView {
 
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
@@ -34,7 +34,7 @@ import EmptyDataSet_Swift
     
 }
 
-extension BaseCollectionView: EmptyDataSetSource, EmptyDataSetDelegate {
+extension BaseCollectionView: DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
         let mstr = NSMutableAttributedString.init(string: "暂无数据")
         mstr.addAttributes([NSAttributedString.Key.foregroundColor : HEX_LightBlue, NSAttributedString.Key.font : UIFont.systemFont(ofSize: 16)], range: NSRange(location: 0, length: mstr.string.count))
@@ -54,7 +54,7 @@ extension BaseCollectionView: EmptyDataSetSource, EmptyDataSetDelegate {
         return true
     }
     
-    func emptyDataSet(_ scrollView: UIScrollView, didTapView view: UIView) {
+    func emptyDataSet(_ scrollView: UIScrollView, didTap view: UIView) {
         self.jt_startRefresh()
     }
     

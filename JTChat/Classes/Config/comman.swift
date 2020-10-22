@@ -31,6 +31,8 @@ struct NotificationHelper {
     static let kChatOnlineNotiName = Notification.Name("kChatOnlineNotiName")
     static let kChatOnGroupNotiName = Notification.Name("kChatOnGroupNotiName")
     static let kReLoginName = Notification.Name("kReLoginName")
+    static let kUpdateRedDot = Notification.Name("NewPrewarningIsComing")
+    static let kUpdateRecentList = Notification.Name("kUpdateRecentList")
 }
 //设备ID
 let UDID = UDIDManager.getUDID()

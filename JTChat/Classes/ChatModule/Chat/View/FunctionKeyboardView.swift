@@ -8,6 +8,7 @@
 
 import UIKit
 import RxSwift
+import Photos
 class FunctionKeyboardView: UIView {
     let keyheight = kScreenWidth-90
     private var bottomOffset: CGFloat = kiPhoneXOrXS ? 34 : 0
@@ -76,7 +77,8 @@ extension FunctionCollectionView: UICollectionViewDelegate, UICollectionViewData
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let dict = dataArr[indexPath.item]
-        self.subject.onNext((dict["name"] as! String))
+        let itemName = dict["name"] as! String
+        self.subject.onNext(itemName)
     }
     
 }

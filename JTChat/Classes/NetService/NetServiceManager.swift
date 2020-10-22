@@ -224,8 +224,8 @@ class NetServiceManager: NSObject {
 extension NetServiceManager {
     
     fileprivate func GET(requestType: RequestType, url: String, params: [String: Any], success:@escaping RequestSuccess, fail:@escaping RequestFail){
-        self.sessionManager?.request(url, method: .get, parameters: params, encoding: URLEncoding.default, headers: self.header as? HTTPHeaders).validate().responseJSON(completionHandler: { (response) in
-            self.handleResponse(response: response, successBlock: success, faliedBlock: fail)
+        self.sessionManager?.request(url, method: .get, parameters: params, encoding: URLEncoding.default, headers: self.header as? HTTPHeaders).validate().responseJSON(completionHandler: { [weak self](response) in
+            self!.handleResponse(response: response, successBlock: success, faliedBlock: fail)
         })
     }
 
@@ -240,8 +240,8 @@ extension NetServiceManager {
         request.httpMethod = HTTPMethod.post.rawValue
         request.setValue("application/json/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpBody = paraStr.data(using: .utf8)
-        self.sessionManager?.request(url, method: HTTPMethod.post, parameters: params, encoding: URLEncoding.default, headers: self.header as? HTTPHeaders).responseJSON(completionHandler: { (response) in
-            return self.handleResponse(response: response, successBlock: success, faliedBlock: fail)
+        self.sessionManager?.request(url, method: HTTPMethod.post, parameters: params, encoding: URLEncoding.default, headers: self.header as? HTTPHeaders).responseJSON(completionHandler: { [weak self](response) in
+            return self!.handleResponse(response: response, successBlock: success, faliedBlock: fail)
         })
     }
     

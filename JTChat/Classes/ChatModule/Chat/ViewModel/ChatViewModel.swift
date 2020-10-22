@@ -17,7 +17,6 @@ class ChatViewModel: BaseViewModel {
     var appendArr: Array<MessageModel> = []
     var subject: PublishSubject<Int> = PublishSubject<Int>()
     var first: Bool = true
-    var sendCount: Int = 0
     var totalTimeArr: Array<String> = []
     override init() {
         super.init()
@@ -26,7 +25,7 @@ class ChatViewModel: BaseViewModel {
     
     @objc func updateData() {
         refreshData(scrollView: UIScrollView())
-        clearRedPot()
+//        clearRedPot()
     }
     
     func clearRedPot() {
@@ -42,18 +41,20 @@ class ChatViewModel: BaseViewModel {
     
     func sendMessage(msg: String) {
         SocketManager.manager.sendMessage(targetModel: contactor, msg: msg, suffix: nil)
-        sendCount += 1
-        page = 1
+//        page = 1
+        localUpdate(msg: msg, suffix: nil)
+        
     }
     func sendPicture(photos:[YPMediaItem]) {
         for item in photos {
             switch item {
             case .photo(p: let img):
                 ChatimagManager.manager.saveImage(image: img.image)
-                SocketManager.manager.sendMessage(targetModel: contactor, msg: ChatimagManager.manager.MD5StrBy(image: img.image), suffix: "jpg")
-                sendCount += 1
-                page = 1
-                refreshData(scrollView: UIScrollView())
+                let msg = ChatimagManager.manager.MD5StrBy(image: img.image)
+                SocketManager.manager.sendMessage(targetModel: contactor, msg: msg, suffix: "jpg")
+//                page = 1
+//                refreshData(scrollView: UIScrollView())
+                self.localUpdate(msg: ChatimagManager.manager.MD5StrBy(image: img.image), suffix: "jpg")
             case .video(v: _):
                 SVPShow(content: "")
             default: break
@@ -63,6 +64,38 @@ class ChatViewModel: BaseViewModel {
 
         }
     }
+    
+    func localUpdate(msg: String , suffix: String?) {
+        if let cmodel = contactor {
+            let model = MessageModel()
+            model.sender = cmodel.nickName
+            model.senderPhone = cmodel.phone
+            model.senderAvanter = cmodel.avatarUrl
+            model.msgContent = msg
+            model.packageType = (suffix ?? "").count > 0 ? 2 : 1
+            model.topic_group = cmodel.topicGroupID
+            model.timeStamp = Date().timeIntervalSince1970
+            model.receiver = ""
+            model.receiverPhone = (USERDEFAULT.object(forKey: "phone") ?? "") as! String
+            model.receiverAvanter = ""
+            model.isRemote = false
+            model.isReaded = true
+            calculateSize(model: model)
+            self.originArr.append(model)
+            if let sm = self.dataArr.last {
+                sm.rowsArr.append(model)
+            } else {
+                let sm = MessageSectionModel()
+                sm.time = ""
+                sm.timeStamp = 0
+                sm.rowsArr = [model]
+                self.dataArr.insert(sm, at: 0)
+            }
+            DBManager.manager.updateRecentChat(model: model)
+        }
+//        self.subject.onNext(1)
+    }
+    
     func refreshData(scrollView: UIScrollView) {
         if let cmodel = contactor {
             self.appendArr = []
@@ -102,7 +135,6 @@ class ChatViewModel: BaseViewModel {
                 semaphore.signal()
             }
             semaphore.wait()
-            clearRedPot()
         }
     }
     
@@ -143,6 +175,78 @@ class ChatViewModel: BaseViewModel {
     deinit {
         NotificationCenter.default.removeObserver(self, name: NotificationHelper.kChatOnlineNotiName, object: nil)
     }
+    
+    func calculateSize(model: MessageModel) {
+        var msgStr: String = model.msgContent
+        if model.packageType == 1 {
+            let height = MessageAttriManager.manager.exchange(content: model.msgContent).boundingRect(with: CGSize(width: (kScreenWidth-132), height: CGFloat(MAXFLOAT)), options: .usesLineFragmentOrigin, context: NSStringDrawingContext()).size.height+38
+            var width: CGFloat = kScreenWidth-132
+            if height < 62 {
+                width = MessageAttriManager.manager.exchange(content: model.msgContent).boundingRect(with: CGSize(width: CGFloat(MAXFLOAT), height: 16), options: .usesLineFragmentOrigin, context: NSStringDrawingContext()).size.width
+                width = width > (kScreenWidth-132) ? (kScreenWidth-132) : width
+            }
+            model.estimate_height = Float(height)
+            model.estimate_width = Float(width)
+        } else {
+            let imgData = model.isRemote ? Data.init(base64Encoded: model.msgContent) : ChatimagManager.manager.GetImageDataBy(MD5Str: model.msgContent)
+            if let id = imgData {
+                msgStr = model.isRemote ? ChatimagManager.manager.MD5By(data: id) : model.msgContent
+                let img = UIImage.init(data: id)
+                if let ig = img {
+                    let swidth = Double(kScreenWidth-122)
+                    let width = Double(ig.size.width)
+                    let height = Double(ig.size.height)
+                    let scale = Double(height/width)
+                    if scale > 1 {
+                        let scaleW = Double(swidth/3)
+                        if width > swidth {
+                            let contrastHeight = Double(scale*scaleW)
+                            if contrastHeight > swidth*2/3 {
+                                model.estimate_width = Float(swidth*2/3)/Float(scale)
+                                model.estimate_height = Float(swidth*2/3)
+                            } else {
+                                model.estimate_width = Float(scaleW)
+                                model.estimate_height = Float(contrastHeight)
+                            }
+                        } else {
+                            if height > swidth*2/3 {
+                                model.estimate_width = Float(swidth*2/3)/Float(scale)
+                                model.estimate_height = Float(swidth*2/3)
+                            } else {
+                                model.estimate_width = Float(width)
+                                model.estimate_height = Float(height)
+                            }
+                        }
+                        
+                    } else {
+                        if width > swidth {
+                            let scaleW = Double(swidth/2)
+                            let contrastHeight = Double(scale*scaleW)
+                            if contrastHeight < swidth/3 {
+                                model.estimate_width = Float(scaleW)
+                                model.estimate_height = Float(swidth/3)
+                            } else {
+                                model.estimate_width = Float(scaleW)
+                                model.estimate_height = Float(contrastHeight)
+                            }
+                        } else {
+                            if height < swidth/3 {
+                                model.estimate_width = Float(width)
+                                model.estimate_height = Float(swidth/3)
+                            } else {
+                                model.estimate_width = Float(width)
+                                model.estimate_height = Float(height)
+                            }
+                        }
+                        
+                    }
+                    model.estimate_height = model.estimate_height+38
+                }
+            }
+        }
+        
+    }
+    
 }
 
 class MessageSectionModel: BaseModel {

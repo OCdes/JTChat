@@ -25,12 +25,27 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
     var toolBottomConstrait: Constraint?
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        JTManager.manager.updateUnreadedCount()
-        
+//        JTManager.manager.updateUnreadedCount()
+        self.viewModel.clearRedPot()
     }
+    
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//
+//    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.viewModel.clearRedPot()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+    }
+    
     override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         USERDEFAULT.removeObject(forKey: "currentID")
+        super.viewDidAppear(animated)
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -80,12 +95,12 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         viewModel.navigationVC = self.navigationController
         if let m = self.viewModel.contactor {
             if m.topicGroupID.count > 0 {
-                let cm = DBManager.manager.getRecent(byPhone: nil, byTopicID: m.topicGroupID)
-                self.title = cm.topicGroupName
+//                let cm = DBManager.manager.getRecent(byPhone: nil, byTopicID: m.topicGroupID)
+                self.title = m.topicGroupName
                 USERDEFAULT.set(m.topicGroupID, forKey: "currentID")
             } else {
-                let cm = DBManager.manager.getRecent(byPhone: m.phone, byTopicID: nil)
-                self.title = cm.nickname
+//                let cm = DBManager.manager.getRecent(byPhone: m.phone, byTopicID: nil)
+                self.title = m.aliasName.count > 0 ? m.aliasName : m.nickName
                 USERDEFAULT.set(m.phone, forKey: "currentID")
             }
         }

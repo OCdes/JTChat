@@ -281,8 +281,8 @@ class ChatTableLeftCell: BaseTableCell {
 class ChatTableRightCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
-            let m = DBManager.manager.getContactor(phone: model.receiverPhone)
-            portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+//            let m = DBManager.manager.getContactor(phone: model.receiverPhone)
+            portraitV.kf.setImage(with: URL(string: JTManager.manager.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             if model.packageType == 1 {
                 contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
                 imgv.isHidden = true

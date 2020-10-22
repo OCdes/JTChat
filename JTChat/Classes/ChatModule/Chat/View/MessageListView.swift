@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MessageListView: UITableView {
+class MessageListView: BaseTableView {
     var dataArr: Array<FriendModel> = [] {
         didSet {
             reloadData()
@@ -22,16 +22,6 @@ class MessageListView: UITableView {
         dataSource = self
         register(MessageListCell.self, forCellReuseIdentifier: "MessageListCell")
         separatorStyle = .none
-        if #available(iOS 11.0, *) {
-            contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
-        } else {
-            // Fallback on earlier versions
-            if #available(iOS 13.0, *) {
-                automaticallyAdjustsScrollIndicatorInsets = true
-            } else {
-                // Fallback on earlier versions
-            }
-        }
     }
     
     required init?(coder: NSCoder) {
@@ -79,10 +69,10 @@ extension MessageListView: UITableViewDelegate, UITableViewDataSource {
         cm.avatarUrl = fm.avatar
         cm.phone = fm.friendPhone
         cm.topicGroupID = fm.topicGroupID
-        
+        cm.topicGroupName = fm.topicGroupName
+        cm.aliasName = fm.aliasName
         let vc = ChatVC()
         vc.viewModel.contactor = cm
-        vc.title = fm.nickname.count > 0 ? fm.nickname: fm.topicGroupName
         self.viewModel?.navigationVC?.pushViewController(vc, animated: true)
     }
     
@@ -91,8 +81,15 @@ extension MessageListView: UITableViewDelegate, UITableViewDataSource {
 class MessageListCell: BaseTableCell {
     var model: FriendModel? {
         didSet {
-            portraitV.kf.setImage(with: URL(string: model!.avatar), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
-            nameLa.text = model!.topicGroupName.count > 0 ? model!.topicGroupName : model!.nickname
+            if model!.nickname.count > 0 || model!.topicGroupName.count > 0 {
+                portraitV.kf.setImage(with: URL(string: model!.avatar), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+                nameLa.text = model!.topicGroupName.count > 0 ? model!.topicGroupName : (model!.aliasName.count > 0 ? model!.aliasName: model!.nickname)
+            } else {
+                let m = DBManager.manager.getContactor(phone: model!.friendPhone)
+                portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+                nameLa.text = model!.topicGroupName.count > 0 ? m.topicGroupName : (model!.aliasName.count > 0 ? model!.aliasName: model!.nickname)
+            }
+            
             dateLa.text = model!.createTime
             messageLa.text = model!.packageType == 2 ? "[图片]" : model!.msgContent
             redDot.isHidden = (model!.isReaded || !(model!.unreadCount > 0))

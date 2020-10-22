@@ -9,6 +9,7 @@
 import UIKit
 import RxSwift
 import ALQRCode
+import AVFoundation
 open class MessageListVC: BaseViewController {
     var viewModel: MessageViewModel = MessageViewModel()
     lazy var scrollView: RecentDialogView = {
@@ -18,6 +19,14 @@ open class MessageListVC: BaseViewController {
     var previousBtn: UIButton?
     var perBtn: UIButton?
     var groupBtn: UIButton?
+    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nil, bundle: nil)
+        self.viewModel.getAllRecentContactor(scrollView: self.scrollView)
+    }
+    
+    required public init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     open override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "消息"
@@ -30,7 +39,8 @@ open class MessageListVC: BaseViewController {
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.navigationBar.isTranslucent = false
-        self.viewModel.getAllRecentContactor()
+//        self.viewModel.subject.onNext("")
+        self.viewModel.getAllRecentContactor(scrollView: self.scrollView)
     }
     
     open override func viewWillDisappear(_ animated: Bool) {
@@ -52,26 +62,40 @@ open class MessageListVC: BaseViewController {
                     self?.present(vc, animated: true, completion: nil)
                     
                 case 1:
-                    let scan = ALScannerQRCodeVC.init()
-                    scan.scannerQRCodeDone = {[weak self](result) in
-                        if let rs = result,let phone = (rs as NSString).components(separatedBy: "_").first {
-                            if JTManager.manager.addFriendSilence {
-                                self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: "", result: { (b) in
-                                })
-                            } else {
-                                let model = ContactInfoModel()
-                                model.phone = phone
-                                let alertv = FriendAddAlertView.init(frame: CGRect.zero)
-                                alertv.model = model
-                                _ = alertv.sureSubject.subscribe { [weak self](a) in
-                                    self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: a, result: { (b) in
+                    let status = AVCaptureDevice.authorizationStatus(for: .video)
+                    if status == .authorized {
+                        let scan = ALScannerQRCodeVC.init()
+                        scan.scannerQRCodeDone = {[weak self](result) in
+                            if let rs = result,let phone = (rs as NSString).components(separatedBy: "_").first {
+                                if JTManager.manager.addFriendSilence {
+                                    self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: "", result: { (b) in
                                     })
+                                } else {
+                                    let model = ContactInfoModel()
+                                    model.phone = phone
+                                    let alertv = FriendAddAlertView.init(frame: CGRect.zero)
+                                    alertv.model = model
+                                    _ = alertv.sureSubject.subscribe { [weak self](a) in
+                                        self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: a, result: { (b) in
+                                        })
+                                    }
+                                    alertv.show()
                                 }
-                                alertv.show()
                             }
                         }
+                        self?.navigationController?.present(scan, animated: true, completion: nil)
+                    } else {
+                        let alertvc = UIAlertController(title: "提示", message: "您的相机权限未开启，请开启权限以扫描二维码以添加好友", preferredStyle: .alert)
+                        alertvc.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
+                        let sureAction = UIAlertAction.init(title: "去打开", style: .destructive) { (ac) in
+                            let url = URL(string: UIApplication.openSettingsURLString)
+                            if let u = url, UIApplication.shared.canOpenURL(u) {
+                                UIApplication.shared.open(u, options: [:], completionHandler: nil)
+                            }
+                        }
+                        alertvc.addAction(sureAction)
+                        self?.navigationController?.present(alertvc, animated: true, completion: nil)
                     }
-                    self?.navigationController?.present(scan, animated: true, completion: nil)
                 default: break
                     
                 }
@@ -114,6 +138,11 @@ open class MessageListVC: BaseViewController {
     
     func bindModel() {
         viewModel.navigationVC = self.navigationController
+        
+        _ = self.scrollView.jt_addRefreshHeader {
+            self.viewModel.getAllRecentContactor(scrollView: self.scrollView)
+        }
+        
         _ = viewModel.rx.observe(Int.self, "perNum").subscribe(onNext: { [weak self](num) in
             if let n = num {
                 self!.perBtn?.setTitle(n > 0 ? "    聊天(\(n))" : "    聊天", for: .normal)

@@ -38,6 +38,11 @@ open class JTManager: NSObject {
             USERDEFAULT.set(phone, forKey: "phone")
         }
     }
+    @objc open var avatarUrl: String = "" {
+        didSet {
+            USERDEFAULT.set(phone, forKey: "JTavatarUrl")
+        }
+    }
     @objc open var isWaterShow: Bool = false {
         didSet {
             USERDEFAULT.set(isWaterShow, forKey: "isWaterShow")
@@ -99,8 +104,8 @@ open class JTManager: NSObject {
         mmodel.receiverPhone = (USERDEFAULT.object(forKey: "phone") ?? "") as! String
         mmodel.receiverAvanter = ""
         mmodel.isReaded = false
-        let _ = DBManager.manager.AddChatLog(model: mmodel)
-        NotificationCenter.default.post(name: NotificationHelper.kChatOnlineNotiName, object: nil)
+        _ = DBManager.manager.AddChatLog(model: mmodel)
+        DBManager.manager.updateRecentChat(model: mmodel)
     }
     
     @objc open func didRecieveGroupChatMessage(data: Data) {
@@ -123,12 +128,8 @@ open class JTManager: NSObject {
         mmodel.receiverPhone = (USERDEFAULT.object(forKey: "phone") ?? "") as! String
         mmodel.receiverAvanter = ""
         mmodel.isReaded = false
-        let m = DBManager.manager.getRecent(byPhone: nil, byTopicID: mmodel.topic_group)
-        if m.topicGroupID.count == 0 {
-            NotificationCenter.default.post(name: NotificationHelper.kChatOnGroupNotiName, object: nil)
-        }
         let _ = DBManager.manager.AddChatLog(model: mmodel)
-        NotificationCenter.default.post(name: NotificationHelper.kChatOnlineNotiName, object: nil)
+        DBManager.manager.updateRecentChat(model: mmodel)
     }
     
     func sendMessage(targetModel: ContactorModel?, msg: String?, suffix: String?) {
@@ -146,7 +147,7 @@ open class JTManager: NSObject {
             model.receiverAvanter = ""
             model.isRemote = false
             model.isReaded = true
-            let _ = DBManager.manager.AddChatLog(model: model)
+            _ = DBManager.manager.AddChatLog(model: model)
             let socketData = SocketDataManager()
             socketData.fromUserId = (USERDEFAULT.object(forKey: "phone") ?? "") as! String
             socketData.targetUserId = cmodel.topicGroupID.count > 0 ? cmodel.topicGroupID : cmodel.phone
@@ -160,16 +161,16 @@ open class JTManager: NSObject {
             if let de = self.delegate {
                 de.JTChatNeedToSendMessage(data: messageOfSend)
             }
-            NotificationCenter.default.post(name: NotificationHelper.kChatOnlineNotiName, object: nil)
         } else {
             SVPShowError(content: "当前用户无效")
         }
     }
     
     func updateUnreadedCount() {
-        if let de = self.delegate {
-            de.JTChatNeedUpdateReadedCount()
-        }
+//        if let de = self.delegate {
+//            de.JTChatNeedUpdateReadedCount()
+//        }
+        NotificationCenter.default.post(name: NotificationHelper.kUpdateRedDot, object: nil)
     }
     
     @objc open func signOut() {

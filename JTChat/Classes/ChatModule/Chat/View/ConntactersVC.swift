@@ -8,6 +8,7 @@
 
 import UIKit
 import ALQRCode
+import AVFoundation
 open class ConntactersVC: BaseViewController  {
     var viewModel: ContactorViewModel = ContactorViewModel.init()
     lazy var tableView:ContactersTableView = {
@@ -26,6 +27,15 @@ open class ConntactersVC: BaseViewController  {
         self.navigationController?.navigationBar.isTranslucent = true
     }
     
+    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nil, bundle: nil)
+        self.viewModel.refreshData(scrollView: self.tableView)
+    }
+    
+    required public init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     open override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "联系人"
@@ -41,26 +51,41 @@ open class ConntactersVC: BaseViewController  {
         let btn = UIButton.init(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
         btn.setImage(JTBundleTool.getBundleImg(with:"addFriend"), for: .normal)
         let _ = btn.rx.controlEvent(.touchUpInside).subscribe(onNext: { [weak self](a) in
-            let scan = ALScannerQRCodeVC.init()
-            scan.scannerQRCodeDone = {[weak self](result) in
-                if let rs = result,let phone = (rs as NSString).components(separatedBy: "_").first {
-                    if JTManager.manager.addFriendSilence {
-                        self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: "", result: { (b) in
-                        })
-                    } else {
-                        let model = ContactInfoModel()
-                        model.phone = phone
-                        let alertv = FriendAddAlertView.init(frame: CGRect.zero)
-                        alertv.model = model
-                        _ = alertv.sureSubject.subscribe { [weak self](a) in
-                            self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: a, result: { (b) in
+            let status = AVCaptureDevice.authorizationStatus(for: .video)
+            if status == .authorized {
+                let scan = ALScannerQRCodeVC.init()
+                scan.scannerQRCodeDone = {[weak self](result) in
+                    if let rs = result,let phone = (rs as NSString).components(separatedBy: "_").first {
+                        if JTManager.manager.addFriendSilence {
+                            self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: "", result: { (b) in
                             })
+                        } else {
+                            let model = ContactInfoModel()
+                            model.phone = phone
+                            let alertv = FriendAddAlertView.init(frame: CGRect.zero)
+                            alertv.model = model
+                            _ = alertv.sureSubject.subscribe { [weak self](a) in
+                                self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: a, result: { (b) in
+                                })
+                            }
+                            alertv.show()
                         }
-                        alertv.show()
                     }
                 }
+                self!.navigationController?.present(scan, animated: true, completion: nil)
+            } else {
+                let alertvc = UIAlertController(title: "提示", message: "您的相机权限未开启，请开启权限以扫描二维码以添加好友", preferredStyle: .alert)
+                alertvc.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
+                let sureAction = UIAlertAction.init(title: "去打开", style: .destructive) { (ac) in
+                    let url = URL(string: UIApplication.openSettingsURLString)
+                    if let u = url, UIApplication.shared.canOpenURL(u) {
+                        UIApplication.shared.open(u, options: [:], completionHandler: nil)
+                    }
+                }
+                alertvc.addAction(sureAction)
+                self?.navigationController?.present(alertvc, animated: true, completion: nil)
             }
-            self!.navigationController?.present(scan, animated: true, completion: nil)
+            
         })
         let btnItem = UIBarButtonItem.init(customView: btn)
         navigationItem.setRightBarButton(btnItem, animated: true)

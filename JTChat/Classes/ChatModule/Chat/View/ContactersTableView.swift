@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ContactersTableView: UITableView {
+class ContactersTableView: BaseTableView {
     var viewModel: ContactorViewModel?
     var searchenable: Bool = true
     lazy var searchTf: UITextField = {
@@ -90,7 +90,6 @@ class ContactersTableView: UITableView {
         dataSource = self
         separatorStyle = .none
         backgroundColor = HEX_COLOR(hexStr: "#F5F6F8")
-        
         let btn = UIButton()
         btn.addTarget(self, action: #selector(goToApplyList), for: .touchUpInside)
         self.headerV.addSubview(btn)
@@ -163,8 +162,9 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
         if viewModel!.typeChange {
             if let m = viewModel?.sectionModel {
                 if indexPath.row < m.employeeArr.count {
-                    portraitUrlString = m.employeeArr[indexPath.row].avatarUrl
-                    titleString = m.employeeArr[indexPath.row].nickName
+                    let em = m.employeeArr[indexPath.row]
+                    portraitUrlString = em.avatarUrl
+                    titleString = em.aliasName.count > 0 ? em.aliasName : em.nickName
                     if portraitUrlString.count > 0 {
                         cell.portraitV.kf.setImage(with: URL.init(string: portraitUrlString), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
                     } else {
@@ -177,7 +177,7 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
             }
         } else {
             let mm = viewModel!.pinyinArr[indexPath.section][indexPath.row]
-            titleString = mm.nickName
+            titleString = mm.aliasName.count > 0 ? mm.aliasName : mm.nickName
             cell.portraitV.kf.setImage(with: URL(string: mm.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
         }
         cell.titleLa.text = titleString

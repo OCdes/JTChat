@@ -19,6 +19,7 @@ class AddFriendTableView: BaseTableView {
         register(MyApplyNoteCell.self, forCellReuseIdentifier: "MyApplyNoteCell")
         _ = viewModel.subject.subscribe(onNext: { [weak self](a) in
             self!.reloadData()
+            print("申请列表线程: \(Thread.current)")
         })
     }
     
@@ -43,7 +44,7 @@ extension AddFriendTableView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if self.viewModel.myApplyArr.count > 0 && self.viewModel.dealApplyArr.count > 0 {
-            if section == 0 {
+            if section == 1 {
                 return self.viewModel.myApplyArr.count
             } else {
                 return self.viewModel.dealApplyArr.count
@@ -55,7 +56,7 @@ extension AddFriendTableView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if self.viewModel.myApplyArr.count > 0 && self.viewModel.dealApplyArr.count > 0 {
-            if indexPath.section == 0 {
+            if indexPath.section == 1 {
                 let cell: MyApplyNoteCell = tableView.dequeueReusableCell(withIdentifier: "MyApplyNoteCell", for: indexPath) as! MyApplyNoteCell
                 cell.model = self.viewModel.myApplyArr[indexPath.row]
                 return cell
@@ -113,7 +114,7 @@ extension AddFriendTableView: UITableViewDelegate, UITableViewDataSource {
         label.font = UIFont.systemFont(ofSize: 14)
         v.addSubview(label)
         if self.viewModel.myApplyArr.count > 0 && self.viewModel.dealApplyArr.count > 0 {
-            if section == 0 {
+            if section == 1 {
                 label.text = "我发起的"
             } else {
                 label.text = "我收到的"

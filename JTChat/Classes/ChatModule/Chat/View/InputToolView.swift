@@ -10,6 +10,7 @@ import UIKit
 import AudioToolbox
 import RxSwift
 import YPImagePicker
+import Photos
 public protocol InputToolViewDelegate: NSObjectProtocol {
     func keyboardChangeFrame(inY: CGFloat)
 }
@@ -158,6 +159,22 @@ class InputToolView: UIView {
         })
         
         _ = funcView.subject.subscribe(onNext: { [weak self](a) in
+            if a == "照片" || a == "拍摄" || a == "视频" {
+                let status = PHPhotoLibrary.authorizationStatus()
+                if status != .authorized {
+                    let alertvc = UIAlertController(title: "提示", message: "您的照片权限未开启，请开启权限以发送图片", preferredStyle: .alert)
+                    alertvc.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
+                    let sureAction = UIAlertAction.init(title: "去打开", style: .destructive) { (ac) in
+                        let url = URL(string: UIApplication.openSettingsURLString)
+                        if let u = url, UIApplication.shared.canOpenURL(u) {
+                            UIApplication.shared.open(u, options: [:], completionHandler: nil)
+                        }
+                    }
+                    alertvc.addAction(sureAction)
+                    self!.viewModel.navigationVC?.present(alertvc, animated: true, completion: nil)
+                    return
+                }
+            }
             if a == "照片" {
                 var config: YPImagePickerConfiguration = YPImagePickerConfiguration.init()
                 config.isScrollToChangeModesEnabled = false

@@ -11,17 +11,7 @@ import UIKit
 class ContactorInfoTableView: UITableView {
     var titlesArr: Array<String> = ["手机","部门"]
     var contentsArr: Array<String> = ["",""]
-    var viewModel: ContactorInfoViewModel? {
-        didSet {
-            if let a = viewModel?.employeeModel.phone, let b = USERDEFAULT.object(forKey: "phone") as? String, a == b {
-                self.tableFooterView = footerV
-            } else {
-                self.tableFooterView = (viewModel?.employeeModel.isFriend ?? false) ? footerV : footerV2
-            }
-            contentsArr[1] = viewModel?.employeeModel.department ?? ""
-            self.reloadData()
-        }
-    }
+    var viewModel: ContactorInfoViewModel?
     lazy var footerV: UIView = {
         let fv = UIView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: 174))
         let messageBtn = UIButton.init(frame: CGRect(x: 16, y: 38, width: kScreenWidth-32, height: 44))
@@ -107,6 +97,15 @@ class ContactorInfoTableView: UITableView {
             
         } else {
             self.tableFooterView = (viewModel?.employeeModel.isFriend ?? false) ? footerV : footerV2
+        }
+        let _ = viewModel!.subject.subscribe { [weak self](a) in
+            if let a = self!.viewModel?.employeeModel.phone, let b = USERDEFAULT.object(forKey: "phone") as? String, a == b {
+                self!.tableFooterView = self!.footerV
+            } else {
+                self!.tableFooterView = (self!.viewModel?.employeeModel.isFriend ?? false) ? self!.footerV : self!.footerV2
+            }
+            self!.contentsArr[1] = self!.viewModel?.employeeModel.department ?? ""
+            self!.reloadData()
         }
         reloadData()
     }

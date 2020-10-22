@@ -29,6 +29,7 @@ class ContactorViewModel: BaseViewModel {
     var pinyinArr: [Array<ContactorModel>] = []
     var indexTitles: Array<String> = []
     var addApplyData: Array<ApplyNoteModel> = []
+    let disposeBag = DisposeBag()
     override init() {
         super.init()
         self.locationCollection = UILocalizedIndexedCollation.current()

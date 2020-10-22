@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JTChat'
-  s.version          = '0.6.5'
+  s.version          = '0.6.6'
   s.summary          = '精特聊天演示'
 
 # This description is used to generate tags and improve search results.
@@ -51,7 +51,7 @@ Pod::Spec.new do |s|
   s.dependency "YPImagePicker"
   s.dependency "MJRefresh"
   s.dependency "SVProgressHUD"
-  s.dependency "EmptyDataSet-Swift"
+  s.dependency "DZNEmptyDataSet", "~> 1.8.1"
   s.dependency "ALQRCode"
   s.dependency "CocoaAsyncSocket"
   s.dependency "FMDB"

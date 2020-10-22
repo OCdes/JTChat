@@ -24,6 +24,7 @@ class ContactorModel: BaseModel {
     var roleID: String = ""
     var isSelected: Bool = false
     var topicGroupID: String = ""
+    var topicGroupName: String = ""
     var aliasName: String = ""
     
     override func mapping(mapper: HelpingMapper) {

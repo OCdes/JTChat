@@ -2,7 +2,7 @@ PODS:
   - Alamofire (4.9.1)
   - ALQRCode (1.0.0)
   - CocoaAsyncSocket (7.6.4)
-  - EmptyDataSet-Swift (5.0.0)
+  - DZNEmptyDataSet (1.8.1)
   - ESTabBarController-swift (2.8.0)
   - FBSnapshotTestCase (2.1.4):
     - FBSnapshotTestCase/SwiftSupport (= 2.1.4)
@@ -14,10 +14,10 @@ PODS:
   - FMDB/standard (2.7.5)
   - HandyJSON (5.0.2)
   - IQKeyboardManagerSwift (6.5.6)
-  - JTChat (0.6.5):
+  - JTChat (0.6.6):
     - ALQRCode
     - CocoaAsyncSocket
-    - EmptyDataSet-Swift
+    - DZNEmptyDataSet (~> 1.8.1)
     - ESTabBarController-swift
     - FMDB
     - HandyJSON
@@ -75,7 +75,7 @@ SPEC REPOS:
     - Alamofire
     - ALQRCode
     - CocoaAsyncSocket
-    - EmptyDataSet-Swift
+    - DZNEmptyDataSet
     - ESTabBarController-swift
     - FBSnapshotTestCase
     - FMDB
@@ -106,13 +106,13 @@ SPEC CHECKSUMS:
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
   ALQRCode: 5826079a88b8fc35e7c0638fd5ab3167ec5228f9
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
-  EmptyDataSet-Swift: eb382c0c87a2d9c678077385a595cec52da38171
+  DZNEmptyDataSet: 9525833b9e68ac21c30253e1d3d7076cc828eaa7
   ESTabBarController-swift: 05593a6ad64700b03c0eb60ff625916370aa4136
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
   IQKeyboardManagerSwift: c7df9d2deb356c04522f5c4b7b6e4ce4d8ed94fe
-  JTChat: f93b712947e7f7786c150d751eba5d32a02f729b
+  JTChat: 8dfbafc6450485ad4a7e3eaeba7dca7eb7e4a5b3
   KeychainSwift: c46e1438d121e47459fb304ac88c5e058a2a91ed
   Kingfisher: b3554e7bf6106115b44e8795300bad580ef2fdc7
   MJRefresh: 6afc955813966afb08305477dd7a0d9ad5e79a16

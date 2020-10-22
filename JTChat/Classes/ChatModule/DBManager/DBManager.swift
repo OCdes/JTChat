@@ -11,7 +11,7 @@ import FMDB
 @objc
 open class DBManager: NSObject {
     struct DBStatic {
-       fileprivate static var instance: DBManager?
+        fileprivate static var instance: DBManager?
     }
     class var manager: DBManager {
         if DBStatic.instance == nil {
@@ -26,7 +26,11 @@ open class DBManager: NSObject {
     }
     
     func disposeDBManager() {
+        dbQueue?.interrupt()
         dbQueue?.close()
+        dbQueue?.inDatabase({ (db) in
+            print("数据库终止执行语句-->\(db.interrupt())")
+        })
         dbQueue = nil
         DBManager.DBStatic.instance = nil
         print("数据库销毁了")
@@ -40,12 +44,62 @@ open class DBManager: NSObject {
         let docPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first ?? ""
         let filePath = "\(docPath)/\(USERDEFAULT.object(forKey: "placeID") ?? "")\(USERDEFAULT.object(forKey: "phone") ?? "")chatList.sqlite"
         dbQueue = FMDatabaseQueue.init(path: filePath)
+        self.dbQueue?.inDatabase({ (db) in
+            let chatLogSQL = "CREATE TABLE IF NOT EXISTS [ChatLogList] ([id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,[sender] VARCHAR(16) NOT NULL,[sender_phone] VARCHAR(16) NOT NULL,[sender_avantar] VARCHAR(255) NULL,[receiver] VARCHAR(16)  NOT NULL,[receiver_phone] VARCHAR(11) NOT NULL,[receiver_avantar] VARCHAR(255) NULL,[package_type] INTEGER NOT NULL,[package_content] TEXT NOT NULL,[create_time] DATETIME NOT NULL,[time_stamp] TIMESTAMP NOT NULL,[topic_group] VARCHAR(16) NULL,[estimate_height] FLOAT NOT NULL,[estimate_width] FLOAT NOT NULL,[is_remote] INTEGER NOT NULL,[is_read] INTEGER NOT NULL)"//,[alisa_name] VARCHAR(16)  NULL
+            if db.open() {
+                db.executeStatements(chatLogSQL)
+                if !db.interrupt() {
+                    print("db.lastError()")
+                }
+            }
+        })
+        self.dbQueue?.inDatabase({ (db) in
+            let recentListCreatSQL = "CREATE TABLE IF NOT EXISTS [RecentChatList] ([id] INTEGER  PRIMARY KEY AUTOINCREMENT NOT NULL,[sender] VARCHAR(16)  NOT NULL,[sender_phone] VARCHAR(16) NOT NULL,[sender_avantar] VARCHAR(255) NULL,[package_type] INTEGER  NOT NULL,[package_content] TEXT  NOT NULL,[create_time] TIMESTAMP  NOT NULL,[topic_group] VARCHAR(32) NULL,[topic_group_name] VARCHAR(255) NULL,[creator] VARCHAR(255) NULL,[is_read] INTEGER NOT NULL, [unread_count] INTEGER NOT NULL)"//,[alisa_name] VARCHAR(16)  NULL
+            if db.open() {
+                db.executeStatements(recentListCreatSQL)
+                if !db.interrupt() {
+                    print("db.lastError()")
+                }
+            }
+        })
+        self.dbQueue?.inDatabase({ (db) in
+            let contactorListSQL = "CREATE TABLE IF NOT EXISTS [ContactorList] ([id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,[name] VARCHAR(32) NULL,[nick_name] VARCHAR(32) NOT NULL,[avantar] VARCHAR(255) NULL,[phone] VARCHAR(16) NOT NULL)"//,[alisa_name] VARCHAR(16)  NULL
+            if db.open() {
+                db.executeStatements(contactorListSQL)
+                if !db.interrupt() {
+                    print("db.lastError()")
+                }
+            }
+        })
+        alert(table: "ChatLogList", arg: "alias_name", type: "VARCHAR(16)")
+        alert(table: "RecentChatList", arg: "alias_name", type: "VARCHAR(16)")
+        alert(table: "ContactorList", arg: "alias_name", type: "VARCHAR(16)")
+    }
+    
+    func alert(table: String, arg: String, type: String) {
+        if isExist(tableName: table) {
+            self.dbQueue?.inDatabase({ (db) in
+                if db.open() {
+                    if !db.columnExists(arg, inTableWithName: table) {
+                        let alertColumnSQL = "ALTER TABLE \(table) ADD \(arg) \(type) not null default('')"
+                        if db.executeStatements(alertColumnSQL) {
+                            print("\(table) 插入 \(arg)成功")
+                        } else {
+                            print("\(table) 插入 \(arg)失败")
+                        }
+                    }
+                    db.close()
+                }
+            })
+        } else {
+            print("\(table)不存在")
+        }
     }
     
     func isExist(tableName: String)->Bool {
         var b = false
         let semaphore = DispatchSemaphore(value: 0)
-        dbQueue?.inDatabase({ (db) in
+        self.dbQueue?.inDatabase({ (db) in
             if db.open() {
                 let existSQL = "select count(*) as total from sqlite_master where type='table' and name = '\(tableName)'"
                 let result = db.executeQuery(existSQL, withArgumentsIn: [])
@@ -56,8 +110,8 @@ open class DBManager: NSObject {
                     }
                 }
                 db.close()
-                semaphore.signal()
             }
+            semaphore.signal()
         })
         semaphore.wait()
         return b
@@ -65,16 +119,18 @@ open class DBManager: NSObject {
     
     func getRecentList(resultBlock:@escaping((_ personArr: Array<FriendModel>, _ groupArr: Array<FriendModel>)->Void)) {
         let semaphore = DispatchSemaphore(value: 0)
-        dbQueue?.inDatabase({ (db) in
+        var pArr: Array<FriendModel> = []
+        var gArr: Array<FriendModel> = []
+        self.dbQueue?.inDatabase({ (db) in
+            print("currentDBQueueThread:\(Thread.current)")
             if db.open() {
                 let queryPersonSQL = "SELECT * FROM RecentChatList ORDER BY create_time DESC"
-                var pArr: Array<FriendModel> = []
-                var gArr: Array<FriendModel> = []
                 let pResult = db.executeQuery(queryPersonSQL, withArgumentsIn: [])
                 if let pr = pResult {
                     while pr.next() {
                         let model = FriendModel()
                         model.nickname = pr["sender"] as! String
+                        model.aliasName = pr["alias_name"] as! String
                         model.friendPhone = pr["sender_phone"] as! String
                         model.avatar = pr["sender_avantar"] as! String
                         model.packageType = pr["package_type"] as! Int
@@ -92,13 +148,15 @@ open class DBManager: NSObject {
                             pArr.append(model)
                         }
                     }
-                    resultBlock(pArr, gArr)
+                    db.close()
+                } else {
+                    db.close()
                 }
-                db.close()
             }
             semaphore.signal()
         })
         semaphore.wait()
+        resultBlock(pArr, gArr)
     }
     
     @objc open func getRecentUnreadCount()->Int {
@@ -120,12 +178,10 @@ open class DBManager: NSObject {
     func addRecentChat(model: FriendModel) {
         let m = getRecent(byPhone: model.friendPhone, byTopicID: model.topicGroupID)
         if (m.friendPhone.count == 0 && m.topicGroupID.count == 0) {
-            let semaphore = DispatchSemaphore(value: 0)
-            dbQueue?.inDatabase({ (db) in
-                if db.open() {
-                    let recentListCreatSQL = "CREATE TABLE IF NOT EXISTS [RecentChatList] ([id] INTEGER  PRIMARY KEY AUTOINCREMENT NOT NULL,[sender] VARCHAR(16)  NOT NULL,[sender_phone] VARCHAR(16) NOT NULL,[sender_avantar] VARCHAR(255) NULL,[package_type] INTEGER  NOT NULL,[package_content] TEXT  NOT NULL,[create_time] TIMESTAMP  NOT NULL,[topic_group] VARCHAR(32) NULL,[topic_group_name] VARCHAR(255) NULL,[creator] VARCHAR(255) NULL,[is_read] INTEGER NOT NULL, [unread_count] INTEGER NOT NULL)"
-                    if db.executeStatements(recentListCreatSQL) {
-                        let insertSQL = "INSERT INTO RecentChatList (sender,sender_phone,sender_avantar,package_type,package_content,create_time,topic_group,topic_group_name,creator,is_read, unread_count) VALUES(?,?,?,?,?,?,?,?,?,?,?)"
+            DispatchQueue.global().async {
+                self.dbQueue?.inDatabase({ (db) in
+                    if db.open() {
+                        let insertSQL = "INSERT INTO RecentChatList (sender,alias_name,sender_phone,sender_avantar,package_type,package_content,create_time,topic_group,topic_group_name,creator,is_read, unread_count) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"
                         
                         if model.createTime.count > 0 {
                             if model.createTime.contains(":") {
@@ -133,26 +189,39 @@ open class DBManager: NSObject {
                                 format.dateFormat = "yyyy-MM-dd HH:mm:ss"
                                 if let date = format.date(from: model.createTime) {
                                     let timeInterval = date.timeIntervalSince1970
-                                    db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname, model.friendPhone, model.avatar, model.packageType, model.msgContent,timeInterval, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
+                                    db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname,model.aliasName, model.friendPhone, model.avatar, model.packageType, model.msgContent,timeInterval, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
+                                    if !db.interrupt() {
+                                        print("db.lastError()")
+                                    }
                                 }
                             } else {
-                                db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname, model.friendPhone, model.avatar, model.packageType, model.msgContent,(Int(model.createTime) ?? 0)/1000, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
+                                db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname,model.aliasName, model.friendPhone, model.avatar, model.packageType, model.msgContent,(Int(model.createTime) ?? 0)/1000, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
+                                if !db.interrupt() {
+                                    print("db.lastError()")
+                                }
                             }
                             
                         } else if model.timeStamp > 0 {
-                            db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname, model.friendPhone, model.avatar, model.packageType, model.msgContent,model.timeStamp, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
+                            db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname,model.aliasName, model.friendPhone, model.avatar, model.packageType, model.msgContent,model.timeStamp, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
+                            if !db.interrupt() {
+                                print("db.lastError()")
+                            }
                         } else {
                             let timeInterval = Date().timeIntervalSince1970
-                            db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname, model.friendPhone, model.avatar, model.packageType, model.msgContent,timeInterval, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
+                            db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname,model.aliasName, model.friendPhone, model.avatar, model.packageType, model.msgContent,timeInterval, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
+                            if !db.interrupt() {
+                                print("db.lastError()")
+                            }
                         }
-                        
-                        
+                        DispatchQueue.main.async {
+                            print("最近列表添加完成")
+                            NotificationCenter.default.post(name: NotificationHelper.kUpdateRecentList, object: nil)
+                            NotificationCenter.default.post(name: NotificationHelper.kUpdateRedDot, object: nil)
+                        }
                     }
-                }
-                db.close()
-                semaphore.signal()
-            })
-            semaphore.wait()
+                    db.close()
+                })
+            }
         } else {
             if model.topicGroupID.count > 0 {
                 let m = GroupInfoModel()
@@ -160,7 +229,14 @@ open class DBManager: NSObject {
                 m.topicGroupID = model.topicGroupID
                 updateGroupInfo(model: m)
             }
-            
+            if model.friendPhone.count > 0 {
+                updateRecentInfo(model: model)
+            }
+            DispatchQueue.main.async {
+                print("最近列表无需添加，开始刷新数据")
+                NotificationCenter.default.post(name: NotificationHelper.kUpdateRecentList, object: nil)
+                NotificationCenter.default.post(name: NotificationHelper.kUpdateRedDot, object: nil)
+            }
         }
     }
     
@@ -175,13 +251,25 @@ open class DBManager: NSObject {
         
         if deletSQL.count > 0 {
             let semaphore = DispatchSemaphore(value: 0)
-            dbQueue?.inDatabase({ (db) in
-                if db.open() {
-                    db.executeUpdate(deletSQL, withArgumentsIn: [])
-                }
-                db.close()
-                semaphore.signal()
-            })
+            DispatchQueue.global().async {
+                
+                self.dbQueue?.inDatabase({ (db) in
+                    if db.open() {
+                        if db.executeUpdate(deletSQL, withArgumentsIn: []) {
+                            if !db.interrupt() {
+                                print("db.lastError()")
+                            }
+                            DispatchQueue.main.async {
+                                print("最近列表删除完成")
+                                NotificationCenter.default.post(name: NotificationHelper.kUpdateRecentList, object: nil)
+                                NotificationCenter.default.post(name: NotificationHelper.kUpdateRedDot, object: nil)
+                            }
+                        }
+                    }
+                    db.close()
+                    semaphore.signal()
+                })
+            }
             semaphore.wait()
         } else {
             print("移除最近联系人/群组 错误")
@@ -198,13 +286,19 @@ open class DBManager: NSObject {
         
         if deletSQL.count > 0 {
             let semaphore = DispatchSemaphore(value: 0)
-            dbQueue?.inDatabase({ (db) in
-                if db.open() {
-                    db.executeUpdate(deletSQL, withArgumentsIn: [])
-                }
-                db.close()
-                semaphore.signal()
-            })
+            DispatchQueue.global().async {
+                
+                self.dbQueue?.inDatabase({ (db) in
+                    if db.open() {
+                        db.executeUpdate(deletSQL, withArgumentsIn: [])
+                        if !db.interrupt() {
+                            print("db.lastError()")
+                        }
+                    }
+                    db.close()
+                    semaphore.signal()
+                })
+            }
             semaphore.wait()
         } else {
             print("移除最近联系人/群组会话 错误")
@@ -212,24 +306,34 @@ open class DBManager: NSObject {
     }
     
     func updateRecentChat(model: MessageModel) {
+        print("进入更新消息消息列表")
         let m = getRecent(byPhone: model.topic_group.count > 0 ? "" : model.senderPhone, byTopicID: model.topic_group)
         if m.friendPhone.count > 0 {
             if m.nickname.count > 0 {
-                let semaphore = DispatchSemaphore(value: 0)
-                dbQueue?.inDatabase({ (db) in
-                    if db.open() {
-                        let updateSQL = "UPDATE RecentChatList SET package_type=\(model.packageType),package_content='\(model.msgContent)',topic_group='\(model.topic_group)',create_time=\(model.timeStamp),is_read=\(model.isReaded),unread_count=\(model.isReaded ? 0 : m.unreadCount+1) WHERE sender_phone='\(model.senderPhone)'"
-                        db.executeUpdate(updateSQL, withArgumentsIn: [])
-                    }
-                    db.close()
-                    semaphore.signal()
-                })
-                semaphore.wait()
+                DispatchQueue.global().async {
+                    self.dbQueue?.inDatabase({ (db) in
+                        if db.open() {
+                            let updateSQL = "UPDATE RecentChatList SET package_type=\(model.packageType),package_content='\(model.msgContent)',topic_group='\(model.topic_group)',create_time=\(model.timeStamp),is_read=\(model.isReaded),unread_count=\(model.isReaded ? 0 : m.unreadCount+1) WHERE sender_phone='\(model.senderPhone)'"
+                            if db.executeUpdate(updateSQL, withArgumentsIn: []) {
+                                if !db.interrupt() {
+                                    print("db.lastError()")
+                                }
+                                DispatchQueue.main.async {
+                                    print("更新最近列表完成")
+                                    NotificationCenter.default.post(name: NotificationHelper.kUpdateRecentList, object: nil)
+                                    NotificationCenter.default.post(name: NotificationHelper.kUpdateRedDot, object: nil)
+                                }
+                            }
+                        }
+                        db.close()
+                    })
+                }
             } else {
                 let m = getContactor(phone: model.senderPhone)
                 if m.phone.count > 0 && m.nickName.count > 0 {
                     let fm = FriendModel()
                     fm.nickname = m.nickName
+                    fm.aliasName = m.aliasName
                     fm.friendPhone = m.phone
                     fm.avatar = m.avatarUrl
                     fm.isReaded = model.isReaded
@@ -239,43 +343,96 @@ open class DBManager: NSObject {
                     fm.packageType = model.packageType
                     fm.msgContent = model.msgContent
                     fm.unreadCount = model.isReaded ? 0 : 1
-                    addRecentChat(model: fm)
+                    updateRecentInfo(model: fm)
                 }
             }
             
         } else if m.topicGroupID.count > 0 {
             if m.topicGroupName.count > 0 {
-                let semaphore = DispatchSemaphore(value: 0)
-                dbQueue?.inDatabase({ (db) in
-                    if db.open() {
-                        let updateSQL = "UPDATE RecentChatList SET package_type=\(model.packageType),package_content='\(model.msgContent)',topic_group='\(m.topicGroupID)',create_time=\(model.timeStamp),is_read=\(model.isReaded),unread_count=\(model.isReaded ? 0 : m.unreadCount+1) WHERE topic_group='\(model.topic_group)'"
-                        db.executeUpdate(updateSQL, withArgumentsIn: [])
-                    }
-                    db.close()
-                    semaphore.signal()
-                })
-                semaphore.wait()
+                DispatchQueue.global().async {
+                    self.dbQueue?.inDatabase({ (db) in
+                        if db.open() {
+                            let updateSQL = "UPDATE RecentChatList SET package_type=\(model.packageType),package_content='\(model.msgContent)',topic_group='\(m.topicGroupID)',create_time=\(model.timeStamp),is_read=\(model.isReaded),unread_count=\(model.isReaded ? 0 : m.unreadCount+1) WHERE topic_group='\(model.topic_group)'"
+                            if db.executeUpdate(updateSQL, withArgumentsIn: []) {
+                                if !db.interrupt() {
+                                    print("db.lastError()")
+                                }
+                                DispatchQueue.main.async {
+                                    print("更新最近列表完成")
+                                    NotificationCenter.default.post(name: NotificationHelper.kUpdateRecentList, object: nil)
+                                    NotificationCenter.default.post(name: NotificationHelper.kUpdateRedDot, object: nil)
+                                }
+                            }
+                        }
+                        db.close()
+                    })
+                }
             } else {
                 updateRecentChat(model: model)
             }
             
         } else {
-            print("当前对话人未存入表")
+            if model.senderPhone.count > 0 {
+                let fm = FriendModel()
+                fm.nickname = model.sender
+                fm.friendPhone = model.senderPhone
+                fm.avatar = model.senderAvanter
+                fm.isReaded = model.isReaded
+                fm.createTime = model.creatTime
+                fm.timeStamp = model.timeStamp
+                fm.topicGroupID = model.topic_group
+                fm.packageType = model.packageType
+                fm.msgContent = model.msgContent
+                fm.unreadCount = model.isReaded ? 0 : 1
+                addRecentChat(model: fm)
+            }
+            print("当前对话人\(model.senderPhone)未存入表,接收人是\(model.receiverPhone)")
+        }
+    }
+    
+    func updateRecentInfo(model: FriendModel) {
+        if model.friendPhone.count > 0 {
+            DispatchQueue.global().async {
+                self.dbQueue?.inDatabase({ (db) in
+                    let updateSQL = "UPDATE RecentChatList SET sender='\(model.nickname)',alias_name='\(model.aliasName)',sender_avantar='\(model.avatar)' WHERE sender_phone='\(model.friendPhone)'"
+                    if db.open() {
+                        if db.executeStatements(updateSQL) {
+                            if !db.interrupt() {
+                                print("db.lastError()")
+                            }
+                            DispatchQueue.main.async {
+                                print("个人联系人信息更新成功")
+                                NotificationCenter.default.post(name: NotificationHelper.kUpdateRecentList, object: nil)
+                                NotificationCenter.default.post(name: NotificationHelper.kUpdateRedDot, object: nil)
+                            }
+                        }
+                    }
+                    db.close()
+                })
+            }
         }
     }
     
     func updateGroupInfo(model: GroupInfoModel) {
         if getRecent(byPhone: "", byTopicID: model.topicGroupID).topicGroupID.count > 0 {
-            let semaphore = DispatchSemaphore(value: 0)
-            dbQueue?.inDatabase({ (db) in
-                if db.open() {
-                    let updateSQL = "UPDATE RecentChatList SET topic_group_name='\(model.topicGroupName)' WHERE topic_group='\(model.topicGroupID)'"
-                    db.executeUpdate(updateSQL, withArgumentsIn: [])
-                }
-                db.close()
-                semaphore.signal()
-            })
-            semaphore.wait()
+            DispatchQueue.global().async {
+                self.dbQueue?.inDatabase({ (db) in
+                    if db.open() {
+                        let updateSQL = "UPDATE RecentChatList SET topic_group_name='\(model.topicGroupName)' WHERE topic_group='\(model.topicGroupID)'"
+                        if db.executeUpdate(updateSQL, withArgumentsIn: []) {
+                            if !db.interrupt() {
+                                print("db.lastError()")
+                            }
+                            DispatchQueue.main.async {
+                                print("个人联系人信息更新成功")
+                                NotificationCenter.default.post(name: NotificationHelper.kUpdateRecentList, object: nil)
+                                NotificationCenter.default.post(name: NotificationHelper.kUpdateRedDot, object: nil)
+                            }
+                        }
+                    }
+                    db.close()
+                })
+            }
         } else {
             let fm = FriendModel()
             fm.createTime = model.createTime
@@ -286,18 +443,42 @@ open class DBManager: NSObject {
         
     }
     
+    func resetRecentList() {
+        if isExist(tableName: "RecentChatList") {
+            let deletSQL = "DELETE FROM RecentChatList"
+            let semaphore = DispatchSemaphore(value: 0)
+            DispatchQueue.global().async {
+                
+                self.dbQueue?.inDatabase({ (db) in
+                    if db.open() {
+                        if db.executeStatements(deletSQL) {
+                            semaphore.signal()
+                            print("重置最近联系人成功")
+                            if !db.interrupt() {
+                                print("db.lastError()")
+                            }
+                        }
+                    }
+                    db.close()
+                })
+            }
+            semaphore.wait()
+        }
+    }
+    
     func getRecent(byPhone: String?, byTopicID: String?) -> FriendModel {
         let model = FriendModel()
         if isExist(tableName: "RecentChatList") {
             if let phone = byPhone, phone.count > 0 {
                 let semaphore = DispatchSemaphore(value: 0)
                 let selectSQL = "SELECT * FROM RecentChatList WHERE sender_phone = '\(phone)';"
-                dbQueue?.inDatabase({ (db) in
+                self.dbQueue?.inDatabase({ (db) in
                     if db.open() {
                         let result = db.executeQuery(selectSQL, withArgumentsIn: [])
                         if let rSet = result {
                             while rSet.next() {
                                 model.nickname = rSet["sender"] as! String
+                                model.aliasName = rSet["alias_name"] as! String
                                 model.avatar = rSet["sender_avantar"] as! String
                                 model.friendPhone = rSet["sender_phone"] as! String
                                 model.unreadCount = rSet["unread_count"] as! Int
@@ -312,21 +493,24 @@ open class DBManager: NSObject {
             if let topic = byTopicID, topic.count > 0 {
                 let semaphore = DispatchSemaphore(value: 0)
                 let selectSQL = "SELECT * FROM RecentChatList WHERE topic_group='\(topic)';"
-                dbQueue?.inDatabase({ (db) in
-                    if db.open() {
-                        let result = db.executeQuery(selectSQL, withArgumentsIn: [])
-                        if let rSet = result {
-                            while rSet.next() {
-                                model.topicGroupID = rSet["topic_group"] as! String
-                                model.topicGroupName = rSet["topic_group_name"] as! String
-                                model.creator = rSet["creator"] as! String
-                                model.unreadCount = rSet["unread_count"] as! Int
+                DispatchQueue.global().async {
+                    
+                    self.dbQueue?.inDatabase({ (db) in
+                        if db.open() {
+                            let result = db.executeQuery(selectSQL, withArgumentsIn: [])
+                            if let rSet = result {
+                                while rSet.next() {
+                                    model.topicGroupID = rSet["topic_group"] as! String
+                                    model.topicGroupName = rSet["topic_group_name"] as! String
+                                    model.creator = rSet["creator"] as! String
+                                    model.unreadCount = rSet["unread_count"] as! Int
+                                }
                             }
                         }
-                    }
-                    db.close()
-                    semaphore.signal()
-                })
+                        db.close()
+                        semaphore.signal()
+                    })
+                }
                 semaphore.wait()
             }
         }
@@ -335,11 +519,9 @@ open class DBManager: NSObject {
     
     func AddChatLog(model: MessageModel)->Bool {
         var b = false
-        let semaphore = DispatchSemaphore(value: 0)
-        dbQueue?.inDatabase({ (db) in
-            let chatLogSQL = "CREATE TABLE IF NOT EXISTS [ChatLogList] ([id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,[sender] VARCHAR(16) NOT NULL,[sender_phone] VARCHAR(16) NOT NULL,[sender_avantar] VARCHAR(255) NULL,[receiver] VARCHAR(16)  NOT NULL,[receiver_phone] VARCHAR(11) NOT NULL,[receiver_avantar] VARCHAR(255) NULL,[package_type] INTEGER NOT NULL,[package_content] TEXT NOT NULL,[create_time] DATETIME NOT NULL,[time_stamp] TIMESTAMP NOT NULL,[topic_group] VARCHAR(16) NULL,[estimate_height] FLOAT NOT NULL,[estimate_width] FLOAT NOT NULL,[is_remote] INTEGER NOT NULL,[is_read] INTEGER NOT NULL)"
-            if db.open() {
-                if db.executeStatements(chatLogSQL) {
+        DispatchQueue.global().async {
+            self.dbQueue?.inDatabase({ (db) in
+                if db.open() {
                     var msgStr: String = model.msgContent
                     if model.packageType == 1 {
                         let height = MessageAttriManager.manager.exchange(content: model.msgContent).boundingRect(with: CGSize(width: (kScreenWidth-132), height: CGFloat(MAXFLOAT)), options: .usesLineFragmentOrigin, context: NSStringDrawingContext()).size.height+38
@@ -411,33 +593,41 @@ open class DBManager: NSObject {
                     let insertSQL = "INSERT INTO ChatLogList (sender,sender_phone,sender_avantar,receiver,receiver_phone,receiver_avantar,package_type,package_content,create_time,time_stamp,topic_group,estimate_height,estimate_width,is_remote,is_read) VALUES (?,?,?,?,?,?,?,?,datetime('now','localtime'),?,?,?,?,?,?)"
                     
                     
-                    print("----------MD5:\(msgStr)")
+                    print("----------MD5:\(msgStr) time:\(Date())")
                     b = db.executeUpdate(insertSQL, withArgumentsIn: [model.sender,model.senderPhone,model.senderAvanter,model.receiver,model.receiverPhone,model.receiverAvanter,model.packageType,msgStr,model.timeStamp,model.topic_group,model.estimate_height,model.estimate_width,model.isRemote,model.isReaded])
+                    if !db.interrupt() {
+                        print("db.lastError()")
+                    }
+                    if b {
+                        DispatchQueue.main.async {
+                            print("聊天数据插入成功")
+                            NotificationCenter.default.post(name: model.topic_group.count > 0 ? NotificationHelper.kChatOnGroupNotiName : NotificationHelper.kChatOnlineNotiName, object: nil)
+                        }
+                    }
                 }
-            }
-            db.close()
-            semaphore.signal()
-        })
-        semaphore.wait()
-        updateRecentChat(model: model)
+                db.close()
+            })
+        }
+        print("聊天记录插入：\(b),时间\(Date())")
+        //        updateRecentChat(model: model)
         return b
     }
     
     func addContactor(model: ContactorModel) {
-        let contactorListSQL = "CREATE TABLE IF NOT EXISTS [ContactorList] ([id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,[name] VARCHAR(32) NULL,[nick_name] VARCHAR(32) NOT NULL,[avantar] VARCHAR(255) NULL,[phone] VARCHAR(16) NOT NULL)"
         if getContactor(phone: model.phone).phone.count == 0 {
-            let semaphore = DispatchSemaphore(value: 0)
-            dbQueue?.inDatabase({ (db) in
-                if db.open() {
-                    if db.executeStatements(contactorListSQL) {
-                        let contactorInsetSQL = "INSERT INTO ContactorList (nick_name,avantar,phone) VALUES(?,?,?)"
-                        db.executeUpdate(contactorInsetSQL, withArgumentsIn: [model.nickName,model.avatarUrl,model.phone])
+            DispatchQueue.global().async {
+                self.dbQueue?.inDatabase({ (db) in
+                    if db.open() {
+                        let contactorInsetSQL = "INSERT INTO ContactorList (nick_name,avantar,phone,alias_name) VALUES(?,?,?,?)"
+                        if db.executeUpdate(contactorInsetSQL, withArgumentsIn: [model.nickName,model.avatarUrl,model.phone,model.aliasName]) {
+                            if !db.interrupt() {
+                                print("db.lastError()")
+                            }
+                        }
                     }
-                }
-                db.close()
-                semaphore.signal()
-            })
-            semaphore.wait()
+                    db.close()
+                })
+            }
         }
     }
     
@@ -446,7 +636,7 @@ open class DBManager: NSObject {
         let model = ContactorModel()
         if isExist(tableName: "ContactorList") {
             let semaphore = DispatchSemaphore(value: 0)
-            dbQueue?.inDatabase({ (db) in
+            self.dbQueue?.inDatabase({ (db) in
                 if db.open() {
                     let result = db.executeQuery(contactorSQL, withArgumentsIn: [])
                     if let rs = result {
@@ -454,6 +644,10 @@ open class DBManager: NSObject {
                             model.avatarUrl = rs["avantar"] as! String
                             model.nickName = rs["nick_name"] as! String
                             model.phone = rs["phone"] as! String
+                            if let als = rs["alias_name"] {
+                                model.aliasName = als as! String
+                            }
+                            
                         }
                     }
                 }
@@ -462,6 +656,7 @@ open class DBManager: NSObject {
             })
             semaphore.wait()
         }
+        
         return model
     }
     
@@ -470,7 +665,7 @@ open class DBManager: NSObject {
         if isExist(tableName: "ChatLogList") {
             if model.topic_group.count > 0  {
                 let semaphore = DispatchSemaphore(value: 0)
-                dbQueue!.inDatabase({ (db) in
+                self.dbQueue!.inDatabase({ (db) in
                     let timeSQL = "select strftime('%Y-%m-%d %H:%M',create_time) as ctime,count(*) as total from ChatLogList where topic_group = '\(model.topic_group)' and receiver_phone = '\(model.receiverPhone)' group by ctime order by create_time desc limit 10 offset \(nums)"
                     var darr: Array<Dictionary<String, Any>> = []
                     if db.open() {
@@ -530,7 +725,7 @@ open class DBManager: NSObject {
                 semaphore.wait()
             } else {
                 let semaphore = DispatchSemaphore(value: 0)
-                dbQueue!.inDatabase({ (db) in
+                self.dbQueue!.inDatabase({ (db) in
                     let timeSQL = "select strftime('%Y-%m-%d %H:%M',create_time) as ctime,count(*) as total from ChatLogList where sender_phone = '\(model.senderPhone)' and receiver_phone = '\(model.receiverPhone)' and topic_group = '' group by ctime order by create_time desc limit 10 offset \(nums) "
                     var darr: Array<Dictionary<String, Any>> = []
                     if db.open() {

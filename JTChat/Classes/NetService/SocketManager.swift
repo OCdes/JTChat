@@ -226,9 +226,9 @@ extension SocketManager: GCDAsyncSocketDelegate {
             }
             mmodel.timeStamp = Date().timeIntervalSince1970
             mmodel.isRemote = true
-            let cm = DBManager.manager.getContactor(phone: model.fromUserId)
-            mmodel.sender = cm.nickName
-            mmodel.senderAvanter = cm.avatarUrl
+//            let cm = DBManager.manager.getContactor(phone: model.fromUserId)
+//            mmodel.sender = cm.nickName
+//            mmodel.senderAvanter = cm.avatarUrl
             mmodel.receiverPhone = UserInfo.shared.userData?.data.emp_phone ?? ""
             mmodel.receiverAvanter = UserInfo.shared.userData?.data.emp_avatar ?? ""
             mmodel.isReaded = false

@@ -12,6 +12,8 @@ class AddFriendApplyViewModel: BaseViewModel {
     var myApplyArr: Array<MyApplyNoteModel> = []
     var dealApplyArr: Array<ApplyNoteModel> = []
     var subject: PublishSubject<Any> = PublishSubject<Any>()
+    var disposeBag = DisposeBag()
+    
     func refreshData(scrollView: UIScrollView) {
         let sub1 = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_FETCHMYADDAPPLY, params: [:]) { (msg, code, response, data) in
             
@@ -37,8 +39,9 @@ class AddFriendApplyViewModel: BaseViewModel {
             if let dict = dealApplyDict["Data"] as? [[String: Any]] {
                 self!.dealApplyArr = JSONDeserializer<ApplyNoteModel>.deserializeModelArrayFrom(array: dict) as! [ApplyNoteModel]
             }
+            print("lianxiren:\(Thread.current)")
             self!.subject.onNext("")
-        }
+        }.disposed(by: self.disposeBag)
 
         
 

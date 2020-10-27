@@ -14,7 +14,7 @@ PODS:
   - FMDB/standard (2.7.5)
   - HandyJSON (5.0.2)
   - IQKeyboardManagerSwift (6.5.6)
-  - JTChat (0.6.6):
+  - JTChat (0.6.7):
     - ALQRCode
     - CocoaAsyncSocket
     - DZNEmptyDataSet (~> 1.8.1)
@@ -26,6 +26,7 @@ PODS:
     - Kingfisher
     - MJRefresh
     - Moya (~> 13.0.0)
+    - NTYAmrConverter (~> 0.1)
     - RxCocoa
     - RxSwift
     - SnapKit (~> 4.0.0)
@@ -47,6 +48,7 @@ PODS:
   - Nimble-Snapshots/Core (6.3.0):
     - FBSnapshotTestCase (~> 2.0)
     - Nimble (~> 7.0)
+  - NTYAmrConverter (0.1.0)
   - PryntTrimmerView (4.0.2)
   - Quick (1.2.0)
   - Result (4.1.0)
@@ -87,6 +89,7 @@ SPEC REPOS:
     - Moya
     - Nimble
     - Nimble-Snapshots
+    - NTYAmrConverter
     - PryntTrimmerView
     - Quick
     - Result
@@ -112,13 +115,14 @@ SPEC CHECKSUMS:
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
   IQKeyboardManagerSwift: c7df9d2deb356c04522f5c4b7b6e4ce4d8ed94fe
-  JTChat: 8dfbafc6450485ad4a7e3eaeba7dca7eb7e4a5b3
+  JTChat: ff9d46258f3c90c55daf621721e1c50ba6f8099d
   KeychainSwift: c46e1438d121e47459fb304ac88c5e058a2a91ed
   Kingfisher: b3554e7bf6106115b44e8795300bad580ef2fdc7
   MJRefresh: 6afc955813966afb08305477dd7a0d9ad5e79a16
   Moya: f4a4b80ff2f8a4ffc208dfb31cd91636622fee6e
   Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
   Nimble-Snapshots: f5459b5b091678dc942d03ec4741cacb58ba4a52
+  NTYAmrConverter: 0cd46d044576b1985f9879b4e5164aa25500b658
   PryntTrimmerView: 6a43cc90df5d99addeabd33d4ba09b1365322130
   Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
   Result: bd966fac789cc6c1563440b348ab2598cc24d5c7

@@ -21,11 +21,12 @@ class ChatViewModel: BaseViewModel {
     override init() {
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: NotificationHelper.kChatOnlineNotiName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: NotificationHelper.kChatOnGroupNotiName, object: nil)
     }
     
     @objc func updateData() {
         refreshData(scrollView: UIScrollView())
-//        clearRedPot()
+        clearRedPot()
     }
     
     func clearRedPot() {
@@ -41,10 +42,15 @@ class ChatViewModel: BaseViewModel {
     
     func sendMessage(msg: String) {
         SocketManager.manager.sendMessage(targetModel: contactor, msg: msg, suffix: nil)
-//        page = 1
+        //        page = 1
         localUpdate(msg: msg, suffix: nil)
-        
     }
+    
+    func sendAudioMessage(path: String) {
+        SocketManager.manager.sendMessage(targetModel: contactor, msg: path, suffix: "wav")
+        localUpdate(msg: path, suffix: "wav")
+    }
+    
     func sendPicture(photos:[YPMediaItem]) {
         for item in photos {
             switch item {
@@ -52,16 +58,16 @@ class ChatViewModel: BaseViewModel {
                 ChatimagManager.manager.saveImage(image: img.image)
                 let msg = ChatimagManager.manager.MD5StrBy(image: img.image)
                 SocketManager.manager.sendMessage(targetModel: contactor, msg: msg, suffix: "jpg")
-//                page = 1
-//                refreshData(scrollView: UIScrollView())
+                //                page = 1
+                //                refreshData(scrollView: UIScrollView())
                 self.localUpdate(msg: ChatimagManager.manager.MD5StrBy(image: img.image), suffix: "jpg")
             case .video(v: _):
                 SVPShow(content: "")
             default: break
-
+                
             }
-
-
+            
+            
         }
     }
     
@@ -93,7 +99,7 @@ class ChatViewModel: BaseViewModel {
             }
             DBManager.manager.updateRecentChat(model: model)
         }
-//        self.subject.onNext(1)
+        //        self.subject.onNext(1)
     }
     
     func refreshData(scrollView: UIScrollView) {
@@ -188,65 +194,71 @@ class ChatViewModel: BaseViewModel {
             model.estimate_height = Float(height)
             model.estimate_width = Float(width)
         } else {
-            let imgData = model.isRemote ? Data.init(base64Encoded: model.msgContent) : ChatimagManager.manager.GetImageDataBy(MD5Str: model.msgContent)
-            if let id = imgData {
-                msgStr = model.isRemote ? ChatimagManager.manager.MD5By(data: id) : model.msgContent
-                let img = UIImage.init(data: id)
-                if let ig = img {
-                    let swidth = Double(kScreenWidth-122)
-                    let width = Double(ig.size.width)
-                    let height = Double(ig.size.height)
-                    let scale = Double(height/width)
-                    if scale > 1 {
-                        let scaleW = Double(swidth/3)
-                        if width > swidth {
-                            let contrastHeight = Double(scale*scaleW)
-                            if contrastHeight > swidth*2/3 {
-                                model.estimate_width = Float(swidth*2/3)/Float(scale)
-                                model.estimate_height = Float(swidth*2/3)
+            if model.msgContent.contains(".wav") {
+                let height = 62
+                let seconds = AVFManager().durationOf(filePath: model.msgContent)
+                
+                let width = (Int(kScreenWidth)-132)/2*(seconds>30 ? 30 : seconds)/30 + 60
+                model.estimate_width = Float(width)
+                model.estimate_height = Float(height)
+            } else {
+                let imgData = model.isRemote ? Data.init(base64Encoded: model.msgContent) : ChatimagManager.manager.GetImageDataBy(MD5Str: model.msgContent)
+                if let id = imgData {
+                    msgStr = model.isRemote ? ChatimagManager.manager.MD5By(data: id) : model.msgContent
+                    let img = UIImage.init(data: id)
+                    if let ig = img {
+                        let swidth = Double(kScreenWidth-122)
+                        let width = Double(ig.size.width)
+                        let height = Double(ig.size.height)
+                        let scale = Double(height/width)
+                        if scale > 1 {
+                            let scaleW = Double(swidth/3)
+                            if width > swidth {
+                                let contrastHeight = Double(scale*scaleW)
+                                if contrastHeight > swidth*2/3 {
+                                    model.estimate_width = Float(swidth*2/3)/Float(scale)
+                                    model.estimate_height = Float(swidth*2/3)
+                                } else {
+                                    model.estimate_width = Float(scaleW)
+                                    model.estimate_height = Float(contrastHeight)
+                                }
                             } else {
-                                model.estimate_width = Float(scaleW)
-                                model.estimate_height = Float(contrastHeight)
+                                if height > swidth*2/3 {
+                                    model.estimate_width = Float(swidth*2/3)/Float(scale)
+                                    model.estimate_height = Float(swidth*2/3)
+                                } else {
+                                    model.estimate_width = Float(width)
+                                    model.estimate_height = Float(height)
+                                }
                             }
                         } else {
-                            if height > swidth*2/3 {
-                                model.estimate_width = Float(swidth*2/3)/Float(scale)
-                                model.estimate_height = Float(swidth*2/3)
+                            if width > swidth {
+                                let scaleW = Double(swidth/2)
+                                let contrastHeight = Double(scale*scaleW)
+                                if contrastHeight < swidth/3 {
+                                    model.estimate_width = Float(scaleW)
+                                    model.estimate_height = Float(swidth/3)
+                                } else {
+                                    model.estimate_width = Float(scaleW)
+                                    model.estimate_height = Float(contrastHeight)
+                                }
                             } else {
-                                model.estimate_width = Float(width)
-                                model.estimate_height = Float(height)
+                                if height < swidth/3 {
+                                    model.estimate_width = Float(width)
+                                    model.estimate_height = Float(swidth/3)
+                                } else {
+                                    model.estimate_width = Float(width)
+                                    model.estimate_height = Float(height)
+                                }
                             }
+                            
                         }
-                        
-                    } else {
-                        if width > swidth {
-                            let scaleW = Double(swidth/2)
-                            let contrastHeight = Double(scale*scaleW)
-                            if contrastHeight < swidth/3 {
-                                model.estimate_width = Float(scaleW)
-                                model.estimate_height = Float(swidth/3)
-                            } else {
-                                model.estimate_width = Float(scaleW)
-                                model.estimate_height = Float(contrastHeight)
-                            }
-                        } else {
-                            if height < swidth/3 {
-                                model.estimate_width = Float(width)
-                                model.estimate_height = Float(swidth/3)
-                            } else {
-                                model.estimate_width = Float(width)
-                                model.estimate_height = Float(height)
-                            }
-                        }
-                        
+                        model.estimate_height = model.estimate_height+38
                     }
-                    model.estimate_height = model.estimate_height+38
                 }
             }
         }
-        
     }
-    
 }
 
 class MessageSectionModel: BaseModel {

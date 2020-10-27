@@ -533,65 +533,75 @@ open class DBManager: NSObject {
                         model.estimate_height = Float(height)
                         model.estimate_width = Float(width)
                     } else {
-                        let imgData = model.isRemote ? Data.init(base64Encoded: model.msgContent) : ChatimagManager.manager.GetImageDataBy(MD5Str: model.msgContent)
-                        if let id = imgData {
-                            msgStr = model.isRemote ? ChatimagManager.manager.MD5By(data: id) : model.msgContent
-                            let img = UIImage.init(data: id)
-                            if let ig = img {
-                                let swidth = Double(kScreenWidth-122)
-                                let width = Double(ig.size.width)
-                                let height = Double(ig.size.height)
-                                let scale = Double(height/width)
-                                if scale > 1 {
-                                    let scaleW = Double(swidth/3)
-                                    if width > swidth {
-                                        let contrastHeight = Double(scale*scaleW)
-                                        if contrastHeight > swidth*2/3 {
-                                            model.estimate_width = Float(swidth*2/3)/Float(scale)
-                                            model.estimate_height = Float(swidth*2/3)
+                        if model.msgContent.contains(".wav") {
+                            let height = 62
+                            let seconds = AVFManager().durationOf(filePath: model.msgContent)
+                            
+                            let width = (Int(kScreenWidth)-132)/2*(seconds>30 ? 30 : seconds)/30 + 60
+                            model.estimate_width = Float(width)
+                            model.estimate_height = Float(height)
+                        } else {
+                            let imgData = model.isRemote ? Data.init(base64Encoded: model.msgContent) : ChatimagManager.manager.GetImageDataBy(MD5Str: model.msgContent)
+                            if let id = imgData {
+                                msgStr = model.isRemote ? ChatimagManager.manager.MD5By(data: id) : model.msgContent
+                                let img = UIImage.init(data: id)
+                                if let ig = img {
+                                    let swidth = Double(kScreenWidth-122)
+                                    let width = Double(ig.size.width)
+                                    let height = Double(ig.size.height)
+                                    let scale = Double(height/width)
+                                    if scale > 1 {
+                                        let scaleW = Double(swidth/3)
+                                        if width > swidth {
+                                            let contrastHeight = Double(scale*scaleW)
+                                            if contrastHeight > swidth*2/3 {
+                                                model.estimate_width = Float(swidth*2/3)/Float(scale)
+                                                model.estimate_height = Float(swidth*2/3)
+                                            } else {
+                                                model.estimate_width = Float(scaleW)
+                                                model.estimate_height = Float(contrastHeight)
+                                            }
                                         } else {
-                                            model.estimate_width = Float(scaleW)
-                                            model.estimate_height = Float(contrastHeight)
+                                            if height > swidth*2/3 {
+                                                model.estimate_width = Float(swidth*2/3)/Float(scale)
+                                                model.estimate_height = Float(swidth*2/3)
+                                            } else {
+                                                model.estimate_width = Float(width)
+                                                model.estimate_height = Float(height)
+                                            }
                                         }
+                                        
                                     } else {
-                                        if height > swidth*2/3 {
-                                            model.estimate_width = Float(swidth*2/3)/Float(scale)
-                                            model.estimate_height = Float(swidth*2/3)
+                                        if width > swidth {
+                                            let scaleW = Double(swidth/2)
+                                            let contrastHeight = Double(scale*scaleW)
+                                            if contrastHeight < swidth/3 {
+                                                model.estimate_width = Float(scaleW)
+                                                model.estimate_height = Float(swidth/3)
+                                            } else {
+                                                model.estimate_width = Float(scaleW)
+                                                model.estimate_height = Float(contrastHeight)
+                                            }
                                         } else {
-                                            model.estimate_width = Float(width)
-                                            model.estimate_height = Float(height)
+                                            if height < swidth/3 {
+                                                model.estimate_width = Float(width)
+                                                model.estimate_height = Float(swidth/3)
+                                            } else {
+                                                model.estimate_width = Float(width)
+                                                model.estimate_height = Float(height)
+                                            }
                                         }
+                                        
                                     }
-                                    
-                                } else {
-                                    if width > swidth {
-                                        let scaleW = Double(swidth/2)
-                                        let contrastHeight = Double(scale*scaleW)
-                                        if contrastHeight < swidth/3 {
-                                            model.estimate_width = Float(scaleW)
-                                            model.estimate_height = Float(swidth/3)
-                                        } else {
-                                            model.estimate_width = Float(scaleW)
-                                            model.estimate_height = Float(contrastHeight)
-                                        }
-                                    } else {
-                                        if height < swidth/3 {
-                                            model.estimate_width = Float(width)
-                                            model.estimate_height = Float(swidth/3)
-                                        } else {
-                                            model.estimate_width = Float(width)
-                                            model.estimate_height = Float(height)
-                                        }
-                                    }
-                                    
+                                    model.estimate_height = model.estimate_height+38
                                 }
-                                model.estimate_height = model.estimate_height+38
                             }
+                            
                         }
+                        
                     }
                     
                     let insertSQL = "INSERT INTO ChatLogList (sender,sender_phone,sender_avantar,receiver,receiver_phone,receiver_avantar,package_type,package_content,create_time,time_stamp,topic_group,estimate_height,estimate_width,is_remote,is_read) VALUES (?,?,?,?,?,?,?,?,datetime('now','localtime'),?,?,?,?,?,?)"
-                    
                     
                     print("----------MD5:\(msgStr) time:\(Date())")
                     b = db.executeUpdate(insertSQL, withArgumentsIn: [model.sender,model.senderPhone,model.senderAvanter,model.receiver,model.receiverPhone,model.receiverAvanter,model.packageType,msgStr,model.timeStamp,model.topic_group,model.estimate_height,model.estimate_width,model.isRemote,model.isReaded])
@@ -704,7 +714,15 @@ open class DBManager: NSObject {
                                         m.timeStamp = oFormat.date(from: timestamp)!.timeIntervalSince1970
                                         m.packageType = rs["package_type"] as! Int
                                         let msgStr = rs["package_content"] as! String
-                                        m.msgContent = m.packageType == 2 ? ChatimagManager.manager.GetImageDataBy(MD5Str: msgStr).base64EncodedString() : msgStr
+                                        if m.packageType == 2 {
+                                            if msgStr.contains(".wav") {
+                                                m.msgContent = msgStr
+                                            } else {
+                                                m.msgContent = ChatimagManager.manager.GetImageDataBy(MD5Str: msgStr).base64EncodedString()
+                                            }
+                                        } else {
+                                            m.msgContent = msgStr
+                                        }
                                         m.topic_group = rs["topic_group"] as! String
                                         m.estimate_height = rs["estimate_height"] as! Float
                                         m.estimate_width = rs["estimate_width"] as! Float
@@ -765,7 +783,15 @@ open class DBManager: NSObject {
                                                 m.timeStamp = oFormat.date(from: timestamp)!.timeIntervalSince1970
                                                 m.packageType = rs["package_type"] as! Int
                                                 let msgStr = rs["package_content"] as! String
-                                                m.msgContent = m.packageType == 2 ? ChatimagManager.manager.GetImageDataBy(MD5Str: msgStr).base64EncodedString() : msgStr
+                                                if m.packageType == 2 {
+                                                    if msgStr.contains(".wav") {
+                                                        m.msgContent = msgStr
+                                                    } else {
+                                                        m.msgContent = ChatimagManager.manager.GetImageDataBy(MD5Str: msgStr).base64EncodedString()
+                                                    }
+                                                } else {
+                                                    m.msgContent = msgStr
+                                                }
                                                 m.topic_group = rs["topic_group"] as! String
                                                 m.estimate_height = rs["estimate_height"] as! Float
                                                 m.estimate_width = rs["estimate_width"] as! Float

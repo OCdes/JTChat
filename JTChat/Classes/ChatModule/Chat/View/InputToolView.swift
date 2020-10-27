@@ -21,6 +21,8 @@ class InputToolView: UIView {
     private var bottomOffset: CGFloat = 0
     var bottomUpDistance: CGFloat = 0
     var subject: PublishSubject<CGFloat> = PublishSubject<CGFloat>()
+    var recorder: RecorderManager?
+    var levelTimer: Timer?
     lazy var emojiView: EmojiKeyboardView = {
         let emk = EmojiKeyboardView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: kScreenWidth*2/3))
         return emk
@@ -29,7 +31,10 @@ class InputToolView: UIView {
         let fv = FunctionKeyboardView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: self.bottomHeight))
         return fv
     }()
-    
+    lazy var voiceView: VoiceAlertView = {
+        let vv = VoiceAlertView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: kScreenHeight-(JTManager.manager.isHideBottom ? 116 : 150)))
+        return vv
+    }()
     lazy var textV: UITextView = {
         let tv = UITextView()
         tv.textColor = HEX_333
@@ -43,11 +48,20 @@ class InputToolView: UIView {
         return tv
     }()
     
-    lazy var voiceBtn: UIButton = {
-        let vb = UIButton()
+    lazy var voiceBtn: TouchButton = {
+        let vb = TouchButton.init(frame: CGRect(x: 0, y: 0, width: 50, height: 40))
         vb.setTitle("按住  说话", for: .normal)
         vb.setTitle("松开  结束", for: .highlighted)
         vb.isHidden = true
+        vb.layer.cornerRadius = 10
+        vb.layer.masksToBounds = true
+        vb.backgroundColor = HEX_LightBlue
+        vb.addTarget(self, action: #selector(voiceBtnTouchupInside(btn:)), for: .touchUpInside)
+        vb.addTarget(self, action: #selector(voiceBtnTouchuDown(btn:)), for: .touchDown)
+        vb.addTarget(self, action: #selector(voiceBtnTouchUpOutSide(btn:)), for: .touchUpOutside)
+        vb.addTarget(self, action: #selector(voiceBtnTouchCancle(btn:)), for: .touchCancel)
+        vb.addTarget(self, action: #selector(voiceBtnTouchDragExit(btn:)), for: .touchDragExit)
+        vb.addTarget(self, action: #selector(voiceBtnTouchDragEnter(btn:)), for: .touchDragEnter)
         return vb
     }()
     
@@ -55,6 +69,7 @@ class InputToolView: UIView {
         let vb = UIButton()
         vb.setImage(JTBundleTool.getBundleImg(with:"voiceicon"), for: .normal)
         vb.setImage(JTBundleTool.getBundleImg(with:"texticon"), for: .selected)
+        vb.addTarget(self, action: #selector(typeBtnClicked(btn:)), for: .touchUpInside)
         return vb
     }()
     
@@ -114,8 +129,7 @@ class InputToolView: UIView {
         
         toolV.addSubview(self.voiceBtn)
         self.voiceBtn.snp_makeConstraints { (make) in
-            make.left.right.bottom.equalTo(self.voiceBtn)
-            make.height.equalTo(40)
+            make.left.right.top.bottom.equalTo(self.textV)
         }
         
         let _ = emojiView.subject.subscribe(onNext: { [weak self](string) in
@@ -161,7 +175,7 @@ class InputToolView: UIView {
         _ = funcView.subject.subscribe(onNext: { [weak self](a) in
             if a == "照片" || a == "拍摄" || a == "视频" {
                 let status = PHPhotoLibrary.authorizationStatus()
-                if status != .authorized {
+                if status == .denied {
                     let alertvc = UIAlertController(title: "提示", message: "您的照片权限未开启，请开启权限以发送图片", preferredStyle: .alert)
                     alertvc.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
                     let sureAction = UIAlertAction.init(title: "去打开", style: .destructive) { (ac) in
@@ -179,11 +193,13 @@ class InputToolView: UIView {
                 var config: YPImagePickerConfiguration = YPImagePickerConfiguration.init()
                 config.isScrollToChangeModesEnabled = false
                 config.onlySquareImagesFromCamera = false
+                config.showsPhotoFilters = false
                 config.usesFrontCamera = true
                 config.hidesBottomBar = true
                 config.screens = [.library]
                 config.library.maxNumberOfItems = 9
                 config.startOnScreen = YPPickerScreen.library
+                config.albumName = "精特"
                 config.wordings.next = "下一步"
                 config.wordings.cancel = "取消"
                 config.wordings.libraryTitle = "相册"
@@ -203,25 +219,30 @@ class InputToolView: UIView {
                 var config: YPImagePickerConfiguration = YPImagePickerConfiguration.init()
                 config.isScrollToChangeModesEnabled = false
                 config.onlySquareImagesFromCamera = false
-                config.usesFrontCamera = true
-                config.hidesBottomBar = true
-                config.screens = [ .photo]
-                config.showsVideoTrimmer = false
-                config.showsPhotoFilters = false
-                config.shouldSaveNewPicturesToAlbum = false
-                config.library.maxNumberOfItems = 9
-                config.startOnScreen = YPPickerScreen.library
+                config.screens = [.video, .photo]
+                config.library.mediaType = .photoAndVideo
+                config.shouldSaveNewPicturesToAlbum = true
+                config.startOnScreen = YPPickerScreen.video
+                config.video.fileType = .ac3
+                config.video.recordingTimeLimit = 10
+                config.video.trimmerMaxDuration = 10
+                config.video.libraryTimeLimit = 10
+                config.video.automaticTrimToTrimmerMaxDuration = true
+                config.albumName = "精特"
                 config.wordings.next = "下一步"
                 config.wordings.cancel = "取消"
                 config.wordings.libraryTitle = "相册"
                 config.wordings.cameraTitle = "相机"
                 config.wordings.albumsTitle = "全部相册"
-                config.library.defaultMultipleSelection = true
                 let picker: YPImagePicker = YPImagePicker.init(configuration: config)
                 picker.imagePickerDelegate = self as? YPImagePickerDelegate
                 picker.didFinishPicking { [unowned picker] items, _  in
-                    if items.count > 0 {
-                        self?.viewModel.sendPicture(photos: items)
+                    if let video = items.singleVideo {
+                        print(video.url)
+                    } else {
+                        if items.count > 0 {
+                            self?.viewModel.sendPicture(photos: items)
+                        }
                     }
                     picker.dismiss(animated: true, completion: nil)
                 }
@@ -291,6 +312,140 @@ class InputToolView: UIView {
             self.textV.becomeFirstResponder()
         }
         
+    }
+    
+    @objc func typeBtnClicked(btn: UIButton) {
+        btn.isSelected = !btn.isSelected
+        if btn.isSelected {
+            self.textV.isHidden = true
+            self.voiceBtn.isHidden = false
+        } else {
+            self.textV.isHidden = false
+            self.voiceBtn.isHidden = true
+        }
+    }
+    @objc func voiceBtnTouchupInside(btn: UIButton) {
+        
+        //发送
+        if AVCaptureDevice.authorizationStatus(for: .audio) == .authorized {
+            print("发送需判断录制时长：touchUpInside")
+            self.voiceView.hide()
+            if let rec = self.recorder {
+                rec.pauseRecorderAudio()
+                let pathStr = rec.stopRecorderAudio(byCancle: nil)
+                print("录制路径：\(pathStr)")
+                if let subPath = (pathStr as NSString).components(separatedBy: "/Caches").last {
+                    if AVFManager().durationOf(filePath: subPath) > 0 {
+        //                _ = self.recorder?.playAudio(by: pathStr)
+                        self.viewModel.sendAudioMessage(path: subPath)
+                    } else {
+                    }
+                }
+            }
+//            self.recorder = nil
+        }
+        
+    }
+    @objc func voiceBtnTouchuDown(btn: UIButton) {
+        if AVCaptureDevice.authorizationStatus(for: .audio) == .denied {
+            let alertvc = UIAlertController(title: "提示", message: "您的麦克风权限未开启，请开启权限以发送语音", preferredStyle: .alert)
+            alertvc.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
+            let sureAction = UIAlertAction.init(title: "去打开", style: .destructive) { (ac) in
+                let url = URL(string: UIApplication.openSettingsURLString)
+                if let u = url, UIApplication.shared.canOpenURL(u) {
+                    UIApplication.shared.open(u, options: [:], completionHandler: nil)
+                }
+            }
+            alertvc.addAction(sureAction)
+            self.viewModel.navigationVC?.present(alertvc, animated: true, completion: nil)
+            return
+        } else {
+            self.voiceView.showInWindow()
+            self.voiceView.imgv.image = JTBundleTool.getBundleImg(with: "voiceLevel_1")
+            print("开始录音：TouchDown")
+            self.recorder = nil
+            let toUser = self.viewModel.contactor!.topicGroupID.count > 0 ? self.viewModel.contactor!.topicGroupID : self.viewModel.contactor!.phone
+            let name = "\(JTManager.manager.phone)\(toUser)"
+            self.recorder = RecorderManager()
+            self.recorder!.beginRecordAudio(name: name)
+            self.levelTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(voiceLevleCallback), userInfo: nil, repeats: true)
+        }
+        
+    }
+    
+    @objc func voiceLevleCallback() {
+        if let recorder = self.recorder?.avRecorder {
+            recorder.updateMeters()
+            var level: Float
+            let minDecibels: Float = -80
+            let decibels: Float = recorder.averagePower(forChannel: 0)
+            if decibels < minDecibels {
+                level = 0.0
+            } else if decibels >= 0 {
+                level = 1
+            } else {
+                let root: Float = 2
+                let minAmp = powf(10.0, 0.05*minDecibels)
+                let inverseAmpRange = 1.0/(1.0-minAmp)
+                let amp = powf(10.0, 0.05*decibels)
+                let adjAmp = (amp-minAmp)*inverseAmpRange
+                level = powf(adjAmp, 1.0/root)
+            }
+            print("level number is \(level)")
+            if level > 0 && level < 0.33 {
+                self.voiceView.imgv.image = JTBundleTool.getBundleImg(with: "voiceLevel_1")
+            } else if level >= 0.33 && level < 0.66 {
+                self.voiceView.imgv.image = JTBundleTool.getBundleImg(with: "voiceLevel_2")
+            } else if level >= 0.66 && level <= 1.0 {
+                self.voiceView.imgv.image = JTBundleTool.getBundleImg(with: "voiceLevel_3")
+            } else {
+                
+            }
+        }
+        
+    }
+    
+    @objc func voiceBtnTouchUpOutSide(btn: UIButton) {
+        if AVCaptureDevice.authorizationStatus(for: .audio) == .authorized {
+            print("取消发送：TouchUpOutSide")
+            self.levelTimer?.invalidate()
+            self.levelTimer = nil
+            self.voiceView.hide()
+            if let rec = self.recorder {
+                _ = rec.stopRecorderAudio(byCancle: true)
+            }
+        }
+    }
+    @objc func voiceBtnTouchCancle(btn: UIButton) {
+        if AVCaptureDevice.authorizationStatus(for: .audio) == .authorized {
+            print("取消录制并不发送TouchCancle")
+            self.voiceView.hide()
+            self.levelTimer?.invalidate()
+            self.levelTimer = nil
+            if let rec = self.recorder {
+                _ = rec.stopRecorderAudio(byCancle: true)
+            }
+        } else {
+            self.recorder = nil
+        }
+    }
+    @objc func voiceBtnTouchDragExit(btn: UIButton) {
+        if AVCaptureDevice.authorizationStatus(for: .audio) == .authorized {
+            self.voiceView.imgv.image = JTBundleTool.getBundleImg(with: "cancleSend")
+            if let rec = self.recorder {
+                rec.pauseRecorderAudio()
+            }
+            print("暂停录制：TouchDragExit")
+        }
+    }
+    @objc func voiceBtnTouchDragEnter(btn: UIButton) {
+        if AVCaptureDevice.authorizationStatus(for: .audio) == .authorized {
+            print("继续录制：TouchDragEnter")
+            self.voiceView.imgv.image = JTBundleTool.getBundleImg(with: "voiceLevel_1")
+            if let rec = self.recorder {
+                rec.resume()
+            }
+        }
     }
     
     @objc func moreBtnClicked(btn: UIButton) {

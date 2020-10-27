@@ -91,7 +91,7 @@ class MessageListCell: BaseTableCell {
             }
             
             dateLa.text = model!.createTime
-            messageLa.text = model!.packageType == 2 ? "[图片]" : model!.msgContent
+            messageLa.text = model!.packageType == 2 ? (model!.msgContent.contains(".wav") ? "[语音]" : "[图片]") : model!.msgContent
             redDot.isHidden = (model!.isReaded || !(model!.unreadCount > 0))
             redDot.text = model!.unreadCount >= 99 ? "99+" : "\(model!.unreadCount)"
         }

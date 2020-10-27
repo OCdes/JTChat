@@ -4,12 +4,17 @@ PODS:
   - CocoaAsyncSocket (7.6.4)
   - DZNEmptyDataSet (1.8.1)
   - ESTabBarController-swift (2.8.0)
+  - FBSnapshotTestCase (2.1.4):
+    - FBSnapshotTestCase/SwiftSupport (= 2.1.4)
+  - FBSnapshotTestCase/Core (2.1.4)
+  - FBSnapshotTestCase/SwiftSupport (2.1.4):
+    - FBSnapshotTestCase/Core
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
   - HandyJSON (5.0.2)
   - IQKeyboardManagerSwift (6.5.6)
-  - JTChat (0.7.0):
+  - JTChat (0.7.1):
     - ALQRCode
     - CocoaAsyncSocket
     - DZNEmptyDataSet (~> 1.8.1)
@@ -37,8 +42,15 @@ PODS:
   - Moya/Core (13.0.1):
     - Alamofire (~> 4.1)
     - Result (~> 4.1)
+  - Nimble (7.3.4)
+  - Nimble-Snapshots (6.3.0):
+    - Nimble-Snapshots/Core (= 6.3.0)
+  - Nimble-Snapshots/Core (6.3.0):
+    - FBSnapshotTestCase (~> 2.0)
+    - Nimble (~> 7.0)
   - NTYAmrConverter (0.1.0)
   - PryntTrimmerView (4.0.2)
+  - Quick (1.2.0)
   - Result (4.1.0)
   - RxCocoa (5.1.1):
     - RxRelay (~> 5)
@@ -54,7 +66,11 @@ PODS:
     - SteviaLayout (~> 4.7.3)
 
 DEPENDENCIES:
+  - FBSnapshotTestCase (~> 2.1.4)
   - JTChat (from `../`)
+  - Nimble (~> 7.0)
+  - Nimble-Snapshots (~> 6.3.0)
+  - Quick (~> 1.2.0)
 
 SPEC REPOS:
   trunk:
@@ -63,6 +79,7 @@ SPEC REPOS:
     - CocoaAsyncSocket
     - DZNEmptyDataSet
     - ESTabBarController-swift
+    - FBSnapshotTestCase
     - FMDB
     - HandyJSON
     - IQKeyboardManagerSwift
@@ -70,8 +87,11 @@ SPEC REPOS:
     - Kingfisher
     - MJRefresh
     - Moya
+    - Nimble
+    - Nimble-Snapshots
     - NTYAmrConverter
     - PryntTrimmerView
+    - Quick
     - Result
     - RxCocoa
     - RxRelay
@@ -91,16 +111,20 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   DZNEmptyDataSet: 9525833b9e68ac21c30253e1d3d7076cc828eaa7
   ESTabBarController-swift: 05593a6ad64700b03c0eb60ff625916370aa4136
+  FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
   IQKeyboardManagerSwift: c7df9d2deb356c04522f5c4b7b6e4ce4d8ed94fe
-  JTChat: 6a9739058fa3678091741ae077b94c77f1e610a7
+  JTChat: 9edbe01d26c8c1fbdddf2455d4877376a99dfbf6
   KeychainSwift: c46e1438d121e47459fb304ac88c5e058a2a91ed
   Kingfisher: b3554e7bf6106115b44e8795300bad580ef2fdc7
   MJRefresh: 6afc955813966afb08305477dd7a0d9ad5e79a16
   Moya: f4a4b80ff2f8a4ffc208dfb31cd91636622fee6e
+  Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
+  Nimble-Snapshots: f5459b5b091678dc942d03ec4741cacb58ba4a52
   NTYAmrConverter: 0cd46d044576b1985f9879b4e5164aa25500b658
   PryntTrimmerView: 6a43cc90df5d99addeabd33d4ba09b1365322130
+  Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
   Result: bd966fac789cc6c1563440b348ab2598cc24d5c7
   RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
   RxRelay: d77f7d771495f43c556cbc43eebd1bb54d01e8e9
@@ -110,6 +134,6 @@ SPEC CHECKSUMS:
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   YPImagePicker: 15aed8bcaa4dad976e11b6114126d731a2f9f3c9
 
-PODFILE CHECKSUM: d062cb68c21802b4d210af93af43c38d141d1e4e
+PODFILE CHECKSUM: 481aa88242888c51864b90d6718a618d4abbc885
 
 COCOAPODS: 1.9.3

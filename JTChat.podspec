@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JTChat'
-  s.version          = '0.7.2'
+  s.version          = '0.7.3'
   s.summary          = '精特聊天演示'
 
 # This description is used to generate tags and improve search results.
@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
   s.author           = { '76515226@qq.com' => '76515226@qq.com' }
   s.source           = { :git => 'https://github.com/OCdes/JTChat.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
-
+  s.libraries = "c++","c"
   s.ios.deployment_target = '10.0'
   s.source_files = 'JTChat/Classes/**/*'
   s.swift_versions = ['4.0','4.2','5.0']

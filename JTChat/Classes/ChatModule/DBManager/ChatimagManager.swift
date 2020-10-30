@@ -18,7 +18,7 @@ class ChatimagManager: NSObject {
         if fileManager.fileExists(atPath: creatPath) {
             return UIImage.init(contentsOfFile: creatPath)!
         } else {
-            print("ChatimgDataManager----Error:图片存取异常")
+            print("ChatimgDataManager----Error:图片存取异常\(MD5Str)")
             return UIImage()
         }
     }
@@ -29,7 +29,7 @@ class ChatimagManager: NSObject {
         if fileManager.fileExists(atPath: creatPath) {
             return try! NSData.init(contentsOfFile: creatPath) as Data
         } else {
-            print("ChatimgDataManager----Error:图片存取异常")
+            print("ChatimgDataManager----Error:图片存取异常\(MD5Str)")
             return Data()
         }
     }
@@ -52,7 +52,7 @@ class ChatimagManager: NSObject {
         }
     }
     
-    func saveImage(imageDataStr: String) {
+    func saveImage(imageDataStr: String)-> String {
         let data = Data.init(base64Encoded: imageDataStr)
         if let imgdata = data {
             let docuPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first ?? ""
@@ -62,10 +62,13 @@ class ChatimagManager: NSObject {
             }
             if fileManager.createFile(atPath: "\(creatPath)/\(MD5By(data: imgdata))", contents: imgdata, attributes: nil) {
                 print("创建成功")
+                return MD5By(data: imgdata)
             } else {
+                return ""
                 print("创建失败，creatPath=\(creatPath), imagePath=\(creatPath)/\(MD5By(data: imgdata))")
             }
         }
+        return ""
     }
     
     func MD5StrBy(image: UIImage)->String {

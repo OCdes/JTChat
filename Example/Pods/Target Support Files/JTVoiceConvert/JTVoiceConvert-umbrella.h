@@ -10,11 +10,12 @@
 #endif
 #endif
 
-#import "NTYAmrCoder.h"
-#import "NTYAmrConverter.h"
+#import "JTVoiceConverter.h"
 #import "interf_dec.h"
 #import "interf_enc.h"
+#import "XKLIMAMRFileCodec.h"
+#import "XKLIMVoiceConverter.h"
 
-FOUNDATION_EXPORT double NTYAmrConverterVersionNumber;
-FOUNDATION_EXPORT const unsigned char NTYAmrConverterVersionString[];
+FOUNDATION_EXPORT double JTVoiceConvertVersionNumber;
+FOUNDATION_EXPORT const unsigned char JTVoiceConvertVersionString[];
 

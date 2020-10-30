@@ -61,8 +61,10 @@ class ChatViewModel: BaseViewModel {
                 //                page = 1
                 //                refreshData(scrollView: UIScrollView())
                 self.localUpdate(msg: ChatimagManager.manager.MD5StrBy(image: img.image), suffix: "jpg")
-            case .video(v: _):
-                SVPShow(content: "")
+            case .video(v: let video):
+                
+                let msg = AVFManager().saveLocalVideo(tmpPath: video.url.absoluteString)
+                SocketManager.manager.sendMessage(targetModel: contactor, msg: msg, suffix: "mp4")
             default: break
                 
             }
@@ -201,6 +203,14 @@ class ChatViewModel: BaseViewModel {
                 let width = (Int(kScreenWidth)-132)/2*(seconds>30 ? 30 : seconds)/30 + 60
                 model.estimate_width = Float(width)
                 model.estimate_height = Float(height)
+            } else if model.msgContent.contains(".mp4") {
+                let size = AVFManager().sizeOfVideo(filePath: model.msgContent)
+                let containerWidth: CGFloat = (kScreenWidth-132)/2
+                model.estimate_width = Float(containerWidth)
+                model.estimate_height = Float((size.height/size.width)*(containerWidth/size.width))
+                if model.estimate_height > Float(1.5*containerWidth) {
+                    model.estimate_height = Float(1.5*containerWidth)
+                }
             } else {
                 let imgData = model.isRemote ? Data.init(base64Encoded: model.msgContent) : ChatimagManager.manager.GetImageDataBy(MD5Str: model.msgContent)
                 if let id = imgData {

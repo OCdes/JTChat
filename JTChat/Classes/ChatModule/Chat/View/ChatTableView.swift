@@ -8,11 +8,14 @@
 
 import UIKit
 import RxSwift
+import AVFoundation
+import AVKit
 class ChatTableView: UITableView {
     var dataArr: Array<MessageSectionModel> = []
     var viewModel: ChatViewModel?
     var recordManager: RecorderManager = RecorderManager()
     var previousImgv: UIImageView?
+    var playerVC: AVPlayerViewController = AVPlayerViewController()
     var tapSubject: PublishSubject<Any> = PublishSubject<Any>()
     init(frame: CGRect, style: UITableView.Style, viewModel vm: ChatViewModel) {
         super.init(frame: frame, style: style)
@@ -52,7 +55,7 @@ class ChatTableView: UITableView {
                         self.scrollToRow(at: IndexPath(row: rows-1, section:section-1), at: .middle, animated: animated ?? false)
                     }
                 }
-
+                
             }
         }
     }
@@ -104,9 +107,9 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
             } else {
                 let cell: ChatTableRightCell = tableView.dequeueReusableCell(withIdentifier: "ChatTableRightCell", for: indexPath) as! ChatTableRightCell
                 cell.model = model
-                let longpress = UILongPressGestureRecognizer.init(target: self, action: #selector(longPress(long:)))
-                cell.contentLa.addGestureRecognizer(longpress)
-                cell.contentLa.isUserInteractionEnabled = true
+                cell.contentV.indexPath = indexPath
+                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
+                cell.contentV.addGestureRecognizer(tap)
                 return cell
             }
         } else {
@@ -120,13 +123,23 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
             } else {
                 let cell: ChatTableLeftCell = tableView.dequeueReusableCell(withIdentifier: "ChatTableLeftCell", for: indexPath) as! ChatTableLeftCell
                 cell.model = model
-                cell.contentLa.indexPath = indexPath
-                let longpress = UILongPressGestureRecognizer.init(target: self, action: #selector(longPress(long:)))
-                cell.contentLa.addGestureRecognizer(longpress)
-                cell.contentLa.isUserInteractionEnabled = true
+                cell.contentV.indexPath = indexPath
+                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
+                cell.contentV.addGestureRecognizer(tap)
                 return cell
             }
             
+        }
+    }
+    
+    @objc func tapNormalCell(tap: UITapGestureRecognizer) {
+        if let la = tap.view {
+            let indexPath = la.indexPath
+            let model = dataArr[indexPath.section].rowsArr[indexPath.row]
+            let creatPath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first?.appending("\(model.msgContent)") ?? ""
+            let avUrl = AVURLAsset.init(url: URL(string: creatPath)!)
+            self.playerVC.player = AVPlayer.init(playerItem: AVPlayerItem.init(asset: avUrl))
+            self.playerVC.player?.play()
         }
     }
     
@@ -234,7 +247,11 @@ class ChatTableLeftCell: BaseTableCell {
                 contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
                 imgv.isHidden = true
             } else {
-                imgv.image = UIImage.init(data: Data.init(base64Encoded: model.msgContent)!)
+                if model.msgContent.contains("mp4") {
+                    _ = AVFManager().firstFrameOfVideo(filePath: model.msgContent, size: CGSize(width: CGFloat(model.estimate_width), height: CGFloat(model.estimate_height)), toImgView: imgv)
+                } else {
+                    imgv.image = UIImage.init(data: Data.init(base64Encoded: model.msgContent)!)
+                }
                 imgv.isHidden = false
             }
             contentV.snp_updateConstraints { (make) in
@@ -346,13 +363,13 @@ class ChatTableLeftCell: BaseTableCell {
 class LeftVoiceCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
-//            let m = DBManager.manager.getContactor(phone: model.receiverPhone)
+            //            let m = DBManager.manager.getContactor(phone: model.receiverPhone)
             contentLa.text = "\(AVFManager().durationOf(filePath: model.msgContent))\""
             portraitV.kf.setImage(with: URL(string: JTManager.manager.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             contentV.snp_updateConstraints { (make) in
                 make.right.equalTo(contentView).offset(-(kScreenWidth-122-CGFloat(model.estimate_width)+35.5))
             }
-
+            
         }
     }
     lazy var portraitV: UIImageView = {
@@ -481,14 +498,19 @@ class LeftVoiceCell: BaseTableCell {
 class ChatTableRightCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
-//            let m = DBManager.manager.getContactor(phone: model.receiverPhone)
+            //            let m = DBManager.manager.getContactor(phone: model.receiverPhone)
             portraitV.kf.setImage(with: URL(string: JTManager.manager.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             if model.packageType == 1 {
                 contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
                 imgv.isHidden = true
             } else {
+                if model.msgContent.contains("mp4") {
+                    let size = CGSize(width: CGFloat(model.estimate_width), height: CGFloat(model.estimate_height))
+                    _ = AVFManager().firstFrameOfVideo(filePath: model.msgContent, size: size, toImgView:imgv)
+                } else {
                     imgv.image = UIImage.init(data: Data.init(base64Encoded: model.msgContent)!)
-                    imgv.isHidden = false
+                }
+                imgv.isHidden = false
             }
             contentV.snp_updateConstraints { (make) in
                 make.left.equalTo(contentView).offset(kScreenWidth-122-CGFloat(model.estimate_width)+35.5)
@@ -599,7 +621,7 @@ class ChatTableRightCell: BaseTableCell {
 class RightVoiceCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
-//            let m = DBManager.manager.getContactor(phone: model.receiverPhone)
+            //            let m = DBManager.manager.getContactor(phone: model.receiverPhone)
             contentLa.text = "\(AVFManager().durationOf(filePath: model.msgContent))\""
             portraitV.kf.setImage(with: URL(string: JTManager.manager.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             contentV.snp_updateConstraints { (make) in

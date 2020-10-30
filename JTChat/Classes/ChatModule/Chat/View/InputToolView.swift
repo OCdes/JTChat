@@ -23,6 +23,7 @@ class InputToolView: UIView {
     var subject: PublishSubject<CGFloat> = PublishSubject<CGFloat>()
     var recorder: RecorderManager?
     var levelTimer: Timer?
+    var recorCount: Int = 0
     lazy var emojiView: EmojiKeyboardView = {
         let emk = EmojiKeyboardView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: kScreenWidth*2/3))
         return emk
@@ -198,6 +199,10 @@ class InputToolView: UIView {
                 config.hidesBottomBar = true
                 config.screens = [.library]
                 config.library.maxNumberOfItems = 9
+                config.library.mediaType = .photoAndVideo
+                config.video.trimmerMinDuration = 1
+                config.video.trimmerMaxDuration = 10
+                config.video.fileType = .mp4
                 config.startOnScreen = YPPickerScreen.library
                 config.albumName = "精特"
                 config.wordings.next = "下一步"
@@ -217,33 +222,22 @@ class InputToolView: UIView {
                 self?.viewModel.navigationVC?.present(picker, animated: true, completion: nil)
             } else if a == "拍摄" {
                 var config: YPImagePickerConfiguration = YPImagePickerConfiguration.init()
-                config.isScrollToChangeModesEnabled = false
                 config.onlySquareImagesFromCamera = false
                 config.screens = [.video, .photo]
+                config.startOnScreen = .video
+                config.showsPhotoFilters = false
+                config.video.fileType = .mp4
                 config.library.mediaType = .photoAndVideo
-                config.shouldSaveNewPicturesToAlbum = true
-                config.startOnScreen = YPPickerScreen.video
-                config.video.fileType = .ac3
-                config.video.recordingTimeLimit = 10
+                config.video.recordingTimeLimit = 60
+                config.video.minimumTimeLimit = 1
                 config.video.trimmerMaxDuration = 10
-                config.video.libraryTimeLimit = 10
-                config.video.automaticTrimToTrimmerMaxDuration = true
-                config.albumName = "精特"
-                config.wordings.next = "下一步"
-                config.wordings.cancel = "取消"
-                config.wordings.libraryTitle = "相册"
-                config.wordings.cameraTitle = "相机"
-                config.wordings.albumsTitle = "全部相册"
+                config.video.trimmerMinDuration = 1
                 let picker: YPImagePicker = YPImagePicker.init(configuration: config)
                 picker.imagePickerDelegate = self as? YPImagePickerDelegate
                 picker.didFinishPicking { [unowned picker] items, _  in
-                    if let video = items.singleVideo {
-                        print(video.url)
-                    } else {
                         if items.count > 0 {
                             self?.viewModel.sendPicture(photos: items)
                         }
-                    }
                     picker.dismiss(animated: true, completion: nil)
                 }
                 self?.viewModel.navigationVC?.present(picker, animated: true, completion: nil)
@@ -325,7 +319,8 @@ class InputToolView: UIView {
         }
     }
     @objc func voiceBtnTouchupInside(btn: UIButton) {
-        
+        self.levelTimer?.invalidate()
+        self.levelTimer = nil
         //发送
         if AVCaptureDevice.authorizationStatus(for: .audio) == .authorized {
             print("发送需判断录制时长：touchUpInside")
@@ -368,12 +363,19 @@ class InputToolView: UIView {
             let name = "\(JTManager.manager.phone)\(toUser)"
             self.recorder = RecorderManager()
             self.recorder!.beginRecordAudio(name: name)
+            self.recorCount = 0
             self.levelTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(voiceLevleCallback), userInfo: nil, repeats: true)
         }
         
     }
     
     @objc func voiceLevleCallback() {
+        if self.recorCount < 30 {
+            self.recorCount += 1
+        } else {
+            self.voiceBtnTouchupInside(btn: UIButton())
+        }
+        
         if let recorder = self.recorder?.avRecorder {
             recorder.updateMeters()
             var level: Float
@@ -432,6 +434,7 @@ class InputToolView: UIView {
     @objc func voiceBtnTouchDragExit(btn: UIButton) {
         if AVCaptureDevice.authorizationStatus(for: .audio) == .authorized {
             self.voiceView.imgv.image = JTBundleTool.getBundleImg(with: "cancleSend")
+            self.levelTimer?.fireDate = Date.distantFuture
             if let rec = self.recorder {
                 rec.pauseRecorderAudio()
             }
@@ -441,6 +444,7 @@ class InputToolView: UIView {
     @objc func voiceBtnTouchDragEnter(btn: UIButton) {
         if AVCaptureDevice.authorizationStatus(for: .audio) == .authorized {
             print("继续录制：TouchDragEnter")
+            self.levelTimer?.fireDate = Date.distantPast
             self.voiceView.imgv.image = JTBundleTool.getBundleImg(with: "voiceLevel_1")
             if let rec = self.recorder {
                 rec.resume()

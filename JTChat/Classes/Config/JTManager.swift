@@ -94,10 +94,12 @@ open class JTManager: NSObject {
         mmodel.packageType = Int(model.transType.rawValue)
         mmodel.msgContent = str.count > 0 ? str : " "
         if model.transType == .TransTypeFileStream {
-            if model.fileSuffix.contains("wav") {
+            if model.fileSuffix.contains("amr") {
                 mmodel.msgContent = AVFManager().saveAudio(audioDataStr: mmodel.msgContent, fromUserId: mmodel.senderPhone)
+            } else if model.fileSuffix.contains("mp4") {
+                mmodel.msgContent = AVFManager().saveVideo(videoDataStr: mmodel.msgContent, fromUserId: mmodel.senderPhone)
             } else {
-                ChatimagManager.manager.saveImage(imageDataStr: model.contentString)
+                mmodel.msgContent = ChatimagManager.manager.saveImage(imageDataStr: model.contentString)
             }
         }
         mmodel.timeStamp = Date().timeIntervalSince1970
@@ -119,14 +121,16 @@ open class JTManager: NSObject {
         let mmodel = MessageModel()
         mmodel.senderPhone = model.fromUserId
         mmodel.packageType = Int(model.transType.rawValue)
+        mmodel.msgContent = str.count > 0 ? str : " "
         if model.transType == .TransTypeFileStream {
-            if model.fileSuffix.contains("wav") {
+            if model.fileSuffix.contains("amr") {
                 mmodel.msgContent = AVFManager().saveAudio(audioDataStr: mmodel.msgContent, fromUserId: "\(model.fromUserId)\(model.targetUserId)")
+            } else if model.fileSuffix.contains("mp4") {
+                mmodel.msgContent = AVFManager().saveVideo(videoDataStr: mmodel.msgContent, fromUserId: "\(model.fromUserId)\(model.targetUserId)")
             } else {
                 ChatimagManager.manager.saveImage(imageDataStr: model.contentString)
             }
         }
-        mmodel.msgContent = str.count > 0 ? str : " "
         mmodel.timeStamp = Date().timeIntervalSince1970
         mmodel.topic_group = model.targetUserId
         mmodel.isRemote = true
@@ -164,7 +168,18 @@ open class JTManager: NSObject {
             socketData.fileSuffix = suffix ?? ""
             socketData.placeId = (USERDEFAULT.object(forKey: "placeID") ?? "0") as! Int
             socketData.transType = (suffix ?? "").count > 0 ? .TransTypeFileStream : .TransTypeByteStream
-            socketData.contentString = (socketData.transType == .TransTypeFileStream) ? (suffix == "wav" ? AVFManager().audioTransToData(with:msg ?? "").base64EncodedString() : ChatimagManager.manager.GetImageDataBy(MD5Str: msg ?? "").base64EncodedString()) : (msg ?? "")
+            if socketData.transType == .TransTypeFileStream {
+                if suffix == "wav" {
+                    socketData.contentString = AVFManager().audioTransToData(with:msg ?? "").base64EncodedString()
+                    socketData.fileSuffix = "amr"
+                } else if suffix == "mp4" {
+                    socketData.contentString = AVFManager().videoData(filePath: msg ?? "").base64EncodedString()
+                } else {
+                    socketData.contentString = ChatimagManager.manager.GetImageDataBy(MD5Str: msg ?? "").base64EncodedString()
+                }
+            } else {
+                socketData.contentString = msg ?? ""
+            }
             let messageOfSend = socketData.getFullData()
             if let de = self.delegate {
                 de.JTChatNeedToSendMessage(data: messageOfSend)

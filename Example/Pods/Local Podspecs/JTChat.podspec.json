@@ -1,6 +1,6 @@
 {
   "name": "JTChat",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "summary": "精特聊天演示",
   "description": "精特聊天演示初始化",
   "homepage": "https://github.com/OCdes/JTChat",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/OCdes/JTChat.git",
-    "tag": "0.7.4"
+    "tag": "0.7.5"
   },
   "libraries": [
     "c++",
@@ -86,8 +86,8 @@
     "FMDB": [
 
     ],
-    "NTYAmrConverter": [
-      "~> 0.1"
+    "JTVoiceConvert": [
+
     ]
   },
   "swift_version": "5.0"

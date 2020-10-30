@@ -34,7 +34,7 @@ class RecorderManager: NSObject {
         } catch let err {
             print("初始化录音session失败：\(err)")
         }
-        let recordSetting: [String: Any] = [AVSampleRateKey: NSNumber(value: 1600),AVFormatIDKey: NSNumber(value: kAudioFormatLinearPCM), AVLinearPCMBitDepthKey:NSNumber(value: 16), AVNumberOfChannelsKey: NSNumber(value: 1), AVEncoderAudioQualityKey:NSNumber(value: AVAudioQuality.min.rawValue)]
+        let recordSetting: [String: Any] = [AVSampleRateKey: NSNumber(value: 8000),AVFormatIDKey: NSNumber(value: kAudioFormatLinearPCM), AVLinearPCMBitDepthKey:NSNumber(value: 16), AVNumberOfChannelsKey: NSNumber(value: 1)]
         
         do {
             let url = URL(fileURLWithPath: self.avPath!)
@@ -93,6 +93,7 @@ class RecorderManager: NSObject {
                     let session = AVAudioSession.sharedInstance()
                     try session.setCategory(.playback)
                     try session.setActive(true)
+                    try? session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
                     let url = URL(fileURLWithPath: path!)
                     self.avPlayer = try AVAudioPlayer(contentsOf: url)
                     self.avPlayer?.delegate = self

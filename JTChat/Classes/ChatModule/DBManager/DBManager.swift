@@ -540,6 +540,14 @@ open class DBManager: NSObject {
                             let width = (Int(kScreenWidth)-132)/2*(seconds>30 ? 30 : seconds)/30 + 60
                             model.estimate_width = Float(width)
                             model.estimate_height = Float(height)
+                        } else if model.msgContent.contains(".mp4") {
+                            let size = AVFManager().sizeOfVideo(filePath: model.msgContent)
+                            let containerWidth: CGFloat = (kScreenWidth-132)/2
+                            model.estimate_width = Float(containerWidth)
+                            model.estimate_height = Float((size.height/size.width)*(containerWidth))
+                            if model.estimate_height > Float(1.5*containerWidth) {
+                                model.estimate_height = Float(1.5*containerWidth)
+                            }
                         } else {
                             let imgData = model.isRemote ? Data.init(base64Encoded: model.msgContent) : ChatimagManager.manager.GetImageDataBy(MD5Str: model.msgContent)
                             if let id = imgData {
@@ -717,6 +725,8 @@ open class DBManager: NSObject {
                                         if m.packageType == 2 {
                                             if msgStr.contains(".wav") {
                                                 m.msgContent = msgStr
+                                            } else if msgStr.contains(".mp4") {
+                                                m.msgContent = msgStr
                                             } else {
                                                 m.msgContent = ChatimagManager.manager.GetImageDataBy(MD5Str: msgStr).base64EncodedString()
                                             }
@@ -785,6 +795,8 @@ open class DBManager: NSObject {
                                                 let msgStr = rs["package_content"] as! String
                                                 if m.packageType == 2 {
                                                     if msgStr.contains(".wav") {
+                                                        m.msgContent = msgStr
+                                                    } else if msgStr.contains(".mp4") {
                                                         m.msgContent = msgStr
                                                     } else {
                                                         m.msgContent = ChatimagManager.manager.GetImageDataBy(MD5Str: msgStr).base64EncodedString()

@@ -95,7 +95,7 @@ class RecorderManager: NSObject {
                     try session.setActive(true)
                     try? session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
                     let url = URL(fileURLWithPath: path!)
-                    self.avPlayer = try AVAudioPlayer(contentsOf: url)
+                    self.avPlayer = try AVAudioPlayer(contentsOf: url, fileTypeHint: "wav")
                     self.avPlayer?.delegate = self
                     if let player = self.avPlayer {
                         if player.isPlaying {

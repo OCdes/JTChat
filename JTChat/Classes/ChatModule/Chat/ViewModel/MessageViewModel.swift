@@ -143,5 +143,6 @@ class FriendModel: BaseModel {
     var topicGroupName: String = ""
     var creator: String = ""
     var unreadCount: Int = 0
+    var voiceIsReaded: Bool = false
 }
 

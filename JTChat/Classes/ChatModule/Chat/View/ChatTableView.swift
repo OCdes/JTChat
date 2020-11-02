@@ -38,6 +38,8 @@ class ChatTableView: UITableView {
         register(ChatTableRightCell.self, forCellReuseIdentifier: "ChatTableRightCell")
         register(LeftVoiceCell.self, forCellReuseIdentifier: "LeftVoiceCell")
         register(RightVoiceCell.self, forCellReuseIdentifier: "RightVoiceCell")
+        register(LeftVideoCell.self, forCellReuseIdentifier: "LeftVideoCell")
+        register(RightVideoCell.self, forCellReuseIdentifier: "RightVideoCell")
         let _ = viewModel?.subject.subscribe(onNext: { [weak self](count) in
             self?.dataArr = (self!.viewModel?.dataArr ?? [])
             self?.reloadData()
@@ -104,6 +106,13 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 let tap = UITapGestureRecognizer.init(target: self, action: #selector(tag(tap:)))
                 cell.contentV.addGestureRecognizer(tap)
                 return cell
+            } else if model.packageType == 2 && model.msgContent.contains(".mp4") {
+                let cell: RightVideoCell = tableView.dequeueReusableCell(withIdentifier: "RightVideoCell", for: indexPath) as! RightVideoCell
+                cell.model = model
+                cell.contentV.indexPath = indexPath
+                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
+                cell.contentV.addGestureRecognizer(tap)
+                return cell
             } else {
                 let cell: ChatTableRightCell = tableView.dequeueReusableCell(withIdentifier: "ChatTableRightCell", for: indexPath) as! ChatTableRightCell
                 cell.model = model
@@ -118,6 +127,13 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 let tap = UITapGestureRecognizer.init(target: self, action: #selector(tag(tap:)))
                 cell.model = model
                 cell.contentV.indexPath = indexPath
+                cell.contentV.addGestureRecognizer(tap)
+                return cell
+            } else if model.packageType == 2 && model.msgContent.contains(".mp4") {
+                let cell: LeftVideoCell = tableView.dequeueReusableCell(withIdentifier: "LeftVideoCell", for: indexPath) as! LeftVideoCell
+                cell.model = model
+                cell.contentV.indexPath = indexPath
+                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
                 cell.contentV.addGestureRecognizer(tap)
                 return cell
             } else {
@@ -136,9 +152,10 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
         if let la = tap.view {
             let indexPath = la.indexPath
             let model = dataArr[indexPath.section].rowsArr[indexPath.row]
-            let creatPath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first?.appending("\(model.msgContent)") ?? ""
-            let avUrl = AVURLAsset.init(url: URL(string: creatPath)!)
+            let creatPath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first?.appending("/\(model.msgContent)") ?? ""
+            let avUrl = AVURLAsset.init(url: URL(fileURLWithPath: creatPath))
             self.playerVC.player = AVPlayer.init(playerItem: AVPlayerItem.init(asset: avUrl))
+            self.viewModel?.navigationVC?.present(self.playerVC, animated: true, completion: nil)
             self.playerVC.player?.play()
         }
     }
@@ -157,6 +174,8 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 if cell.isKind(of: LeftVoiceCell.self) {
                     let c = cell as! LeftVoiceCell
                     imgv = c.imgv
+                    
+                    c.redDot.isHidden = true
                 } else {
                     let c = cell as! RightVoiceCell
                     imgv = c.imgv
@@ -166,6 +185,10 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 let duration = (AVFManager().durationOf(filePath: model.msgContent))
                 self.recordManager.stopPlayAudio(by: "")
                 self.recordManager.playAudio(by: model.msgContent)
+                if !model.voiceIsReaded {
+                    model.voiceIsReaded = true
+                    DBManager.manager.updateChatLog(model: model)
+                }
                 DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + .seconds(duration)) {
                     DispatchQueue.main.async {
                         imgv.stopAnimating()
@@ -282,6 +305,7 @@ class ChatTableLeftCell: BaseTableCell {
     lazy var imgv: UIImageView = {
         let iv = UIImageView()
         iv.layer.cornerRadius = 3
+        iv.contentMode = .scaleAspectFit
         iv.layer.masksToBounds = true
         iv.isHidden = true
         return iv
@@ -360,12 +384,94 @@ class ChatTableLeftCell: BaseTableCell {
     }
 }
 
+class LeftVideoCell: BaseTableCell {
+    var model: MessageModel = MessageModel() {
+        didSet {
+            let m = DBManager.manager.getContactor(phone: model.senderPhone)
+            portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+            _ = AVFManager().firstFrameOfVideo(filePath: model.msgContent, size: CGSize(width: CGFloat(model.estimate_width), height: CGFloat(model.estimate_height)), toImgView: imgv)
+            contentV.snp_updateConstraints { (make) in
+                make.right.equalTo(contentView).offset(-(58 + kScreenWidth-116-CGFloat(model.estimate_width)))
+            }
+        }
+    }
+    lazy var portraitV: UIImageView = {
+        let pv = UIImageView()
+        pv.layer.cornerRadius = 18
+        pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
+        return pv
+    }()
+    lazy var contentV: UIView = {
+        let cv = UIView()
+        cv.layer.cornerRadius = 3
+        cv.backgroundColor = HEX_FFF
+        return cv
+    }()
+    lazy var imgv: UIImageView = {
+        let iv = UIImageView()
+        iv.layer.cornerRadius = 3
+        iv.contentMode = .scaleAspectFill
+        iv.layer.masksToBounds = true
+        return iv
+    }()
+    lazy var playImgv: UIImageView = {
+        let pv = UIImageView()
+        pv.image = JTBundleTool.getBundleImg(with: "JTVideoPlay")
+        return pv
+    }()
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        contentView.backgroundColor = UIColor.clear
+        contentView.addSubview(portraitV)
+        portraitV.snp_makeConstraints { (make) in
+            make.left.equalTo(contentView).offset(9.5)
+            make.top.equalTo(contentView).offset(11)
+            make.size.equalTo(CGSize(width: 36, height: 36))
+        }
+        
+        contentView.addSubview(contentV)
+        contentV.snp_makeConstraints { (make) in
+            make.left.equalTo(portraitV.snp_right).offset(12.5)
+            make.top.equalTo(portraitV).offset(1)
+            make.right.equalTo(contentView).offset(-64)
+            make.bottom.equalTo(contentView).offset(-11)
+        }
+        
+        contentV.addSubview(imgv)
+        imgv.snp_makeConstraints { (make) in
+            make.edges.equalTo(UIEdgeInsets.zero)
+        }
+        
+        contentV.addSubview(playImgv)
+        playImgv.snp_makeConstraints { (make) in
+            make.center.equalTo(contentV)
+            make.size.equalTo(CGSize(width: 45, height: 45))
+        }
+    }
+    
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(ChatTableView.copyItem) || action == #selector(ChatTableView.retweetItem) || action == #selector(ChatTableView.deletItem) {
+            return true
+        }
+        return false
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 class LeftVoiceCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             //            let m = DBManager.manager.getContactor(phone: model.receiverPhone)
             contentLa.text = "\(AVFManager().durationOf(filePath: model.msgContent))\""
             portraitV.kf.setImage(with: URL(string: JTManager.manager.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+            redDot.isHidden = model.voiceIsReaded
             contentV.snp_updateConstraints { (make) in
                 make.right.equalTo(contentView).offset(-(kScreenWidth-122-CGFloat(model.estimate_width)+35.5))
             }
@@ -541,6 +647,7 @@ class ChatTableRightCell: BaseTableCell {
     lazy var imgv: UIImageView = {
         let iv = UIImageView()
         iv.layer.cornerRadius = 3
+        iv.contentMode = .scaleAspectFit
         iv.layer.masksToBounds = true
         iv.isHidden = true
         return iv
@@ -599,6 +706,88 @@ class ChatTableRightCell: BaseTableCell {
         contentV.addSubview(imgv)
         imgv.snp_makeConstraints { (make) in
             make.edges.equalTo(UIEdgeInsets.zero)
+        }
+    }
+    
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(ChatTableView.copyItem) || action == #selector(ChatTableView.retweetItem) || action == #selector(ChatTableView.deletItem) {
+            return true
+        }
+        return false
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class RightVideoCell: BaseTableCell {
+    var model: MessageModel = MessageModel() {
+        didSet {
+            portraitV.kf.setImage(with: URL(string: JTManager.manager.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+                    let size = CGSize(width: CGFloat(model.estimate_width), height: CGFloat(model.estimate_height))
+            _ = AVFManager().firstFrameOfVideo(filePath: model.msgContent, size: size, toImgView:imgv)
+                    
+            contentV.snp_updateConstraints { (make) in
+                make.left.equalTo(contentView).offset(kScreenWidth-116-CGFloat(model.estimate_width)+58)
+            }
+        }
+    }
+    lazy var portraitV: UIImageView = {
+        let pv = UIImageView()
+        pv.layer.cornerRadius = 18
+        pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
+        return pv
+    }()
+    
+    lazy var contentV: UIView = {
+        let cv = UIView()
+        cv.layer.cornerRadius = 3
+        cv.backgroundColor = HEX_COLOR(hexStr: "#CEE6FA")
+        return cv
+    }()
+    lazy var imgv: UIImageView = {
+        let iv = UIImageView()
+        iv.layer.cornerRadius = 3
+        iv.contentMode = .scaleAspectFill
+        iv.layer.masksToBounds = true
+        return iv
+    }()
+    lazy var playImgv: UIImageView = {
+        let pv = UIImageView()
+        pv.image = JTBundleTool.getBundleImg(with: "JTVideoPlay")
+        return pv
+    }()
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        contentView.addSubview(portraitV)
+        portraitV.snp_makeConstraints { (make) in
+            make.right.equalTo(contentView).offset(-9.5)
+            make.top.equalTo(contentView).offset(11)
+            make.size.equalTo(CGSize(width: 36, height: 36))
+        }
+        
+        contentView.addSubview(contentV)
+        contentV.snp_makeConstraints { (make) in
+            make.right.equalTo(portraitV.snp_left).offset(-12.5)
+            make.top.equalTo(portraitV).offset(1)
+            make.left.equalTo(contentView).offset(64)
+            make.bottom.equalTo(contentView).offset(-11)
+        }
+        
+        contentV.addSubview(imgv)
+        imgv.snp_makeConstraints { (make) in
+            make.edges.equalTo(UIEdgeInsets.zero)
+        }
+        
+        contentV.addSubview(playImgv)
+        playImgv.snp_makeConstraints { (make) in
+            make.center.equalTo(contentV)
+            make.size.equalTo(CGSize(width: 45, height: 45))
         }
     }
     

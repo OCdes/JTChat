@@ -74,6 +74,7 @@ open class DBManager: NSObject {
         alert(table: "ChatLogList", arg: "alias_name", type: "VARCHAR(16)")
         alert(table: "RecentChatList", arg: "alias_name", type: "VARCHAR(16)")
         alert(table: "ContactorList", arg: "alias_name", type: "VARCHAR(16)")
+        alert(table: "ChatLogList", arg: "voice_is_read", type: "INTEGER")
     }
     
     func alert(table: String, arg: String, type: String) {
@@ -81,7 +82,7 @@ open class DBManager: NSObject {
             self.dbQueue?.inDatabase({ (db) in
                 if db.open() {
                     if !db.columnExists(arg, inTableWithName: table) {
-                        let alertColumnSQL = "ALTER TABLE \(table) ADD \(arg) \(type) not null default('')"
+                        let alertColumnSQL = "ALTER TABLE \(table) ADD \(arg) \(type) not null default(\(type == "INTEGER" ? "0" : "''"))"
                         if db.executeStatements(alertColumnSQL) {
                             print("\(table) 插入 \(arg)成功")
                         } else {
@@ -304,7 +305,21 @@ open class DBManager: NSObject {
             print("移除最近联系人/群组会话 错误")
         }
     }
-    
+    func updateChatLog(model: MessageModel) {
+        var updateSQL = "UPDATE ChatLogList SET voice_is_read=\(model.voiceIsReaded) WHERE package_content='\(model.msgContent)'"
+        if model.topic_group.count > 0 {
+            updateSQL = "UPDATE ChatLogList SET voice_is_read=\(model.voiceIsReaded) WHERE sender_phone='\(model.senderPhone)' and topic_group='\(model.topic_group)'"
+        }
+        DispatchQueue.global().async {
+            self.dbQueue?.inDatabase({ (db) in
+                if db.open() {
+                    if db.executeStatements(updateSQL) {
+                        print("更新语音未读状态为已读")
+                    }
+                }
+            })
+        }
+    }
     func updateRecentChat(model: MessageModel) {
         print("进入更新消息消息列表")
         let m = getRecent(byPhone: model.topic_group.count > 0 ? "" : model.senderPhone, byTopicID: model.topic_group)
@@ -547,6 +562,7 @@ open class DBManager: NSObject {
                             model.estimate_height = Float((size.height/size.width)*(containerWidth))
                             if model.estimate_height > Float(1.5*containerWidth) {
                                 model.estimate_height = Float(1.5*containerWidth)
+                                model.estimate_width = model.estimate_height * Float(size.width/size.height)
                             }
                         } else {
                             let imgData = model.isRemote ? Data.init(base64Encoded: model.msgContent) : ChatimagManager.manager.GetImageDataBy(MD5Str: model.msgContent)
@@ -554,7 +570,7 @@ open class DBManager: NSObject {
                                 msgStr = model.isRemote ? ChatimagManager.manager.MD5By(data: id) : model.msgContent
                                 let img = UIImage.init(data: id)
                                 if let ig = img {
-                                    let swidth = Double(kScreenWidth-122)
+                                    let swidth = Double(kScreenWidth-116)
                                     let width = Double(ig.size.width)
                                     let height = Double(ig.size.height)
                                     let scale = Double(height/width)
@@ -609,10 +625,10 @@ open class DBManager: NSObject {
                         
                     }
                     
-                    let insertSQL = "INSERT INTO ChatLogList (sender,sender_phone,sender_avantar,receiver,receiver_phone,receiver_avantar,package_type,package_content,create_time,time_stamp,topic_group,estimate_height,estimate_width,is_remote,is_read) VALUES (?,?,?,?,?,?,?,?,datetime('now','localtime'),?,?,?,?,?,?)"
+                    let insertSQL = "INSERT INTO ChatLogList (sender,sender_phone,voice_is_read,sender_avantar,receiver,receiver_phone,receiver_avantar,package_type,package_content,create_time,time_stamp,topic_group,estimate_height,estimate_width,is_remote,is_read) VALUES (?,?,?,?,?,?,?,?,?,datetime('now','localtime'),?,?,?,?,?,?)"
                     
                     print("----------MD5:\(msgStr) time:\(Date())")
-                    b = db.executeUpdate(insertSQL, withArgumentsIn: [model.sender,model.senderPhone,model.senderAvanter,model.receiver,model.receiverPhone,model.receiverAvanter,model.packageType,msgStr,model.timeStamp,model.topic_group,model.estimate_height,model.estimate_width,model.isRemote,model.isReaded])
+                    b = db.executeUpdate(insertSQL, withArgumentsIn: [model.sender,model.senderPhone,model.voiceIsReaded,model.senderAvanter,model.receiver,model.receiverPhone,model.receiverAvanter,model.packageType,msgStr,model.timeStamp,model.topic_group,model.estimate_height,model.estimate_width,model.isRemote,model.isReaded])
                     if !db.interrupt() {
                         print("db.lastError()")
                     }
@@ -737,6 +753,7 @@ open class DBManager: NSObject {
                                         m.estimate_height = rs["estimate_height"] as! Float
                                         m.estimate_width = rs["estimate_width"] as! Float
                                         m.isRemote = rs["is_remote"] as! Bool
+                                        m.voiceIsReaded = rs["voice_is_read"] as! Bool
                                         arr.append(m)
                                     }
                                     rs.close()
@@ -808,6 +825,7 @@ open class DBManager: NSObject {
                                                 m.estimate_height = rs["estimate_height"] as! Float
                                                 m.estimate_width = rs["estimate_width"] as! Float
                                                 m.isRemote = rs["is_remote"] as! Bool
+                                                m.voiceIsReaded = rs["voice_is_read"] as! Bool
                                                 arr.append(m)
                                             }
                                             rs.close()

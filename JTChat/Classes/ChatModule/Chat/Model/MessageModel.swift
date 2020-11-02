@@ -39,6 +39,7 @@ class MessageModel: BaseModel {
     var estimate_width: Float = 0
     var isRemote: Bool = false
     var isReaded: Bool = false
+    var voiceIsReaded: Bool = false
 }
 
 class MessageListModel: BaseModel {

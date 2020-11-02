@@ -96,6 +96,7 @@ open class JTManager: NSObject {
         if model.transType == .TransTypeFileStream {
             if model.fileSuffix.contains("amr") {
                 mmodel.msgContent = AVFManager().saveAudio(audioDataStr: mmodel.msgContent, fromUserId: mmodel.senderPhone)
+                mmodel.voiceIsReaded = false
             } else if model.fileSuffix.contains("mp4") {
                 mmodel.msgContent = AVFManager().saveVideo(videoDataStr: mmodel.msgContent, fromUserId: mmodel.senderPhone)
             } else {
@@ -125,6 +126,7 @@ open class JTManager: NSObject {
         if model.transType == .TransTypeFileStream {
             if model.fileSuffix.contains("amr") {
                 mmodel.msgContent = AVFManager().saveAudio(audioDataStr: mmodel.msgContent, fromUserId: "\(model.fromUserId)\(model.targetUserId)")
+                mmodel.voiceIsReaded = false
             } else if model.fileSuffix.contains("mp4") {
                 mmodel.msgContent = AVFManager().saveVideo(videoDataStr: mmodel.msgContent, fromUserId: "\(model.fromUserId)\(model.targetUserId)")
             } else {

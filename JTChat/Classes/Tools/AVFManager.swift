@@ -15,11 +15,12 @@ class AVFManager: NSObject {
         let fPath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first?.appending(filePath)
         let fileName = ((filePath as NSString).replacingOccurrences(of: ".wav", with: ".amr") as NSString).replacingOccurrences(of: "/recorder/", with: "")
         let amrPath = NSTemporaryDirectory().appending(fileName)
-        
+        let filemanager = FileManager.default
         if XKLIMVoiceConverter.xklim_convertWav(toAmr: fPath!, amrSavePath: amrPath) > 0 {
             let data = NSData(contentsOfFile: amrPath)! as Data
-            let pp = self.saveAudio(audioDataStr: data.base64EncodedString(), fromUserId: "76515226")
-            RecorderManager().playAudio(by: pp)
+            let wavData = XKLIMVoiceConverter.xklim_decodeAMR(toWAVE: data)
+            filemanager.createFile(atPath: fPath!, contents: wavData, attributes: nil)
+            RecorderManager().playAudio(by: (fPath! as NSString).components(separatedBy: "/Caches").last!)
             return data
         } else {
             print("发送时wav转换amr失败")
@@ -75,25 +76,18 @@ class AVFManager: NSObject {
             }
             if !filemanager.fileExists(atPath: creatPath!) {
                 if XKLIMVoiceConverter.xklim_convertAmr(toWav: tmpPath, wavSavePath: creatPath!) > 0 {
-                    if filemanager.createFile(atPath: creatPath!, contents: imgdata, attributes: nil) {
-                        print("创建成功")
-                    } else {
-                        print("创建失败，语音文件路径=\(creatPath!)")
-                    }
+                        print("转换成功，语音文件路径=\(creatPath!)")
                 } else {
                     print("arm转换wav失败")
                 }
-                
             }
-            
-            
         }
         return ((creatPath ?? "") as NSString).components(separatedBy: "/Caches").last ?? ""
     }
     
     
     func videoData(filePath: String) -> Data {
-        let fPath = (NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first?.appending(filePath))
+        let fPath = (NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first?.appending("/\(filePath)"))
         if let data = NSData(contentsOfFile: fPath!) {
             return data as Data
         } else {
@@ -104,8 +98,8 @@ class AVFManager: NSObject {
     
     func firstFrameOfVideo(filePath: String, size: CGSize, toImgView: UIImageView) -> UIImage {
         DispatchQueue.global().async {
-            let path = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first?.appending(filePath)
-            if let url = URL.init(string: path!) {
+            let path = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first?.appending("/\(filePath)")
+             let url = URL(fileURLWithPath: path!)
                 let urlAsset = AVURLAsset(url: url, options: [AVURLAssetPreferPreciseDurationAndTimingKey:NSNumber(value: false)])
                 let gene = AVAssetImageGenerator.init(asset: urlAsset)
                 gene.appliesPreferredTrackTransform = true
@@ -118,13 +112,10 @@ class AVFManager: NSObject {
                     }
                 } catch let err {
                     DispatchQueue.main.async {
-                        toImgView.image = JTBundleTool.getBundleImg(with: "placeHolder") ?? UIImage()
+                        toImgView.image = UIImage.imageWith(color: HEX_COLOR(hexStr: "#e6e6e6"))
                     }
                     print("截取第一贞失败：\(err.localizedDescription)")
                 }
-            } else {
-                print("当前url:\(path!) 不可用")
-            }
         }
         
         return JTBundleTool.getBundleImg(with: "placeHolder") ?? UIImage()
@@ -132,7 +123,7 @@ class AVFManager: NSObject {
     
     func sizeOfVideo(filePath: String) -> CGSize {
         var size: CGSize = CGSize.zero
-        let creatPath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first?.appending("\(filePath)")
+        let creatPath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first?.appending("/\(filePath)")
         let asset = AVURLAsset(url: URL(fileURLWithPath: creatPath!))
         let arr = asset.tracks
         for track in arr {

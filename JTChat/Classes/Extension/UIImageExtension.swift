@@ -21,4 +21,17 @@ extension  UIImage {
         UIGraphicsEndImageContext()
         return image
     }
+    
+    open func imageAddSubImage(img: UIImage) -> UIImage? {
+        var rect = CGRect(x: 0, y: 0, width: img.size.width, height: img.size.height)
+        let imageSize = self.size
+        rect.origin.x = (imageSize.width - img.size.width)/2
+        rect.origin.y = (imageSize.height - img.size.height)/2
+        UIGraphicsBeginImageContext(imageSize)
+        self.draw(in: CGRect(x: 0, y: 0, width: imageSize.width, height: imageSize.height))
+        img.draw(in: rect)
+        let newImg = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImg
+    }
 }

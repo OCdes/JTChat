@@ -13,7 +13,7 @@ import RxCocoa
 import RxSwift
 
 //import EmptyDataSet_Swift
-@objc class BaseTableView: UITableView {
+ @objc open class BaseTableView: UITableView {
 
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
@@ -32,7 +32,7 @@ import RxSwift
         }
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -40,13 +40,13 @@ import RxSwift
 
 extension BaseTableView: DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
 
-    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
+    public func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
         let mstr = NSMutableAttributedString.init(string: "暂无数据")
         mstr.addAttributes([NSAttributedString.Key.foregroundColor : HEX_LightBlue, NSAttributedString.Key.font : UIFont.systemFont(ofSize: 16)], range: NSRange(location: 0, length: mstr.string.count))
         return mstr
     }
 
-    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
+    public func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
         let img = JTBundleTool.getBundleImg(with:"emptyPlaceholder")
         return img
     }
@@ -55,15 +55,15 @@ extension BaseTableView: DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
 //        return false
 //    }
 
-    func emptyDataSetShouldAllowTouch(_ scrollView: UIScrollView) -> Bool {
+    public func emptyDataSetShouldAllowTouch(_ scrollView: UIScrollView) -> Bool {
         return false
     }
 
-    func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
+    public func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
         return true
     }
 
-    func emptyDataSet(_ scrollView: UIScrollView, didTap view: UIView) {
+    public func emptyDataSet(_ scrollView: UIScrollView, didTap view: UIView) {
         self.jt_startRefresh()
     }
 

@@ -13,7 +13,7 @@ open class DBManager: NSObject {
     struct DBStatic {
         fileprivate static var instance: DBManager?
     }
-    class var manager: DBManager {
+    open class var manager: DBManager {
         if DBStatic.instance == nil {
             DBStatic.instance = DBManager()
         }
@@ -25,7 +25,7 @@ open class DBManager: NSObject {
         initChatListDataBase()
     }
     
-    func disposeDBManager() {
+    open func disposeDBManager() {
         dbQueue?.interrupt()
         dbQueue?.close()
         dbQueue?.inDatabase({ (db) in
@@ -118,7 +118,7 @@ open class DBManager: NSObject {
         return b
     }
     
-    func getRecentList(resultBlock:@escaping((_ personArr: Array<FriendModel>, _ groupArr: Array<FriendModel>)->Void)) {
+    open func getRecentList(resultBlock:@escaping((_ personArr: Array<FriendModel>, _ groupArr: Array<FriendModel>)->Void)) {
         let semaphore = DispatchSemaphore(value: 0)
         var pArr: Array<FriendModel> = []
         var gArr: Array<FriendModel> = []

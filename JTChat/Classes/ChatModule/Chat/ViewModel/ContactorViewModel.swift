@@ -10,7 +10,7 @@ import UIKit
 import RxSwift
 import HandyJSON
 import SVProgressHUD
-class ContactorViewModel: BaseViewModel {
+open class ContactorViewModel: BaseViewModel {
     var searchText: String?
     var department: String?
     var sectionModel: ContactDataModel = ContactDataModel()
@@ -60,7 +60,7 @@ class ContactorViewModel: BaseViewModel {
         
         let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_ADDAPPLY, params: [:]) { [weak self](msg, code, response, data) in
             print(data)
-            self!.addApplyData = (JSONDeserializer<ApplyNoteModel>.deserializeModelArrayFrom(array: (data["Data"] as! Array<Dictionary<String, Any>>))! as? Array<ApplyNoteModel>)!
+            self!.addApplyData = (JSONDeserializer<ApplyNoteModel>.deserializeModelArrayFrom(array: ((data["data"] ?? data["Data"]) as! Array<Dictionary<String, Any>>))! as? Array<ApplyNoteModel>)!
             self!.subject.onNext("")
         } fail: { (errorInfo) in
             SVProgressHUD.showError(withStatus: (errorInfo.message.count>0 ? errorInfo.message : "获取待处理事项错误"))

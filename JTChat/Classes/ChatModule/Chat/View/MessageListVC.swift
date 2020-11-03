@@ -11,7 +11,7 @@ import RxSwift
 import ALQRCode
 import AVFoundation
 open class MessageListVC: BaseViewController {
-    var viewModel: MessageViewModel = MessageViewModel()
+    open var viewModel: MessageViewModel = MessageViewModel()
     lazy var scrollView: RecentDialogView = {
         let tv = RecentDialogView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: (kScreenHeight-49-45-(kScreenHeight>=750 ? 122 : 64))), viewModel: self.viewModel)
         return tv

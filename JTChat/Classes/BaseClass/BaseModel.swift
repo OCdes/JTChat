@@ -8,9 +8,9 @@
 
 import UIKit
 import HandyJSON
-class BaseModel: HandyJSON {
-    required init() {}
-    func mapping(mapper: HelpingMapper) {
+open class BaseModel: HandyJSON {
+    required public init() {}
+    public func mapping(mapper: HelpingMapper) {
         
     }
 }

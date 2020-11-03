@@ -10,8 +10,8 @@ import UIKit
 import ALQRCode
 import AVFoundation
 open class ConntactersVC: BaseViewController  {
-    var viewModel: ContactorViewModel = ContactorViewModel.init()
-    lazy var tableView:ContactersTableView = {
+    open var viewModel: ContactorViewModel = ContactorViewModel.init()
+    open lazy var tableView:ContactersTableView = {
         let tv = ContactersTableView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: kScreenHeight), style: .grouped, viewModel: self.viewModel)
         return tv
     }()

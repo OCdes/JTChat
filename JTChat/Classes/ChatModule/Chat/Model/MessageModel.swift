@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MessageModel: BaseModel {
+open class MessageModel: BaseModel {
     /*
      CREATE TABLE [ChatLog] (
      [id] INTEGER  PRIMARY KEY AUTOINCREMENT NOT NULL,

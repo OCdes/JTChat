@@ -9,7 +9,7 @@
 import UIKit
 import HandyJSON
 import RxSwift
-class MessageViewModel: BaseViewModel {
+open class MessageViewModel: BaseViewModel {
     var personalListArr: Array<FriendModel> = []
     var groupListArr: Array<FriendModel> = []
     var subject: PublishSubject<Any> = PublishSubject<Any>()
@@ -79,7 +79,7 @@ class MessageViewModel: BaseViewModel {
         getMessageList(scrollView: UIScrollView())
     }
     
-    func getMessageList(scrollView: UIScrollView) {
+    open func getMessageList(scrollView: UIScrollView) {
         self.personalListArr = []
         self.groupListArr = []
         DBManager.manager.getRecentList { [weak self](arr1, arr2) in
@@ -123,7 +123,7 @@ class MessageViewModel: BaseViewModel {
     }
 }
 
-class FriendModel: BaseModel {
+open class FriendModel: BaseModel {
     var avatar: String = ""
     var createTime: String = ""
     var timeStamp: TimeInterval = 0
@@ -142,7 +142,10 @@ class FriendModel: BaseModel {
     var topicGroupID: String = ""
     var topicGroupName: String = ""
     var creator: String = ""
-    var unreadCount: Int = 0
+    open var unreadCount: Int = 0
     var voiceIsReaded: Bool = false
+    public required init() {
+        
+    }
 }
 

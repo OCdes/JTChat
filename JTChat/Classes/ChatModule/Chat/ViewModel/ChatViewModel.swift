@@ -41,13 +41,13 @@ class ChatViewModel: BaseViewModel {
     }
     
     func sendMessage(msg: String) {
-        SocketManager.manager.sendMessage(targetModel: contactor, msg: msg, suffix: nil)
+        JTManager.shareManager().sendMessage(targetModel: contactor, msg: msg, suffix: nil)
         //        page = 1
         localUpdate(msg: msg, suffix: nil)
     }
     
     func sendAudioMessage(path: String) {
-        SocketManager.manager.sendMessage(targetModel: contactor, msg: path, suffix: "wav")
+        JTManager.shareManager().sendMessage(targetModel: contactor, msg: path, suffix: "wav")
         localUpdate(msg: path, suffix: "wav")
     }
     
@@ -57,14 +57,12 @@ class ChatViewModel: BaseViewModel {
             case .photo(p: let img):
                 ChatimagManager.manager.saveImage(image: img.image)
                 let msg = ChatimagManager.manager.MD5StrBy(image: img.image)
-                SocketManager.manager.sendMessage(targetModel: contactor, msg: msg, suffix: "jpg")
-                //                page = 1
-                //                refreshData(scrollView: UIScrollView())
+                JTManager.shareManager().sendMessage(targetModel: contactor, msg: msg, suffix: "jpg")
                 self.localUpdate(msg: ChatimagManager.manager.MD5StrBy(image: img.image), suffix: "jpg")
             case .video(v: let video):
                 
                 let msg = AVFManager().saveLocalVideo(tmpPath: video.url.absoluteString)
-                SocketManager.manager.sendMessage(targetModel: contactor, msg: msg, suffix: "mp4")
+                JTManager.shareManager().sendMessage(targetModel: contactor, msg: msg, suffix: "mp4")
             default: break
                 
             }

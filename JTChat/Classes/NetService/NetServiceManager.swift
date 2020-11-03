@@ -95,15 +95,7 @@ class NetServiceManager: NSObject {
     }
     
     public func checkWifi() {
-        UserInfo.shared.wifiEnable = UserInfo.shared.placeData?.data.placeDetail.appAttendanceWifi ?? "" == self.getSSID()
-        if UserInfo.shared.wifiEnable && !(UserInfo.shared.isValidGps ?? false) {
-            LocationManager.manager.endLocation()
-            UserInfo.shared.enableGPSSignup = false
-        } else {
-            if UserInfo.shared.isValidGps ?? false {
-                LocationManager.manager.startLocation()
-            }
-        }
+        
     }
     
     private func getSSID() -> String {
@@ -336,7 +328,7 @@ extension NetServiceManager {
         if code == REQUEST_SUCCESSFUL {
             successBlock(msg,code,value as AnyObject,data)
         } else if code == 501 || code == 6601 {
-            RootConfig.reLogin()
+            
         } else {
             var errorInfo = AFSErrorInfo();
             errorInfo.code = code;

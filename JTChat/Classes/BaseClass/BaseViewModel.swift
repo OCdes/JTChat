@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BaseViewModel: NSObject {
+open class BaseViewModel: NSObject {
     var navigationVC: UINavigationController?
     var vc: UIViewController?
     override init() {

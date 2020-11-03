@@ -8,7 +8,7 @@
 
 import UIKit
 import HandyJSON
-class ContactorModel: BaseModel {
+open class ContactorModel: BaseModel {
     var avatarUrl: String = ""
     var createTime: String = ""
     var defaultPhotoUrl: String = ""
@@ -27,7 +27,7 @@ class ContactorModel: BaseModel {
     var topicGroupName: String = ""
     var aliasName: String = ""
     
-    override func mapping(mapper: HelpingMapper) {
+    public override func mapping(mapper: HelpingMapper) {
         mapper <<<
             self.avatarUrl <-- "avatar"
         mapper <<<

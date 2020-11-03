@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ContactersTableView: BaseTableView {
+open class ContactersTableView: BaseTableView {
     var viewModel: ContactorViewModel?
     var searchenable: Bool = true
     lazy var searchTf: UITextField = {
@@ -126,7 +126,7 @@ class ContactersTableView: BaseTableView {
         self.viewModel?.navigationVC?.pushViewController(vc, animated: true)
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -134,7 +134,7 @@ class ContactersTableView: BaseTableView {
 
 extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
     
-    func numberOfSections(in tableView: UITableView) -> Int {
+    public func numberOfSections(in tableView: UITableView) -> Int {
         if (!viewModel!.typeChange) {
             return viewModel?.pinyinArr.count ?? 0
         } else {
@@ -142,7 +142,7 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
         }
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if (!viewModel!.typeChange) {
             let arr = viewModel!.pinyinArr[section]
             return arr.count
@@ -155,7 +155,7 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
         }
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: ContactersTableCell = tableView.dequeueReusableCell(withIdentifier: "ContactersTableCell", for: indexPath) as! ContactersTableCell
         var portraitUrlString = ""
         var titleString = ""
@@ -184,11 +184,11 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
         return cell
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 64
     }
     
-    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+    public func sectionIndexTitles(for tableView: UITableView) -> [String]? {
         if !viewModel!.typeChange {
             return viewModel!.indexTitles
         } else {
@@ -196,7 +196,7 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
         }
     }
     
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if !viewModel!.typeChange {
             let v: UIView = UIView.init(frame: CGRect(x: 0, y: 0, width: frame.width, height: 30))
             let la: UILabel = UILabel.init(frame: CGRect(x: 15, y: 0, width: frame.width, height: 30))
@@ -209,7 +209,7 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
         return UIView()
     }
     
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if !viewModel!.typeChange {
             return 30
         } else {
@@ -218,15 +218,15 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
         
     }
     
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+    public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 0.01
     }
     
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+    public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         return UIView()
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if !viewModel!.typeChange {
             let m = viewModel!.pinyinArr[indexPath.section][indexPath.row]
             let vc = ContacterInfoVC()
@@ -257,7 +257,7 @@ extension ContactersTableView: UITableViewDelegate, UITableViewDataSource, UITex
         }
     }
     
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+    public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         self.viewModel?.navigationVC?.pushViewController(ContactorResultVC(), animated: true)
         return false
     }

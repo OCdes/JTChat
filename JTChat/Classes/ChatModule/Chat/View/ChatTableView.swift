@@ -36,8 +36,10 @@ class ChatTableView: UITableView {
         }
         register(ChatTableLeftCell.self, forCellReuseIdentifier: "ChatTableLeftCell")
         register(ChatTableRightCell.self, forCellReuseIdentifier: "ChatTableRightCell")
+        register(LeftImgVCell.self, forCellReuseIdentifier: "LeftImgVCell")
         register(LeftVoiceCell.self, forCellReuseIdentifier: "LeftVoiceCell")
         register(RightVoiceCell.self, forCellReuseIdentifier: "RightVoiceCell")
+        register(RightImgVCell.self, forCellReuseIdentifier: "RightImgVCell")
         register(LeftVideoCell.self, forCellReuseIdentifier: "LeftVideoCell")
         register(RightVideoCell.self, forCellReuseIdentifier: "RightVideoCell")
         let _ = viewModel?.subject.subscribe(onNext: { [weak self](count) in
@@ -113,12 +115,19 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
                 cell.contentV.addGestureRecognizer(tap)
                 return cell
-            } else {
+            } else if model.packageType == 2 {
+                let cell: RightImgVCell = tableView.dequeueReusableCell(withIdentifier: "RightImgVCell", for: indexPath) as! RightImgVCell
+                cell.model = model
+                cell.contentV.indexPath = indexPath
+//                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
+//                cell.contentV.addGestureRecognizer(tap)
+                return cell
+            }  else {
                 let cell: ChatTableRightCell = tableView.dequeueReusableCell(withIdentifier: "ChatTableRightCell", for: indexPath) as! ChatTableRightCell
                 cell.model = model
                 cell.contentV.indexPath = indexPath
-                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
-                cell.contentV.addGestureRecognizer(tap)
+//                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
+//                cell.contentV.addGestureRecognizer(tap)
                 return cell
             }
         } else {
@@ -136,12 +145,19 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
                 cell.contentV.addGestureRecognizer(tap)
                 return cell
+            } else if model.packageType == 2 {
+                let cell: LeftImgVCell = tableView.dequeueReusableCell(withIdentifier: "LeftImgVCell", for: indexPath) as! LeftImgVCell
+                cell.model = model
+                cell.contentV.indexPath = indexPath
+//                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
+//                cell.contentV.addGestureRecognizer(tap)
+                return cell
             } else {
                 let cell: ChatTableLeftCell = tableView.dequeueReusableCell(withIdentifier: "ChatTableLeftCell", for: indexPath) as! ChatTableLeftCell
                 cell.model = model
                 cell.contentV.indexPath = indexPath
-                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
-                cell.contentV.addGestureRecognizer(tap)
+//                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
+//                cell.contentV.addGestureRecognizer(tap)
                 return cell
             }
             
@@ -360,6 +376,76 @@ class ChatTableLeftCell: BaseTableCell {
         contentV.addSubview(contentLa)
         contentLa.snp_makeConstraints { (make) in
             make.edges.equalTo(UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5))
+        }
+        
+        contentV.addSubview(imgv)
+        imgv.snp_makeConstraints { (make) in
+            make.edges.equalTo(UIEdgeInsets.zero)
+        }
+    }
+    
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(ChatTableView.copyItem) || action == #selector(ChatTableView.retweetItem) || action == #selector(ChatTableView.deletItem) {
+            return true
+        }
+        return false
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class LeftImgVCell: BaseTableCell {
+    var model: MessageModel = MessageModel() {
+        didSet {
+            let m = DBManager.manager.getContactor(phone: model.senderPhone)
+            portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+            imgv.image = UIImage.init(data: Data.init(base64Encoded: model.msgContent)!)
+            contentV.snp_updateConstraints { (make) in
+                make.right.equalTo(contentView).offset(-(58 + kScreenWidth-116-CGFloat(model.estimate_width)))
+            }
+        }
+    }
+    lazy var portraitV: UIImageView = {
+        let pv = UIImageView()
+        pv.layer.cornerRadius = 18
+        pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
+        return pv
+    }()
+    lazy var contentV: UIView = {
+        let cv = UIView()
+        cv.layer.cornerRadius = 3
+        cv.backgroundColor = HEX_FFF
+        return cv
+    }()
+    lazy var imgv: UIImageView = {
+        let iv = UIImageView()
+        iv.layer.cornerRadius = 3
+        iv.contentMode = .scaleAspectFill
+        iv.layer.masksToBounds = true
+        return iv
+    }()
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        contentView.backgroundColor = UIColor.clear
+        contentView.addSubview(portraitV)
+        portraitV.snp_makeConstraints { (make) in
+            make.left.equalTo(contentView).offset(9.5)
+            make.top.equalTo(contentView).offset(11)
+            make.size.equalTo(CGSize(width: 36, height: 36))
+        }
+        
+        contentView.addSubview(contentV)
+        contentV.snp_makeConstraints { (make) in
+            make.left.equalTo(portraitV.snp_right).offset(12.5)
+            make.top.equalTo(portraitV).offset(1)
+            make.right.equalTo(contentView).offset(-64)
+            make.bottom.equalTo(contentView).offset(-11)
         }
         
         contentV.addSubview(imgv)
@@ -701,6 +787,75 @@ class ChatTableRightCell: BaseTableCell {
         contentV.addSubview(contentLa)
         contentLa.snp_makeConstraints { (make) in
             make.edges.equalTo(UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5))
+        }
+        
+        contentV.addSubview(imgv)
+        imgv.snp_makeConstraints { (make) in
+            make.edges.equalTo(UIEdgeInsets.zero)
+        }
+    }
+    
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(ChatTableView.copyItem) || action == #selector(ChatTableView.retweetItem) || action == #selector(ChatTableView.deletItem) {
+            return true
+        }
+        return false
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class RightImgVCell: BaseTableCell {
+    var model: MessageModel = MessageModel() {
+        didSet {
+            portraitV.kf.setImage(with: URL(string: JTManager.manager.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+            imgv.image = UIImage.init(data: Data.init(base64Encoded: model.msgContent)!)
+            contentV.snp_updateConstraints { (make) in
+                make.left.equalTo(contentView).offset(kScreenWidth-116-CGFloat(model.estimate_width)+58)
+            }
+        }
+    }
+    lazy var portraitV: UIImageView = {
+        let pv = UIImageView()
+        pv.layer.cornerRadius = 18
+        pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
+        return pv
+    }()
+    
+    lazy var contentV: UIView = {
+        let cv = UIView()
+        cv.layer.cornerRadius = 3
+        cv.backgroundColor = HEX_COLOR(hexStr: "#CEE6FA")
+        return cv
+    }()
+    lazy var imgv: UIImageView = {
+        let iv = UIImageView()
+        iv.layer.cornerRadius = 3
+        iv.contentMode = .scaleAspectFill
+        iv.layer.masksToBounds = true
+        return iv
+    }()
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        contentView.addSubview(portraitV)
+        portraitV.snp_makeConstraints { (make) in
+            make.right.equalTo(contentView).offset(-9.5)
+            make.top.equalTo(contentView).offset(11)
+            make.size.equalTo(CGSize(width: 36, height: 36))
+        }
+        
+        contentView.addSubview(contentV)
+        contentV.snp_makeConstraints { (make) in
+            make.right.equalTo(portraitV.snp_left).offset(-12.5)
+            make.top.equalTo(portraitV).offset(1)
+            make.left.equalTo(contentView).offset(64)
+            make.bottom.equalTo(contentView).offset(-11)
         }
         
         contentV.addSubview(imgv)

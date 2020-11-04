@@ -69,7 +69,7 @@ class AVFManager: NSObject {
         if let imgdata = data {
             if !filemanager.fileExists(atPath: tmpPath) {
                 if filemanager.createFile(atPath: tmpPath, contents: imgdata, attributes: nil) {
-                    print("amr创建成功")
+                    print("amr创建成功, 路径为=\(tmpPath)")
                 } else {
                     print("amr创建失败，路径为=\(tmpPath)")
                 }

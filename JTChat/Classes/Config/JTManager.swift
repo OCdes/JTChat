@@ -130,7 +130,7 @@ open class JTManager: NSObject {
             } else if model.fileSuffix.contains("mp4") {
                 mmodel.msgContent = AVFManager().saveVideo(videoDataStr: mmodel.msgContent, fromUserId: "\(model.fromUserId)\(model.targetUserId)")
             } else {
-                ChatimagManager.manager.saveImage(imageDataStr: model.contentString)
+                mmodel.msgContent = ChatimagManager.manager.saveImage(imageDataStr: model.contentString)
             }
         }
         mmodel.timeStamp = Date().timeIntervalSince1970

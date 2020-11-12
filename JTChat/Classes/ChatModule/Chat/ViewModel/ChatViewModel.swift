@@ -113,7 +113,6 @@ class ChatViewModel: BaseViewModel {
             model.receiver = ""
             model.receiverPhone = USERDEFAULT.object(forKey: "phone") as! String
             model.receiverAvanter = ""
-            let semaphore = DispatchSemaphore(value: 0)
             DBManager.manager.getChatLog(model: model, page: page, nums: page == 1 ? 0 : self.totalTimeArr.count) { [weak self](arr) in
                 self!.first = false
                 scrollView.jt_endRefresh()
@@ -138,9 +137,7 @@ class ChatViewModel: BaseViewModel {
                 } else {
                     scrollView.jt_endRefresh()
                 }
-                semaphore.signal()
             }
-            semaphore.wait()
         }
     }
     

@@ -117,7 +117,6 @@ class AVFManager: NSObject {
                     print("截取第一贞失败：\(err.localizedDescription)")
                 }
         }
-        
         return JTBundleTool.getBundleImg(with: "placeHolder") ?? UIImage()
     }
     

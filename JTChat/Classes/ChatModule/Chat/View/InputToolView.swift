@@ -309,6 +309,7 @@ class InputToolView: UIView {
     }
     
     @objc func typeBtnClicked(btn: UIButton) {
+        resignActive()
         btn.isSelected = !btn.isSelected
         if btn.isSelected {
             self.textV.isHidden = true

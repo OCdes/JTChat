@@ -233,11 +233,6 @@ open class DBManager: NSObject {
             if model.friendPhone.count > 0 {
                 updateRecentInfo(model: model)
             }
-            DispatchQueue.main.async {
-                print("最近列表无需添加，开始刷新数据")
-                NotificationCenter.default.post(name: NotificationHelper.kUpdateRecentList, object: nil)
-                NotificationCenter.default.post(name: NotificationHelper.kUpdateRedDot, object: nil)
-            }
         }
     }
     
@@ -415,11 +410,6 @@ open class DBManager: NSObject {
                             if !db.interrupt() {
                                 print("db.lastError()")
                             }
-                            DispatchQueue.main.async {
-                                print("个人联系人信息更新成功")
-                                NotificationCenter.default.post(name: NotificationHelper.kUpdateRecentList, object: nil)
-                                NotificationCenter.default.post(name: NotificationHelper.kUpdateRedDot, object: nil)
-                            }
                         }
                     }
                     db.close()
@@ -437,11 +427,6 @@ open class DBManager: NSObject {
                         if db.executeUpdate(updateSQL, withArgumentsIn: []) {
                             if !db.interrupt() {
                                 print("db.lastError()")
-                            }
-                            DispatchQueue.main.async {
-                                print("个人联系人信息更新成功")
-                                NotificationCenter.default.post(name: NotificationHelper.kUpdateRecentList, object: nil)
-                                NotificationCenter.default.post(name: NotificationHelper.kUpdateRedDot, object: nil)
                             }
                         }
                     }
@@ -537,7 +522,7 @@ open class DBManager: NSObject {
         DispatchQueue.global().async {
             self.dbQueue?.inDatabase({ (db) in
                 if db.open() {
-                    var msgStr: String = model.msgContent
+                    let msgStr: String = model.msgContent
                     if model.packageType == 1 {
                         let height = MessageAttriManager.manager.exchange(content: model.msgContent).boundingRect(with: CGSize(width: (kScreenWidth-132), height: CGFloat(MAXFLOAT)), options: .usesLineFragmentOrigin, context: NSStringDrawingContext()).size.height+38
                         var width: CGFloat = kScreenWidth-132
@@ -565,10 +550,9 @@ open class DBManager: NSObject {
                                 model.estimate_width = model.estimate_height * Float(size.width/size.height)
                             }
                         } else {
-                            let imgData = model.isRemote ? Data.init(base64Encoded: model.msgContent) : ChatimagManager.manager.GetImageDataBy(MD5Str: model.msgContent)
-                            if let id = imgData {
-                                msgStr = model.isRemote ? ChatimagManager.manager.MD5By(data: id) : model.msgContent
-                                let img = UIImage.init(data: id)
+                            let imgData = ChatimagManager.manager.GetImageDataBy(MD5Str: model.msgContent)
+                            if imgData.count > 0 {
+                                let img = UIImage.init(data: imgData)
                                 if let ig = img {
                                     let swidth = Double(kScreenWidth-116)
                                     let width = Double(ig.size.width)
@@ -744,7 +728,7 @@ open class DBManager: NSObject {
                                             } else if msgStr.contains(".mp4") {
                                                 m.msgContent = msgStr
                                             } else {
-                                                m.msgContent = ChatimagManager.manager.GetImageDataBy(MD5Str: msgStr).base64EncodedString()
+                                                m.msgContent = msgStr
                                             }
                                         } else {
                                             m.msgContent = msgStr
@@ -816,7 +800,7 @@ open class DBManager: NSObject {
                                                     } else if msgStr.contains(".mp4") {
                                                         m.msgContent = msgStr
                                                     } else {
-                                                        m.msgContent = ChatimagManager.manager.GetImageDataBy(MD5Str: msgStr).base64EncodedString()
+                                                        m.msgContent = msgStr
                                                     }
                                                 } else {
                                                     m.msgContent = msgStr

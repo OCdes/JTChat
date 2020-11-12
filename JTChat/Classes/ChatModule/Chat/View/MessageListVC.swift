@@ -63,7 +63,7 @@ open class MessageListVC: BaseViewController {
                     
                 case 1:
                     let status = AVCaptureDevice.authorizationStatus(for: .video)
-                    if status == .authorized {
+                    if status != .denied {
                         let scan = ALScannerQRCodeVC.init()
                         scan.scannerQRCodeDone = {[weak self](result) in
                             if let rs = result,let phone = (rs as NSString).components(separatedBy: "_").first {
@@ -138,10 +138,6 @@ open class MessageListVC: BaseViewController {
     
     func bindModel() {
         viewModel.navigationVC = self.navigationController
-        
-        _ = self.scrollView.jt_addRefreshHeader {
-            self.viewModel.getAllRecentContactor(scrollView: self.scrollView)
-        }
         
         _ = viewModel.rx.observe(Int.self, "perNum").subscribe(onNext: { [weak self](num) in
             if let n = num {

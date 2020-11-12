@@ -119,15 +119,15 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 let cell: RightImgVCell = tableView.dequeueReusableCell(withIdentifier: "RightImgVCell", for: indexPath) as! RightImgVCell
                 cell.model = model
                 cell.contentV.indexPath = indexPath
-//                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
-//                cell.contentV.addGestureRecognizer(tap)
+                //                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
+                //                cell.contentV.addGestureRecognizer(tap)
                 return cell
             }  else {
                 let cell: ChatTableRightCell = tableView.dequeueReusableCell(withIdentifier: "ChatTableRightCell", for: indexPath) as! ChatTableRightCell
                 cell.model = model
                 cell.contentV.indexPath = indexPath
-//                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
-//                cell.contentV.addGestureRecognizer(tap)
+                //                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
+                //                cell.contentV.addGestureRecognizer(tap)
                 return cell
             }
         } else {
@@ -149,15 +149,15 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 let cell: LeftImgVCell = tableView.dequeueReusableCell(withIdentifier: "LeftImgVCell", for: indexPath) as! LeftImgVCell
                 cell.model = model
                 cell.contentV.indexPath = indexPath
-//                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
-//                cell.contentV.addGestureRecognizer(tap)
+                //                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
+                //                cell.contentV.addGestureRecognizer(tap)
                 return cell
             } else {
                 let cell: ChatTableLeftCell = tableView.dequeueReusableCell(withIdentifier: "ChatTableLeftCell", for: indexPath) as! ChatTableLeftCell
                 cell.model = model
                 cell.contentV.indexPath = indexPath
-//                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
-//                cell.contentV.addGestureRecognizer(tap)
+                //                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
+                //                cell.contentV.addGestureRecognizer(tap)
                 return cell
             }
             
@@ -282,17 +282,7 @@ class ChatTableLeftCell: BaseTableCell {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.senderPhone)
             portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
-            if model.packageType == 1 {
-                contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
-                imgv.isHidden = true
-            } else {
-                if model.msgContent.contains("mp4") {
-                    _ = AVFManager().firstFrameOfVideo(filePath: model.msgContent, size: CGSize(width: CGFloat(model.estimate_width), height: CGFloat(model.estimate_height)), toImgView: imgv)
-                } else {
-                    imgv.image = UIImage.init(data: Data.init(base64Encoded: model.msgContent)!)
-                }
-                imgv.isHidden = false
-            }
+            contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
             contentV.snp_updateConstraints { (make) in
                 make.right.equalTo(contentView).offset(-(35.5+kScreenWidth-122-CGFloat(model.estimate_width)))
             }
@@ -300,7 +290,7 @@ class ChatTableLeftCell: BaseTableCell {
     }
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
-        pv.layer.cornerRadius = 18
+        
         pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
@@ -318,14 +308,6 @@ class ChatTableLeftCell: BaseTableCell {
         cl.isUserInteractionEnabled = true
         return cl
     }()
-    lazy var imgv: UIImageView = {
-        let iv = UIImageView()
-        iv.layer.cornerRadius = 3
-        iv.contentMode = .scaleAspectFit
-        iv.layer.masksToBounds = true
-        iv.isHidden = true
-        return iv
-    }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = UIColor.clear
@@ -337,27 +319,7 @@ class ChatTableLeftCell: BaseTableCell {
         }
         
         let trangle = UIImageView.init()
-        DispatchQueue.global().async {
-            UIGraphicsBeginImageContextWithOptions(CGSize(width: 6, height: 15), false, UIScreen.main.scale)
-            let c = UIGraphicsGetCurrentContext()
-            if let context = c {
-                context.saveGState()
-                context.setFillColor(HEX_FFF.cgColor)
-                var points = [CGPoint](repeating: CGPoint.zero, count: 3)
-                points[0] = CGPoint(x: 6, y: 0)
-                points[1] = CGPoint(x: 0, y: 5)
-                points[2] = CGPoint(x: 6, y: 10)
-                context.addLines(between: points)
-                context.closePath()
-                context.drawPath(using: .fill)
-                let image = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
-                context.restoreGState()
-                DispatchQueue.main.async {
-                    trangle.image = image
-                }
-            }
-        }
+        trangle.image = JTBundleTool.getBundleImg(with: "leftTrangle")
         contentView.addSubview(trangle)
         trangle.snp_makeConstraints { (make) in
             make.left.equalTo(portraitV.snp_right).offset(6.5)
@@ -376,11 +338,6 @@ class ChatTableLeftCell: BaseTableCell {
         contentV.addSubview(contentLa)
         contentLa.snp_makeConstraints { (make) in
             make.edges.equalTo(UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5))
-        }
-        
-        contentV.addSubview(imgv)
-        imgv.snp_makeConstraints { (make) in
-            make.edges.equalTo(UIEdgeInsets.zero)
         }
     }
     
@@ -405,7 +362,7 @@ class LeftImgVCell: BaseTableCell {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.senderPhone)
             portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
-            imgv.image = UIImage.init(data: Data.init(base64Encoded: model.msgContent)!)
+            imgv.image = ChatimagManager.manager.GetImageBy(MD5Str: model.msgContent)
             contentV.snp_updateConstraints { (make) in
                 make.right.equalTo(contentView).offset(-(58 + kScreenWidth-116-CGFloat(model.estimate_width)))
             }
@@ -413,7 +370,7 @@ class LeftImgVCell: BaseTableCell {
     }
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
-        pv.layer.cornerRadius = 18
+        
         pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
@@ -475,7 +432,7 @@ class LeftVideoCell: BaseTableCell {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.senderPhone)
             portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
-            _ = AVFManager().firstFrameOfVideo(filePath: model.msgContent, size: CGSize(width: CGFloat(model.estimate_width), height: CGFloat(model.estimate_height)), toImgView: imgv)
+            _ = AVFManager().firstFrameOfVideo(filePath: model.msgContent, size: CGSize(width: CGFloat(model.estimate_width)*2, height: CGFloat(model.estimate_height)*2), toImgView: imgv)
             contentV.snp_updateConstraints { (make) in
                 make.right.equalTo(contentView).offset(-(58 + kScreenWidth-116-CGFloat(model.estimate_width)))
             }
@@ -483,7 +440,7 @@ class LeftVideoCell: BaseTableCell {
     }
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
-        pv.layer.cornerRadius = 18
+        
         pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
@@ -531,7 +488,7 @@ class LeftVideoCell: BaseTableCell {
         contentV.addSubview(playImgv)
         playImgv.snp_makeConstraints { (make) in
             make.center.equalTo(contentV)
-            make.size.equalTo(CGSize(width: 45, height: 45))
+            make.size.equalTo(CGSize(width: 35, height: 35))
         }
     }
     
@@ -554,9 +511,9 @@ class LeftVideoCell: BaseTableCell {
 class LeftVoiceCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
-            //            let m = DBManager.manager.getContactor(phone: model.receiverPhone)
+            let m = DBManager.manager.getContactor(phone: model.senderPhone)
             contentLa.text = "\(AVFManager().durationOf(filePath: model.msgContent))\""
-            portraitV.kf.setImage(with: URL(string: JTManager.manager.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+            portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             redDot.isHidden = model.voiceIsReaded
             contentV.snp_updateConstraints { (make) in
                 make.right.equalTo(contentView).offset(-(kScreenWidth-122-CGFloat(model.estimate_width)+35.5))
@@ -566,7 +523,7 @@ class LeftVoiceCell: BaseTableCell {
     }
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
-        pv.layer.cornerRadius = 18
+        
         pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
@@ -613,27 +570,7 @@ class LeftVoiceCell: BaseTableCell {
         }
         
         let trangle = UIImageView.init()
-        DispatchQueue.global().async {
-            UIGraphicsBeginImageContextWithOptions(CGSize(width: 6, height: 15), false, UIScreen.main.scale)
-            let c = UIGraphicsGetCurrentContext()
-            if let context = c {
-                context.saveGState()
-                context.setFillColor(HEX_FFF.cgColor)
-                var points = [CGPoint](repeating: CGPoint.zero, count: 3)
-                points[0] = CGPoint(x: 6, y: 0)
-                points[1] = CGPoint(x: 0, y: 5)
-                points[2] = CGPoint(x: 6, y: 10)
-                context.addLines(between: points)
-                context.closePath()
-                context.drawPath(using: .fill)
-                let image = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
-                context.restoreGState()
-                DispatchQueue.main.async {
-                    trangle.image = image
-                }
-            }
-        }
+        trangle.image = JTBundleTool.getBundleImg(with: "leftTrangle")
         contentView.addSubview(trangle)
         trangle.snp_makeConstraints { (make) in
             make.left.equalTo(portraitV.snp_right).offset(6.5)
@@ -690,20 +627,8 @@ class LeftVoiceCell: BaseTableCell {
 class ChatTableRightCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
-            //            let m = DBManager.manager.getContactor(phone: model.receiverPhone)
             portraitV.kf.setImage(with: URL(string: JTManager.manager.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
-            if model.packageType == 1 {
-                contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
-                imgv.isHidden = true
-            } else {
-                if model.msgContent.contains("mp4") {
-                    let size = CGSize(width: CGFloat(model.estimate_width), height: CGFloat(model.estimate_height))
-                    _ = AVFManager().firstFrameOfVideo(filePath: model.msgContent, size: size, toImgView:imgv)
-                } else {
-                    imgv.image = UIImage.init(data: Data.init(base64Encoded: model.msgContent)!)
-                }
-                imgv.isHidden = false
-            }
+            contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
             contentV.snp_updateConstraints { (make) in
                 make.left.equalTo(contentView).offset(kScreenWidth-122-CGFloat(model.estimate_width)+35.5)
             }
@@ -711,7 +636,7 @@ class ChatTableRightCell: BaseTableCell {
     }
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
-        pv.layer.cornerRadius = 18
+        
         pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
@@ -730,14 +655,6 @@ class ChatTableRightCell: BaseTableCell {
         cl.adjustsFontSizeToFitWidth = true
         return cl
     }()
-    lazy var imgv: UIImageView = {
-        let iv = UIImageView()
-        iv.layer.cornerRadius = 3
-        iv.contentMode = .scaleAspectFit
-        iv.layer.masksToBounds = true
-        iv.isHidden = true
-        return iv
-    }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(portraitV)
@@ -748,27 +665,7 @@ class ChatTableRightCell: BaseTableCell {
         }
         
         let trangle = UIImageView.init()
-        DispatchQueue.global().async {
-            UIGraphicsBeginImageContextWithOptions(CGSize(width: 6, height: 15), false, UIScreen.main.scale)
-            let c = UIGraphicsGetCurrentContext()
-            if let context = c {
-                context.saveGState()
-                context.setFillColor(HEX_COLOR(hexStr: "#CEE6FA").cgColor)
-                var points = [CGPoint](repeating: CGPoint.zero, count: 3)
-                points[0] = CGPoint(x: 6, y: 5)
-                points[1] = CGPoint(x: 0, y: 10)
-                points[2] = CGPoint(x: 0, y: 0)
-                context.addLines(between: points)
-                context.closePath()
-                context.drawPath(using: .fill)
-                let image = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
-                context.restoreGState()
-                DispatchQueue.main.async {
-                    trangle.image = image
-                }
-            }
-        }
+        trangle.image = JTBundleTool.getBundleImg(with: "rightTrangle")
         contentView.addSubview(trangle)
         trangle.snp_makeConstraints { (make) in
             make.right.equalTo(portraitV.snp_left).offset(-6.5)
@@ -787,11 +684,6 @@ class ChatTableRightCell: BaseTableCell {
         contentV.addSubview(contentLa)
         contentLa.snp_makeConstraints { (make) in
             make.edges.equalTo(UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5))
-        }
-        
-        contentV.addSubview(imgv)
-        imgv.snp_makeConstraints { (make) in
-            make.edges.equalTo(UIEdgeInsets.zero)
         }
     }
     
@@ -815,7 +707,7 @@ class RightImgVCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             portraitV.kf.setImage(with: URL(string: JTManager.manager.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
-            imgv.image = UIImage.init(data: Data.init(base64Encoded: model.msgContent)!)
+            imgv.image = ChatimagManager.manager.GetImageBy(MD5Str: model.msgContent)
             contentV.snp_updateConstraints { (make) in
                 make.left.equalTo(contentView).offset(kScreenWidth-116-CGFloat(model.estimate_width)+58)
             }
@@ -823,7 +715,7 @@ class RightImgVCell: BaseTableCell {
     }
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
-        pv.layer.cornerRadius = 18
+        
         pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
@@ -884,9 +776,9 @@ class RightVideoCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             portraitV.kf.setImage(with: URL(string: JTManager.manager.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
-                    let size = CGSize(width: CGFloat(model.estimate_width), height: CGFloat(model.estimate_height))
+            let size = CGSize(width: CGFloat(model.estimate_width)*2, height: CGFloat(model.estimate_height)*2)
             _ = AVFManager().firstFrameOfVideo(filePath: model.msgContent, size: size, toImgView:imgv)
-                    
+            
             contentV.snp_updateConstraints { (make) in
                 make.left.equalTo(contentView).offset(kScreenWidth-116-CGFloat(model.estimate_width)+58)
             }
@@ -894,7 +786,7 @@ class RightVideoCell: BaseTableCell {
     }
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
-        pv.layer.cornerRadius = 18
+        
         pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
@@ -942,7 +834,7 @@ class RightVideoCell: BaseTableCell {
         contentV.addSubview(playImgv)
         playImgv.snp_makeConstraints { (make) in
             make.center.equalTo(contentV)
-            make.size.equalTo(CGSize(width: 45, height: 45))
+            make.size.equalTo(CGSize(width: 35, height: 35))
         }
     }
     
@@ -975,7 +867,7 @@ class RightVoiceCell: BaseTableCell {
     }
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
-        pv.layer.cornerRadius = 18
+        
         pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
@@ -1023,27 +915,7 @@ class RightVoiceCell: BaseTableCell {
         }
         
         let trangle = UIImageView.init()
-        DispatchQueue.global().async {
-            UIGraphicsBeginImageContextWithOptions(CGSize(width: 6, height: 15), false, UIScreen.main.scale)
-            let c = UIGraphicsGetCurrentContext()
-            if let context = c {
-                context.saveGState()
-                context.setFillColor(HEX_COLOR(hexStr: "#CEE6FA").cgColor)
-                var points = [CGPoint](repeating: CGPoint.zero, count: 3)
-                points[0] = CGPoint(x: 6, y: 5)
-                points[1] = CGPoint(x: 0, y: 10)
-                points[2] = CGPoint(x: 0, y: 0)
-                context.addLines(between: points)
-                context.closePath()
-                context.drawPath(using: .fill)
-                let image = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
-                context.restoreGState()
-                DispatchQueue.main.async {
-                    trangle.image = image
-                }
-            }
-        }
+        trangle.image = JTBundleTool.getBundleImg(with: "rightTrangle")
         contentView.addSubview(trangle)
         trangle.snp_makeConstraints { (make) in
             make.right.equalTo(portraitV.snp_left).offset(-6.5)

@@ -52,7 +52,7 @@ open class ConntactersVC: BaseViewController  {
         btn.setImage(JTBundleTool.getBundleImg(with:"addFriend"), for: .normal)
         let _ = btn.rx.controlEvent(.touchUpInside).subscribe(onNext: { [weak self](a) in
             let status = AVCaptureDevice.authorizationStatus(for: .video)
-            if status == .authorized {
+            if status != .denied {
                 let scan = ALScannerQRCodeVC.init()
                 scan.scannerQRCodeDone = {[weak self](result) in
                     if let rs = result,let phone = (rs as NSString).components(separatedBy: "_").first {

@@ -75,4 +75,5 @@ class ContactInfoModel: BaseModel {
     var isFriend: Bool = false
     var jobNumber: String = ""
     var phone: String = ""
+    
 }

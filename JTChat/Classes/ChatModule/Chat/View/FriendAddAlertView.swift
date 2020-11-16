@@ -11,7 +11,7 @@ class FriendAddAlertView: UIView {
     var model: ContactInfoModel = ContactInfoModel() {
         didSet {
             portraitv.kf.setImage(with: URL(string: model.avatarUrl) ,placeholder: JTBundleTool.getBundleImg(with: "approvalPortrait"))
-            nameLa.text = model.nickName.count>0 ? model.nickName : model.phone
+            nameLa.text = (model.nickName.count>0 ? model.nickName : model.phone)
         }
     }
     var sureSubject = PublishSubject<String>()

@@ -33,10 +33,10 @@ class AddFriendApplyViewModel: BaseViewModel {
             let myApplyDict = myApplyData as! [String:Any]
             let dealApplyDict = dealApplyData as! [String:Any]
             print(myApplyData,dealApplyData)
-            if let dict = myApplyDict["Data"] as? [[String: Any]] {
+            if let dict = (myApplyDict["Data"] ?? myApplyDict["data"]) as? [[String: Any]] {
                 self!.myApplyArr = JSONDeserializer<MyApplyNoteModel>.deserializeModelArrayFrom(array: dict) as! [MyApplyNoteModel]
             }
-            if let dict = dealApplyDict["Data"] as? [[String: Any]] {
+            if let dict = (dealApplyDict["Data"] ?? dealApplyDict["data"]) as? [[String: Any]] {
                 self!.dealApplyArr = JSONDeserializer<ApplyNoteModel>.deserializeModelArrayFrom(array: dict) as! [ApplyNoteModel]
             }
             print("lianxiren:\(Thread.current)")

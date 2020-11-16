@@ -116,8 +116,19 @@ open class MessageViewModel: BaseViewModel {
             }
             
         }
-        
     }
+    
+        func getInfoOf(qrContent: String, result: @escaping(_ cinfo: ContactInfoModel)->Void) {
+            _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: "/v1/chat/decryptEmpInfo", params: ["empQrcodeContent":qrContent], success: { (msg, code, repose, data) in
+                let m = JSONDeserializer<ContactInfoModel>.deserializeFrom(dict: ((JTManager.manager.isSafeQrCode ? data["data"] : data["Data"]) as! Dictionary<String, Any>))
+                if let mm = m {
+                    result(mm)
+                }
+            }, fail: { (errorInfo) in
+                
+            })
+        }
+    
     deinit {
         NotificationCenter.default.removeObserver(self)
     }

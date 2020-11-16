@@ -55,21 +55,52 @@ open class ConntactersVC: BaseViewController  {
             if status != .denied {
                 let scan = ALScannerQRCodeVC.init()
                 scan.scannerQRCodeDone = {[weak self](result) in
-                    if let rs = result,let phone = (rs as NSString).components(separatedBy: "_").first {
-                        if JTManager.manager.addFriendSilence {
-                            self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: "", result: { (b) in
+                    if let rs = result, rs.count > 0 {
+                        if JTManager.manager.isSafeQrCode {
+                            self?.viewModel.getInfoOf(qrContent: rs, result: { (cinfo) in
+                                if cinfo.isFriend {
+                                    SVPShowError(content: "\(cinfo.nickName)已是您的好友")
+                                } else {
+                                    if JTManager.manager.addFriendSilence {
+                                        self!.viewModel.addFriend(friendNickname: cinfo.nickName, friendPhone: cinfo.phone, friendAvatar: cinfo.avatarUrl, remark: "", result: { (b) in
+                                        })
+                                    } else {
+                                        let alertv = FriendAddAlertView.init(frame: CGRect.zero)
+                                        alertv.model = cinfo
+                                        _ = alertv.sureSubject.subscribe { [weak self](a) in
+                                            self!.viewModel.addFriend(friendNickname: cinfo.aliasName, friendPhone: cinfo.phone, friendAvatar: cinfo.avatarUrl, remark: a, result: { (b) in
+                                            })
+                                        }
+                                        alertv.show()
+                                    }
+                                }
+                                
                             })
                         } else {
-                            let model = ContactInfoModel()
-                            model.phone = phone
-                            let alertv = FriendAddAlertView.init(frame: CGRect.zero)
-                            alertv.model = model
-                            _ = alertv.sureSubject.subscribe { [weak self](a) in
-                                self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: a, result: { (b) in
+                            if let phone = (rs as NSString).components(separatedBy: "_").first {
+                                self?.viewModel.getInfoOf(qrContent: phone, result: { (cinfo) in
+                                    if cinfo.isFriend {
+                                        SVPShowError(content: "\(cinfo.nickName)已是您的好友")
+                                    } else {
+                                        if JTManager.manager.addFriendSilence {
+                                            self!.viewModel.addFriend(friendNickname: cinfo.nickName, friendPhone: phone, friendAvatar: cinfo.avatarUrl, remark: "", result: { (b) in
+                                            })
+                                        } else {
+                                            cinfo.phone = phone
+                                            let alertv = FriendAddAlertView.init(frame: CGRect.zero)
+                                            alertv.model = cinfo
+                                            _ = alertv.sureSubject.subscribe { [weak self](a) in
+                                                self!.viewModel.addFriend(friendNickname: nil, friendPhone: phone, friendAvatar: nil, remark: a, result: { (b) in
+                                                })
+                                            }
+                                            alertv.show()
+                                        }
+                                    }
+                                    
                                 })
                             }
-                            alertv.show()
                         }
+                        scan.dismiss(animated: true, completion: nil)
                     }
                 }
                 self!.navigationController?.present(scan, animated: true, completion: nil)

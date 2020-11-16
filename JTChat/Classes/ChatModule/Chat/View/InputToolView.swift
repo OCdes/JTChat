@@ -232,6 +232,12 @@ class InputToolView: UIView {
                 config.video.minimumTimeLimit = 1
                 config.video.trimmerMaxDuration = 10
                 config.video.trimmerMinDuration = 1
+                config.albumName = "精特"
+                config.wordings.next = "下一步"
+                config.wordings.cancel = "取消"
+                config.wordings.libraryTitle = "相册"
+                config.wordings.cameraTitle = "相机"
+                config.wordings.albumsTitle = "全部相册"
                 let picker: YPImagePicker = YPImagePicker.init(configuration: config)
                 picker.imagePickerDelegate = self as? YPImagePickerDelegate
                 picker.didFinishPicking { [unowned picker] items, _  in

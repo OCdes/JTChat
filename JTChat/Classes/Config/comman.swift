@@ -116,13 +116,11 @@ func currentDateStr() -> String {
 func SVPShowSuccess(content str: String) {
     SVProgressHUD.setDefaultMaskType(.none)
     SVProgressHUD.showSuccess(withStatus: str)
-    SVProgressHUD.dismiss(withDelay: 3)
 }
 
 func SVPShowError(content str: String) {
     SVProgressHUD.setDefaultMaskType(.none)
     SVProgressHUD.showError(withStatus: str)
-    SVProgressHUD.dismiss(withDelay: 3)
 }
 
 func SVPShow(content str: String) {

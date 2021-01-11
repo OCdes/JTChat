@@ -160,7 +160,6 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 //                cell.contentV.addGestureRecognizer(tap)
                 return cell
             }
-            
         }
     }
     
@@ -244,7 +243,7 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let model = dataArr[indexPath.section].rowsArr[indexPath.row]
-        return CGFloat(model.estimate_height > 62 ? model.estimate_height : 62)
+        return CGFloat(model.estimate_height > 62 ? model.estimate_height : 62) + 16.5
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -274,13 +273,13 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
     }
-    
 }
 
 class ChatTableLeftCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.senderPhone)
+            nameLa.text = m.aliasName.count > 0 ? m.aliasName : m.nickName
             portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
             contentV.snp_updateConstraints { (make) in
@@ -288,6 +287,14 @@ class ChatTableLeftCell: BaseTableCell {
             }
         }
     }
+    
+    lazy var nameLa: UILabel = {
+        let nl = UILabel()
+        nl.font = UIFont.systemFont(ofSize: 14)
+        nl.textColor = HEX_999
+        return nl
+    }()
+    
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
         
@@ -311,10 +318,18 @@ class ChatTableLeftCell: BaseTableCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = UIColor.clear
+        
+        contentView.addSubview(nameLa)
+        nameLa.snp_makeConstraints { (make) in
+            make.left.equalTo(contentView).offset(9.5)
+            make.top.equalTo(contentView).offset(5)
+            make.size.equalTo(CGSize(width: 150, height: 15))
+        }
+        
         contentView.addSubview(portraitV)
         portraitV.snp_makeConstraints { (make) in
             make.left.equalTo(contentView).offset(9.5)
-            make.top.equalTo(contentView).offset(11)
+            make.top.equalTo(nameLa.snp_bottom).offset(3)
             make.size.equalTo(CGSize(width: 36, height: 36))
         }
         
@@ -361,6 +376,7 @@ class LeftImgVCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.senderPhone)
+            nameLa.text = m.aliasName.count > 0 ? m.aliasName : m.nickName
             portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             imgv.image = ChatimagManager.manager.GetImageBy(MD5Str: model.msgContent)
             contentV.snp_updateConstraints { (make) in
@@ -368,6 +384,14 @@ class LeftImgVCell: BaseTableCell {
             }
         }
     }
+    
+    lazy var nameLa: UILabel = {
+        let nl = UILabel()
+        nl.font = UIFont.systemFont(ofSize: 14)
+        nl.textColor = HEX_999
+        return nl
+    }()
+    
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
         
@@ -390,10 +414,18 @@ class LeftImgVCell: BaseTableCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = UIColor.clear
+        
+        contentView.addSubview(nameLa)
+        nameLa.snp_makeConstraints { (make) in
+            make.left.equalTo(contentView).offset(9.5)
+            make.top.equalTo(contentView).offset(5)
+            make.size.equalTo(CGSize(width: 150, height: 15))
+        }
+        
         contentView.addSubview(portraitV)
         portraitV.snp_makeConstraints { (make) in
             make.left.equalTo(contentView).offset(9.5)
-            make.top.equalTo(contentView).offset(11)
+            make.top.equalTo(nameLa.snp_bottom).offset(3)
             make.size.equalTo(CGSize(width: 36, height: 36))
         }
         
@@ -431,6 +463,7 @@ class LeftVideoCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.senderPhone)
+            nameLa.text = m.aliasName.count > 0 ? m.aliasName : m.nickName
             portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             _ = AVFManager().firstFrameOfVideo(filePath: model.msgContent, size: CGSize(width: CGFloat(model.estimate_width)*2, height: CGFloat(model.estimate_height)*2), toImgView: imgv)
             contentV.snp_updateConstraints { (make) in
@@ -438,6 +471,14 @@ class LeftVideoCell: BaseTableCell {
             }
         }
     }
+    
+    lazy var nameLa: UILabel = {
+        let nl = UILabel()
+        nl.font = UIFont.systemFont(ofSize: 14)
+        nl.textColor = HEX_999
+        return nl
+    }()
+    
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
         
@@ -465,10 +506,18 @@ class LeftVideoCell: BaseTableCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = UIColor.clear
+        
+        contentView.addSubview(nameLa)
+        nameLa.snp_makeConstraints { (make) in
+            make.left.equalTo(contentView).offset(9.5)
+            make.top.equalTo(contentView).offset(5)
+            make.size.equalTo(CGSize(width: 150, height: 15))
+        }
+        
         contentView.addSubview(portraitV)
         portraitV.snp_makeConstraints { (make) in
             make.left.equalTo(contentView).offset(9.5)
-            make.top.equalTo(contentView).offset(11)
+            make.top.equalTo(nameLa.snp_bottom).offset(3)
             make.size.equalTo(CGSize(width: 36, height: 36))
         }
         
@@ -512,6 +561,7 @@ class LeftVoiceCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.senderPhone)
+            nameLa.text = m.aliasName.count > 0 ? m.aliasName : m.nickName
             contentLa.text = "\(AVFManager().durationOf(filePath: model.msgContent))\""
             portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             redDot.isHidden = model.voiceIsReaded
@@ -521,6 +571,14 @@ class LeftVoiceCell: BaseTableCell {
             
         }
     }
+    
+    lazy var nameLa: UILabel = {
+        let nl = UILabel()
+        nl.font = UIFont.systemFont(ofSize: 14)
+        nl.textColor = HEX_999
+        return nl
+    }()
+    
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
         
@@ -562,10 +620,18 @@ class LeftVoiceCell: BaseTableCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = UIColor.clear
+        
+        contentView.addSubview(nameLa)
+        nameLa.snp_makeConstraints { (make) in
+            make.left.equalTo(contentView).offset(9.5)
+            make.top.equalTo(contentView).offset(5)
+            make.size.equalTo(CGSize(width: 150, height: 15))
+        }
+        
         contentView.addSubview(portraitV)
         portraitV.snp_makeConstraints { (make) in
             make.left.equalTo(contentView).offset(9.5)
-            make.top.equalTo(contentView).offset(11)
+            make.top.equalTo(nameLa.snp_bottom).offset(3)
             make.size.equalTo(CGSize(width: 36, height: 36))
         }
         
@@ -634,6 +700,7 @@ class ChatTableRightCell: BaseTableCell {
             }
         }
     }
+    
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
         
@@ -657,6 +724,7 @@ class ChatTableRightCell: BaseTableCell {
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
         contentView.addSubview(portraitV)
         portraitV.snp_makeConstraints { (make) in
             make.right.equalTo(contentView).offset(-9.5)
@@ -713,6 +781,7 @@ class RightImgVCell: BaseTableCell {
             }
         }
     }
+    
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
         
@@ -735,6 +804,7 @@ class RightImgVCell: BaseTableCell {
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
         contentView.addSubview(portraitV)
         portraitV.snp_makeConstraints { (make) in
             make.right.equalTo(contentView).offset(-9.5)
@@ -784,6 +854,7 @@ class RightVideoCell: BaseTableCell {
             }
         }
     }
+    
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
         
@@ -811,6 +882,7 @@ class RightVideoCell: BaseTableCell {
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
         contentView.addSubview(portraitV)
         portraitV.snp_makeConstraints { (make) in
             make.right.equalTo(contentView).offset(-9.5)
@@ -865,6 +937,7 @@ class RightVoiceCell: BaseTableCell {
             }
         }
     }
+    
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
         
@@ -907,6 +980,7 @@ class RightVoiceCell: BaseTableCell {
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
         contentView.addSubview(portraitV)
         portraitV.snp_makeConstraints { (make) in
             make.right.equalTo(contentView).offset(-9.5)

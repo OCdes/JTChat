@@ -263,10 +263,10 @@ class InputToolView: UIView {
             self.bottomUpDistance = endFrame.height
             self.keyboardHeight = endFrame.height
             if let de = delegate {
-                de.keyboardChangeFrame(inY: endFrame.height+textHeight-(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) :(49+(kiPhoneXOrXS ? 34 : 0))))
+                de.keyboardChangeFrame(inY: endFrame.height+textHeight+(JTManager.manager.isHideBottom ? 0 : 49))
             }
             self.toolV.snp_updateConstraints { (make) in
-                make.bottom.equalTo(self).offset(-(endFrame.height-(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) :(49+(kiPhoneXOrXS ? 34 : 0)))))
+                make.bottom.equalTo(self).offset(-(endFrame.height+(JTManager.manager.isHideBottom ? 0 :49)))
             }
         }
     }

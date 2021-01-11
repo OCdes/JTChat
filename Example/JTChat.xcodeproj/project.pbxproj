@@ -16,6 +16,7 @@
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		622954EA79509AC7397342FF /* Pods_JTChat_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E322A819B6FC9570734F73C /* Pods_JTChat_Example.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		6B1AFF1A24FACBE700FF8B1B /* JTChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B1AFF1924FACBE700FF8B1B /* JTChat.framework */; };
+		6B8E822625AC037F00A71988 /* EBaseNavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8E822525AC037F00A71988 /* EBaseNavController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +46,7 @@
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		6B1AFF1924FACBE700FF8B1B /* JTChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = JTChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6B8E822525AC037F00A71988 /* EBaseNavController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EBaseNavController.swift; sourceTree = "<group>"; };
 		9797F147D72F69CAAE9613E7 /* Pods_JTChat_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JTChat_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B91FAD5511F56235763CBBC5 /* JTChat.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = JTChat.podspec; path = ../JTChat.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		D29E18040AF0BDD75BDA7FA2 /* Pods-JTChat_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JTChat_Example.release.xcconfig"; path = "Target Support Files/Pods-JTChat_Example/Pods-JTChat_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 			children = (
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
+				6B8E822525AC037F00A71988 /* EBaseNavController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -423,6 +426,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B8E822625AC037F00A71988 /* EBaseNavController.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 			);

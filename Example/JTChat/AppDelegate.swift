@@ -14,12 +14,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        JTManager.manager.url = "https://api.hzjtyh.com"
+        JTManager.manager.url = "http://192.168.0.82:14002"//"https://api.hzjtyh.com"
         JTManager.manager.placeID = 2040
-        JTManager.manager.isHideBottom = false
-//        JTManager.manager.jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN1c3RvbSI6eyJ1c2VyT3BlbklEIjoiIiwibWVyY2hhbnRJRCI6MTAzNywicGhvbmUiOiIxNTY2OTAxOTU1NyIsInBsYWNlSUQiOjIwNDAsInZlcnNpb25ObyI6IjEuMC45IiwidGVybWluYWxUeXBlIjoiQXBwIn19.eyJzdWIiOiLmjojmnYNBUFDnq6_ku6TniYwiLCJpc3MiOiLnsr7nibnlqLHmsYfmnInpmZDlhazlj7giLCJleHAiOjE2MDIzMjM1MTEsImlhdCI6MTYwMjIzNzExMSwianRpIjoiYjg5MzIxN2VjNTE5NDM2YThmNzUwNmI1MGNjMTRiMmQifQ.ZEyj0MTIuwmMvF6zrx8mgnJyxC_K9V8CBFptbRepzW8"
-        JTManager.manager.ctoken = "dd24c20a94584991a0cf1023032c954e"//51eb8aff2d8149c2bd18d533c0515f94
-        JTManager.manager.phone = "13516776244"//13516776244
+        JTManager.manager.isHideBottom = true
+        JTManager.manager.jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN1c3RvbSI6eyJ1c2VyT3BlbklEIjoiIiwicGxhY2VLZXkiOiJlYThkZjVhYTBhMWRkNzgxNWE3MGIzY2QxNWUxMWE0YSIsIm1lcmNoYW50SUQiOjEwMzcsInBob25lIjoiMTU2NjkwMTk1NTciLCJwbGFjZUlEIjoyMDQwLCJ2ZXJzaW9uTm8iOiIxLjIuMSIsInRlcm1pbmFsVHlwZSI6IkFwcCJ9fQ.eyJzdWIiOiLmjojmnYNBUFDnq6_ku6TniYwiLCJpc3MiOiLnsr7nibnlqLHmsYfmnInpmZDlhazlj7giLCJleHAiOjE2MTA0MjI0OTQsImlhdCI6MTYxMDMzNjA5NCwianRpIjoiMTE0NTI1N2E1MjNkNGZiYmJjNzViZmNmNTE0NjNlNTUifQ.PBgHCyjB6w_74V0Bebu039fbxiZiazPZbAAobfM47Ag"
+//        JTManager.manager.ctoken = "dd24c20a94584991a0cf1023032c954e"//51eb8aff2d8149c2bd18d533c0515f94
+        JTManager.manager.phone = "15669019557"//13516776244
         setRootVC()
         return true
     }
@@ -27,11 +27,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     @objc func setRootVC() {
         let tabVC = UITabBarController.init()
         let messageVc = MessageListVC()
-        let messageNav = UINavigationController.init(rootViewController: messageVc)
+        let messageNav = EBaseNavController.init(rootViewController: messageVc)
         messageNav.tabBarItem = UITabBarItem.init(title: "消息", image: nil, tag: 0)
 
         let contactorVc = ConntactersVC()
-        let contactorNav = UINavigationController.init(rootViewController: contactorVc)
+        let contactorNav = EBaseNavController.init(rootViewController: contactorVc)
         contactorNav.tabBarItem = UITabBarItem.init(title: "联系人", image: nil, tag: 1)
         tabVC.viewControllers = [messageNav, contactorNav]
         tabVC.edgesForExtendedLayout = UIRectEdge.all

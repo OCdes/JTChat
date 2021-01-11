@@ -40,6 +40,8 @@ class BaseNavigationController: UINavigationController {
         viewController.hidesBottomBarWhenPushed = true
         if self.viewControllers.count == 0  {
             viewController.hidesBottomBarWhenPushed = false
+        } else if self.viewControllers.count > 0 {
+            viewController.hidesBottomBarWhenPushed = JTManager.manager.isHideBottom
         }
         super.pushViewController(viewController, animated: animated)
     }

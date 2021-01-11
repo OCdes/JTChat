@@ -81,13 +81,13 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         view.addSubview(tableView)
         tableView.snp_makeConstraints { (make) in
             make.top.left.right.equalTo(view)
-            self.bottomConstrait = make.bottom.equalTo(view).offset(kiPhoneXOrXS ? -62 : -62).constraint
+            make.bottom.equalTo(view).offset(-62-(JTManager.manager.isHideBottom ? 0 : (kiPhoneXOrXS ? 83 : 49)))
         }
         view.addSubview(toolView)
         toolView.snp_makeConstraints { (make) in
             make.left.right.equalTo(self.view)
             make.top.equalTo(self.tableView.snp_bottom)
-            self.toolBottomConstrait = make.bottom.equalTo(view).constraint
+            make.bottom.equalTo(view).offset(JTManager.manager.isHideBottom ? 0 : ((kiPhoneXOrXS ? -83 : -49)))
         }
     }
 
@@ -117,14 +117,26 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
     }
 
     func keyboardChangeFrame(inY: CGFloat) {
-        self.tableView.snp_updateConstraints { (make) in
-            make.bottom.equalTo(-62-inY);
+        self.toolView.snp_updateConstraints { (make) in
+            make.bottom.equalTo(self.view)
         }
-//        self.bottomConstrait?.updateOffset(amount:  -62-inY)
-//        self.tableView.scrollTo(offsetY: -(inY), animated: true)
+        self.tableView.snp_updateConstraints { (make) in
+            make.bottom.equalTo(self.view).offset(-62-inY);
+        }
         self.tableView.reloadData()
     }
 
+    func keyboardHideFrame(inY: CGFloat) {
+        
+        self.tableView.snp_updateConstraints { (make) in
+            make.bottom.equalTo(view).offset(-62-inY-(JTManager.manager.isHideBottom ? 0 : (kiPhoneXOrXS ? 83 : 49)))
+        }
+        self.toolView.snp_updateConstraints { (make) in
+            make.bottom.equalTo(view).offset(JTManager.manager.isHideBottom ? 0 : ((kiPhoneXOrXS ? -83 : -49)))
+        }
+        self.tableView.reloadData()
+    }
+    
     deinit {
         print("聊天销毁了")
     }

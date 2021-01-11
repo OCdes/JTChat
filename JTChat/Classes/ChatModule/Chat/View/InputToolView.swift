@@ -13,6 +13,7 @@ import YPImagePicker
 import Photos
 public protocol InputToolViewDelegate: NSObjectProtocol {
     func keyboardChangeFrame(inY: CGFloat)
+    func keyboardHideFrame(inY: CGFloat)
 }
 
 class InputToolView: UIView {
@@ -263,10 +264,10 @@ class InputToolView: UIView {
             self.bottomUpDistance = endFrame.height
             self.keyboardHeight = endFrame.height
             if let de = delegate {
-                de.keyboardChangeFrame(inY: endFrame.height+textHeight+(JTManager.manager.isHideBottom ? 0 : 49))
+                de.keyboardChangeFrame(inY: endFrame.height+textHeight)
             }
             self.toolV.snp_updateConstraints { (make) in
-                make.bottom.equalTo(self).offset(-(endFrame.height+(JTManager.manager.isHideBottom ? 0 :49)))
+                make.bottom.equalTo(self).offset(-endFrame.height)
             }
         }
     }
@@ -280,7 +281,7 @@ class InputToolView: UIView {
                 make.bottom.equalTo(self).offset(-self.bottomOffset)
             }
             if let de = delegate {
-                de.keyboardChangeFrame(inY: self.bottomOffset+textHeight)
+                de.keyboardHideFrame(inY: self.bottomOffset+textHeight)
             }
             
         }
@@ -292,6 +293,9 @@ class InputToolView: UIView {
             self.textV.resignFirstResponder()
             hideFunctionView()
             self.isTyping = false
+            if self.typeBtn.isSelected {
+                self.typeBtnClicked(btn: self.typeBtn)
+            }
             addSubview(emojiView)
             UIView.animate(withDuration: 0.3) {
                 self.toolV.snp_updateConstraints { (make) in
@@ -300,7 +304,8 @@ class InputToolView: UIView {
                 
                 self.emojiView.snp_makeConstraints { (make) in
                     make.top.equalTo(self.toolV.snp_bottom)
-                    make.left.bottom.right.equalTo(self)
+                    make.left.right.equalTo(self)
+                    make.bottom.equalTo(self).offset(JTManager.manager.isHideBottom ? 0 : (kiPhoneXOrXS ? -83 : -49))
                 }
                 if let de = self.delegate {
                     de.keyboardChangeFrame(inY: self.bottomHeight+self.textHeight)
@@ -315,15 +320,16 @@ class InputToolView: UIView {
     }
     
     @objc func typeBtnClicked(btn: UIButton) {
-        resignActive()
         btn.isSelected = !btn.isSelected
         if btn.isSelected {
+            resignActive()
             self.textV.isHidden = true
             self.voiceBtn.isHidden = false
         } else {
             self.textV.isHidden = false
             self.voiceBtn.isHidden = true
         }
+        
     }
     @objc func voiceBtnTouchupInside(btn: UIButton) {
         self.levelTimer?.invalidate()
@@ -464,19 +470,25 @@ class InputToolView: UIView {
         if btn.isSelected {
             self.textV.resignFirstResponder()
             hideEmojiView()
+            if self.typeBtn.isSelected {
+                self.typeBtnClicked(btn: self.typeBtn)
+            }
             addSubview(funcView)
             UIView.animate(withDuration: 0.3) {
+                if let de = self.delegate {
+                    de.keyboardChangeFrame(inY: self.bottomHeight+self.textHeight+(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) : kiPhoneXOrXS ? 83 : 49))
+                }
+                
                 self.toolV.snp_updateConstraints { (make) in
-                    make.bottom.equalTo(self).offset(-self.bottomHeight)
+                    make.bottom.equalTo(self).offset(-self.bottomHeight-(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) : kiPhoneXOrXS ? 83 : 49))
                 }
                 
                 self.funcView.snp_makeConstraints { (make) in
                     make.top.equalTo(self.toolV.snp_bottom)
-                    make.left.bottom.right.equalTo(self)
+                    make.left.right.equalTo(self)
+                    make.bottom.equalTo(self).offset(JTManager.manager.isHideBottom ? 0 : (kiPhoneXOrXS ? -83 : -49))
                 }
-                if let de = self.delegate {
-                    de.keyboardChangeFrame(inY: self.bottomHeight+self.textHeight)
-                }
+                
             }
         } else {
             hideFunctionView()
@@ -492,7 +504,7 @@ class InputToolView: UIView {
         }
         self.emojiView.removeFromSuperview()
         if let de = self.delegate {
-            de.keyboardChangeFrame(inY: self.bottomOffset+textHeight)
+            de.keyboardHideFrame(inY: self.bottomOffset+textHeight)
         }
     }
     
@@ -503,7 +515,7 @@ class InputToolView: UIView {
         }
         self.funcView.removeFromSuperview()
         if let de = self.delegate {
-            de.keyboardChangeFrame(inY: self.bottomOffset+textHeight)
+            de.keyboardHideFrame(inY: self.bottomOffset+textHeight)
         }
     }
     
@@ -572,17 +584,17 @@ extension InputToolView: UITextViewDelegate {
         if self.previousOffsetY <= 72 && previousOffsetY > 19.1 {
             textHeight = previousOffsetY - 19.09375
             if let de = delegate {
-                de.keyboardChangeFrame(inY: textHeight + (self.isTyping ? keyboardHeight-49-(kiPhoneXOrXS ? 34 : 0) : bottomHeight))
+                de.keyboardChangeFrame(inY: textHeight + (self.isTyping ? keyboardHeight : bottomHeight))
             }
         } else if previousOffsetY > 0 && previousOffsetY <= 19.1 {
             textHeight = previousOffsetY - 19.09375
             if let de = delegate {
-                de.keyboardChangeFrame(inY:(self.isTyping ? keyboardHeight-49-(kiPhoneXOrXS ? 34 : 0) : bottomHeight))
+                de.keyboardChangeFrame(inY:(self.isTyping ? keyboardHeight : bottomHeight))
             }
         } else if previousOffsetY == 0  {
             textHeight = 0
             if let de = delegate {
-                de.keyboardChangeFrame(inY:(self.isTyping ? keyboardHeight-49-(kiPhoneXOrXS ? 34 : 0) : bottomHeight))
+                de.keyboardChangeFrame(inY:(self.isTyping ? keyboardHeight : bottomHeight))
             }
         }
     }

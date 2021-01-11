@@ -25,7 +25,7 @@ class CountDownBtn: UIButton {
         setBackgroundImage(UIImage.imageWith(color: HEX_COLOR(hexStr: "#716F73")), for: .disabled)
         layer.cornerRadius = 3
         layer.masksToBounds = true
-        timer = Observable<Int>.interval(1, scheduler: MainScheduler.instance)
+        timer = Observable<Int>.interval(DispatchTimeInterval.seconds(1), scheduler: MainScheduler.instance)
     }
     
     

@@ -11,8 +11,7 @@ import RxSwift
 import Photos
 class FunctionKeyboardView: UIView {
     let keyheight = kScreenWidth-90
-    private var bottomOffset: CGFloat = kiPhoneXOrXS ? 34 : 0
-    let functionHeight = kScreenWidth-90 - (kiPhoneXOrXS ? 34 : 0) - 20
+    let functionHeight = kScreenWidth-90
     var subject: PublishSubject<String> = PublishSubject<String>()
     lazy var collectionView: FunctionCollectionView = {
         let layout = UICollectionViewFlowLayout.init()
@@ -31,7 +30,7 @@ class FunctionKeyboardView: UIView {
         addSubview(collectionView)
         collectionView.snp_makeConstraints { (make) in
             make.left.top.right.equalTo(self)
-            make.bottom.equalTo(self).offset(-bottomOffset-20)
+            make.bottom.equalTo(self)
         }
         subject = collectionView.subject
     }

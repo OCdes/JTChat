@@ -243,7 +243,15 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let model = dataArr[indexPath.section].rowsArr[indexPath.row]
-        return CGFloat(model.estimate_height > 62 ? model.estimate_height : 62) + 16.5
+        if !model.isRemote {
+            if let cmodel = viewModel?.contactor, cmodel.topicGroupID.count > 0{
+                return CGFloat(model.estimate_height > 62 ? model.estimate_height : 62) + 16.5
+            }
+            return CGFloat(model.estimate_height > 62 ? model.estimate_height : 62)
+        } else {
+            return CGFloat(model.estimate_height > 62 ? model.estimate_height : 62) + 16.5
+        }
+        
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

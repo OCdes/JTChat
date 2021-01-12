@@ -78,6 +78,9 @@ open class JTManager: NSObject {
             USERDEFAULT.set(employeeDict, forKey: "cemployeeDict")
         }
     }
+    
+    @objc open var tabBarIsTranlucent: Bool = true
+    
     @objc open var isSafeQrCode: Bool = false
     
     @objc open var addFriendSilence: Bool = false

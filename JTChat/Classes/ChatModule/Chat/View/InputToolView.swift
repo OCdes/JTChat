@@ -262,12 +262,12 @@ class InputToolView: UIView {
         print(dict)
         if self.bottomUpDistance <= endFrame.height {
             self.bottomUpDistance = endFrame.height
-            self.keyboardHeight = endFrame.height
+            self.keyboardHeight = endFrame.height-(JTManager.manager.isHideBottom ? 0 : (49+(kiPhoneXOrXS ? 34 : 0)))
             if let de = delegate {
-                de.keyboardChangeFrame(inY: endFrame.height+textHeight)
+                de.keyboardChangeFrame(inY: self.keyboardHeight+textHeight)
             }
             self.toolV.snp_updateConstraints { (make) in
-                make.bottom.equalTo(self).offset(-endFrame.height)
+                make.bottom.equalTo(self).offset(-self.keyboardHeight)
             }
         }
     }
@@ -305,7 +305,7 @@ class InputToolView: UIView {
                 self.emojiView.snp_makeConstraints { (make) in
                     make.top.equalTo(self.toolV.snp_bottom)
                     make.left.right.equalTo(self)
-                    make.bottom.equalTo(self).offset(JTManager.manager.isHideBottom ? 0 : (kiPhoneXOrXS ? -83 : -49))
+                    make.bottom.equalTo(self).offset(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? -34 : 0) : 0)
                 }
                 if let de = self.delegate {
                     de.keyboardChangeFrame(inY: self.bottomHeight+self.textHeight)
@@ -476,17 +476,17 @@ class InputToolView: UIView {
             addSubview(funcView)
             UIView.animate(withDuration: 0.3) {
                 if let de = self.delegate {
-                    de.keyboardChangeFrame(inY: self.bottomHeight+self.textHeight+(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) : kiPhoneXOrXS ? 83 : 49))
+                    de.keyboardChangeFrame(inY: self.bottomHeight+self.textHeight+(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) : 0))
                 }
                 
                 self.toolV.snp_updateConstraints { (make) in
-                    make.bottom.equalTo(self).offset(-self.bottomHeight-(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) : kiPhoneXOrXS ? 83 : 49))
+                    make.bottom.equalTo(self).offset(-self.bottomHeight-(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) : 0))
                 }
                 
                 self.funcView.snp_makeConstraints { (make) in
                     make.top.equalTo(self.toolV.snp_bottom)
                     make.left.right.equalTo(self)
-                    make.bottom.equalTo(self).offset(JTManager.manager.isHideBottom ? 0 : (kiPhoneXOrXS ? -83 : -49))
+                    make.bottom.equalTo(self).offset(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? -34 : 0) : 0)
                 }
                 
             }

@@ -81,13 +81,13 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         view.addSubview(tableView)
         tableView.snp_makeConstraints { (make) in
             make.top.left.right.equalTo(view)
-            make.bottom.equalTo(view).offset(-62-(JTManager.manager.isHideBottom ? 0 : (kiPhoneXOrXS ? 83 : 49)))
+            make.bottom.equalTo(view).offset(-62-(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 49) : 0))
         }
         view.addSubview(toolView)
         toolView.snp_makeConstraints { (make) in
             make.left.right.equalTo(self.view)
             make.top.equalTo(self.tableView.snp_bottom)
-            make.bottom.equalTo(view).offset(JTManager.manager.isHideBottom ? 0 : ((kiPhoneXOrXS ? -83 : -49)))
+            make.bottom.equalTo(view).offset(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? -34 : 0) : 0)
         }
     }
 
@@ -129,10 +129,10 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
     func keyboardHideFrame(inY: CGFloat) {
         
         self.tableView.snp_updateConstraints { (make) in
-            make.bottom.equalTo(view).offset(-62-inY-(JTManager.manager.isHideBottom ? 0 : (kiPhoneXOrXS ? 83 : 49)))
+            make.bottom.equalTo(view).offset(-62-inY-(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) : 0))
         }
         self.toolView.snp_updateConstraints { (make) in
-            make.bottom.equalTo(view).offset(JTManager.manager.isHideBottom ? 0 : ((kiPhoneXOrXS ? -83 : -49)))
+            make.bottom.equalTo(view).offset(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? -34 : 0) : 0)
         }
         self.tableView.reloadData()
     }

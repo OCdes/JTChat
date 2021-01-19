@@ -244,12 +244,12 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let model = dataArr[indexPath.section].rowsArr[indexPath.row]
         if !model.isRemote {
+            return CGFloat(model.estimate_height > 62 ? model.estimate_height : 62)
+        } else {
             if let cmodel = viewModel?.contactor, cmodel.topicGroupID.count > 0{
                 return CGFloat(model.estimate_height > 62 ? model.estimate_height : 62) + 16.5
             }
             return CGFloat(model.estimate_height > 62 ? model.estimate_height : 62)
-        } else {
-            return CGFloat(model.estimate_height > 62 ? model.estimate_height : 62) + 16.5
         }
         
     }
@@ -287,7 +287,9 @@ class ChatTableLeftCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.senderPhone)
-            nameLa.text = m.aliasName.count > 0 ? m.aliasName : m.nickName
+            if model.topic_group.count > 0 {
+                nameLa.text = m.aliasName.count > 0 ? m.aliasName : m.nickName
+            }
             portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
             contentV.snp_updateConstraints { (make) in
@@ -384,7 +386,9 @@ class LeftImgVCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.senderPhone)
-            nameLa.text = m.aliasName.count > 0 ? m.aliasName : m.nickName
+            if model.topic_group.count > 0 {
+                nameLa.text = m.aliasName.count > 0 ? m.aliasName : m.nickName
+            }
             portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             imgv.image = ChatimagManager.manager.GetImageBy(MD5Str: model.msgContent)
             contentV.snp_updateConstraints { (make) in
@@ -471,7 +475,9 @@ class LeftVideoCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.senderPhone)
-            nameLa.text = m.aliasName.count > 0 ? m.aliasName : m.nickName
+            if model.topic_group.count > 0 {
+                nameLa.text = m.aliasName.count > 0 ? m.aliasName : m.nickName
+            }
             portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             _ = AVFManager().firstFrameOfVideo(filePath: model.msgContent, size: CGSize(width: CGFloat(model.estimate_width)*2, height: CGFloat(model.estimate_height)*2), toImgView: imgv)
             contentV.snp_updateConstraints { (make) in
@@ -569,7 +575,9 @@ class LeftVoiceCell: BaseTableCell {
     var model: MessageModel = MessageModel() {
         didSet {
             let m = DBManager.manager.getContactor(phone: model.senderPhone)
-            nameLa.text = m.aliasName.count > 0 ? m.aliasName : m.nickName
+            if model.topic_group.count > 0 {
+                nameLa.text = m.aliasName.count > 0 ? m.aliasName : m.nickName
+            }
             contentLa.text = "\(AVFManager().durationOf(filePath: model.msgContent))\""
             portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             redDot.isHidden = model.voiceIsReaded

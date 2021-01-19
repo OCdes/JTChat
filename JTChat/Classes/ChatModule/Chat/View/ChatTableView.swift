@@ -246,10 +246,7 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
         if !model.isRemote {
             return CGFloat(model.estimate_height > 62 ? model.estimate_height : 62)
         } else {
-            if let cmodel = viewModel?.contactor, cmodel.topicGroupID.count > 0{
-                return CGFloat(model.estimate_height > 62 ? model.estimate_height : 62) + 16.5
-            }
-            return CGFloat(model.estimate_height > 62 ? model.estimate_height : 62)
+            return CGFloat(model.estimate_height > 62 ? model.estimate_height : 62) + 16.5
         }
         
     }

@@ -168,6 +168,7 @@ open class FriendModel: BaseModel {
     var userPhone: String = ""
     var packageType: Int = 0
     var msgContent: String = ""
+    var fileSuffix: String = ""
     var isReaded: Bool = false
     var isSelected: Bool = false
     var topicGroupID: String = ""

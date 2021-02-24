@@ -35,6 +35,7 @@ open class MessageModel: BaseModel {
     var msgContent: String = ""
     var packageType: Int = 0
     var topic_group: String = ""
+    var fileSuffix: String = ""
     var estimate_height: Float = 0
     var estimate_width: Float = 0
     var isRemote: Bool = false

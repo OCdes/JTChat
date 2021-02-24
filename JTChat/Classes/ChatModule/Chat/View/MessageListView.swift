@@ -128,6 +128,7 @@ class MessageListCell: BaseTableCell {
             messageLa.text = model!.packageType == 2 ? (model!.msgContent.contains(".wav") ? "[语音]" : (model!.msgContent.contains("mp4") ? "[视频]" : "[图片]")) : model!.msgContent
             redDot.isHidden = (model!.isReaded || !(model!.unreadCount > 0))
             redDot.text = model!.unreadCount >= 99 ? "99+" : "\(model!.unreadCount)"
+            self.atRemarkLa.text = model?.fileSuffix ?? ""
             if let ti = model?.topTime, ti.count > 0 {
                 backgroundColor = HEX_COLOR(hexStr: "#e2e2e2").withAlphaComponent(0.3)
             } else {
@@ -140,6 +141,13 @@ class MessageListCell: BaseTableCell {
         let pv = UIImageView()
         pv.layer.cornerRadius = 18
         return pv
+    }()
+    
+    lazy var atRemarkLa: UILabel = {
+        let al = UILabel()
+        al.textColor = UIColor.red
+        al.font = UIFont.systemFont(ofSize: 12)
+        return al
     }()
     
     lazy var nameLa: UILabel = {
@@ -224,10 +232,17 @@ class MessageListCell: BaseTableCell {
             make.height.equalTo(22)
         }
         
+        contentView.addSubview(self.atRemarkLa)
+        self.atRemarkLa.snp_makeConstraints { (make) in
+            make.top.equalTo(nameLa.snp_bottom)
+            make.height.left.equalTo(nameLa)
+        }
+        
         contentView.addSubview(messageLa)
         messageLa.snp_makeConstraints { (make) in
             make.top.equalTo(nameLa.snp_bottom)
-            make.height.left.right.equalTo(nameLa)
+            make.left.equalTo(atRemarkLa.snp_right)
+            make.height.right.equalTo(self.atRemarkLa)
         }
         
         let line = LineView.init(frame: CGRect.zero)

@@ -75,6 +75,7 @@ open class DBManager: NSObject {
         alert(table: "ChatLogList", arg: "avatar_url", type: "VARCHAR(255)")
         alert(table: "RecentChatList", arg: "alias_name", type: "VARCHAR(16)")
         alert(table: "RecentChatList", arg: "avatar_url", type: "VARCHAR(255)")
+        alert(table: "RecentChatList", arg: "file_suffix", type: "VARCHAR(16)")
         alert(table: "RecentChatList", arg: "top_time", type: "TIMESTAMP")
         alert(table: "ContactorList", arg: "alias_name", type: "VARCHAR(16)")
         alert(table: "ChatLogList", arg: "voice_is_read", type: "INTEGER")
@@ -151,6 +152,7 @@ open class DBManager: NSObject {
                             model.topTime = ChatDateManager.manager.dealDate(byTimestamp: tit)
                         }
                         if model.topicGroupID.count > 0  {
+                            model.fileSuffix = pr["file_suffix"] as? String ?? ""
                             gArr.append(model)
                         } else {
                             pArr.append(model)
@@ -393,7 +395,7 @@ open class DBManager: NSObject {
                 DispatchQueue.global().async {
                     self.dbQueue?.inDatabase({ (db) in
                         if db.open() {
-                            let updateSQL = "UPDATE RecentChatList SET package_type=\(model.packageType),package_content='\(model.msgContent)',topic_group='\(m.topicGroupID)',create_time=\(model.timeStamp),is_read=\(model.isReaded),unread_count=\(model.isReaded ? 0 : m.unreadCount+1) WHERE topic_group='\(model.topic_group)'"
+                            let updateSQL = "UPDATE RecentChatList SET package_type=\(model.packageType),package_content='\(model.msgContent)',topic_group='\(m.topicGroupID)',create_time=\(model.timeStamp),is_read=\(model.isReaded),unread_count=\(model.isReaded ? 0 : m.unreadCount+1),file_suffix='\(model.isReaded ? "" : model.fileSuffix)' WHERE topic_group='\(model.topic_group)'"
                             if db.executeUpdate(updateSQL, withArgumentsIn: []) {
                                 if !db.interrupt() {
                                     print("db.lastError()")

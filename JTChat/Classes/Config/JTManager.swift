@@ -145,6 +145,7 @@ open class JTManager: NSObject {
         mmodel.senderAvanter = cm.avatarUrl
         mmodel.receiverPhone = (USERDEFAULT.object(forKey: "phone") ?? "") as! String
         mmodel.receiverAvanter = ""
+        mmodel.fileSuffix = model.fileSuffix
         mmodel.isReaded = false
         let _ = DBManager.manager.AddChatLog(model: mmodel)
         DBManager.manager.updateRecentChat(model: mmodel)

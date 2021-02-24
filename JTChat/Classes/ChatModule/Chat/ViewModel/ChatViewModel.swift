@@ -125,6 +125,7 @@ class ChatViewModel: BaseViewModel {
     func sendMessage(msg: String) {
         JTManager.shareManager().sendMessage(targetModel: contactor, msg: msg, suffix: nil, atSomeOne: self.atRanges.count > 0 ? "${{\((self.atPhones as NSArray).componentsJoined(by: ","))}}" : nil)
         //        page = 1
+        self.atPhones = []
         localUpdate(msg: msg, suffix: nil)
     }
     

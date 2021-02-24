@@ -71,6 +71,36 @@ class ChatimagManager: NSObject {
         return ""
     }
     
+    func saveChatBGImage(image:UIImage, forGroup groupID: String) {
+        let idata = image.jpegData(compressionQuality: 1.0)
+        if let imgdata = idata {
+            let docuPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first ?? ""
+            let creatPath = docuPath + "/chatBGimages"
+            if !fileManager.fileExists(atPath: creatPath) {
+                try! fileManager.createDirectory(atPath: creatPath, withIntermediateDirectories: true, attributes: [:])
+            }
+            if fileManager.createFile(atPath: "\(creatPath)/\(groupID)", contents: imgdata, attributes: nil) {
+                print("创建成功")
+            } else {
+                print("创建失败，creatPath=\(creatPath), imagePath=\(creatPath)/\(groupID))")
+            }
+        }
+    }
+    
+    func GetChatBGImageBy(groupID: String) -> UIImage? {
+        let docuPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first ?? ""
+        let creatPath = docuPath + "/chatBGimages" + "/\(groupID)"
+        if fileManager.fileExists(atPath: creatPath) {
+            if let data = try? NSData.init(contentsOfFile: creatPath) as Data {
+                return UIImage(data: data)
+            }
+            return nil
+        } else {
+            print("ChatimgDataManager----Error:图片存取异常\(groupID)")
+            return nil
+        }
+    }
+    
     func MD5StrBy(image: UIImage)->String {
         
         let data = image.jpegData(compressionQuality: 1.0)

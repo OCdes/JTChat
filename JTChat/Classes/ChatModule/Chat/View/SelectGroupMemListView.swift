@@ -1,19 +1,20 @@
 //
-//  GroupManagerTableView.swift
-//  Swift-jtyh
+//  SelectGroupMemListView.swift
+//  JTChat
 //
-//  Created by LJ on 2020/8/6.
-//  Copyright © 2020 WanCai. All rights reserved.
+//  Created by 袁炳生 on 2021/2/20.
 //
 
 import UIKit
-import YPImagePicker
-class GroupManagerTableView: UITableView {
-    var dataArr: Array<String> = ["解散群组","转让群主"]
+import RxSwift
+class SelectGroupMemListView: UITableView {
+    var dataArr: Array<GroupMemberModel> = []
     var viewModel: GroupInfoViewModel?
+    var subject: PublishSubject<Any> = PublishSubject<Any>()
     init(frame: CGRect, style: UITableView.Style, viewModel vm: GroupInfoViewModel) {
         super.init(frame: frame, style: style)
         viewModel = vm
+        dataArr = vm.model.membersList
         delegate = self
         dataSource = self
         if #available(iOS 11.0, *) {
@@ -26,8 +27,14 @@ class GroupManagerTableView: UITableView {
                 // Fallback on earlier versions
             }
         }
-        register(UITableViewCell.self, forCellReuseIdentifier: "UITableViewCell")
+        register(GroupMemCell.self, forCellReuseIdentifier: "GroupMemCell")
+        _ = viewModel!.subject.subscribe(onNext: { [weak self](a) in
+            self?.dataArr = self?.viewModel?.model.membersList ?? []
+            self?.reloadData()
+        })
     }
+    
+    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -35,20 +42,34 @@ class GroupManagerTableView: UITableView {
     
 }
 
-extension GroupManagerTableView: UITableViewDelegate, UITableViewDataSource {
+extension SelectGroupMemListView: UITableViewDelegate, UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataArr.count
+        if section == 0 {
+            return 1
+        } else {
+            return dataArr.count
+        }
+        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let m = dataArr[indexPath.row]
-        let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "UITableViewCell", for: indexPath)
-        cell.textLabel?.text = m
+        let cell: GroupMemCell = tableView.dequeueReusableCell(withIdentifier: "GroupMemCell", for: indexPath) as! GroupMemCell
+        if indexPath.section == 0 {
+            cell.titleLa.text = "所有人(\(dataArr.count))"
+        } else {
+            let m = dataArr[indexPath.row]
+            cell.portraitV.kf.setImage(with: URL(string: m.avatar), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+            cell.titleLa.text = m.nickname
+        }
+        cell.markLa.isHidden = true
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 44
+        return 64
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -68,14 +89,11 @@ extension GroupManagerTableView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let s = dataArr[indexPath.row]
-        switch s {
-        case "解散群组":
-            self.viewModel?.deleGroup()
-        case "转让群主":
-            SVPShow(content: "")
-        default:
-            break
+        if indexPath.section == 0 {
+            self.subject.onNext("所有人")
+        } else {
+            let m = dataArr[indexPath.row]
+            self.subject.onNext(m)
         }
     }
     

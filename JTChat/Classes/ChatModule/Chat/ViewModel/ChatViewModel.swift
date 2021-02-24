@@ -18,10 +18,92 @@ class ChatViewModel: BaseViewModel {
     var subject: PublishSubject<Int> = PublishSubject<Int>()
     var first: Bool = true
     var totalTimeArr: Array<String> = []
+    var atNames: [String] = []
+    var atPhones: [String] = []
+    var atRanges: [NSRange] = []
     override init() {
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: NotificationHelper.kChatOnlineNotiName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: NotificationHelper.kChatOnGroupNotiName, object: nil)
+    }
+    
+    func removeAtRange(atIndex: Int) {
+        let m = self.atRanges[atIndex]
+        for i in 0..<self.atRanges.count {
+            if i > atIndex {
+                var rm = self.atRanges[i]
+                rm.location = rm.location-m.length
+                self.atRanges[i] = rm
+            }
+        }
+        self.atRanges.remove(at: atIndex)
+        self.atNames.remove(at: atIndex)
+        self.atPhones.remove(at: atIndex)
+    }
+    
+    func addRange(range: NSRange, addPhone phone:String, addName name:String) {
+        if self.atRanges.count > 0 {
+            var addIndex = self.atRanges.count-1
+            for i in 0..<self.atRanges.count {
+                let ra = self.atRanges[i]
+                if ra.location > range.location {
+                    if i > 0 {
+                        self.atRanges.insert(range, at: i-1)
+                        self.atPhones.insert(phone, at: i-1)
+                        self.atNames.insert(name, at: i-1)
+                    } else {
+                        self.atRanges.insert(range, at: 0)
+                        self.atPhones.insert(phone, at: 0)
+                        self.atNames.insert(name, at: 0)
+                    }
+                    for j in i..<self.atRanges.count {
+                        var ra = self.atRanges[j]
+                        if ra.location > range.location {
+                            ra.location = ra.location+range.length+1
+                            self.atRanges[j] = ra
+                        }
+                    }
+                    break;
+                } else {
+                    addIndex = i+1
+                }
+            }
+            if addIndex == self.atRanges.count {
+                self.atRanges.append(range)
+                self.atPhones.append(phone)
+                self.atNames.append(name)
+            } else {
+                self.atRanges.insert(range, at: addIndex)
+                self.atPhones.insert(phone, at: addIndex)
+                self.atNames.insert(name, at: addIndex)
+            }
+        } else {
+            self.atRanges.append(range)
+            self.atPhones.append(phone)
+            self.atNames.append(name)
+        }
+    }
+    
+    func updateRangeBy(addingStr: String, withRange: NSRange) {
+        if self.atRanges.count > 0 {
+            if addingStr.count == 0 {
+                for i in 0..<self.atRanges.count {
+                    var ra = self.atRanges[i]
+                    if ra.location > withRange.location {
+                        ra.location = ra.location-withRange.length
+                        self.atRanges[i] = ra
+                    }
+                }
+            } else {
+                for i in 0..<self.atRanges.count {
+                    var ra = self.atRanges[i]
+                    if ra.location > withRange.location {
+                        ra.location = ra.location+addingStr.count
+                        self.atRanges[i] = ra
+                    }
+                }
+            }
+        }
     }
     
     @objc func updateData() {
@@ -41,13 +123,13 @@ class ChatViewModel: BaseViewModel {
     }
     
     func sendMessage(msg: String) {
-        JTManager.shareManager().sendMessage(targetModel: contactor, msg: msg, suffix: nil)
+        JTManager.shareManager().sendMessage(targetModel: contactor, msg: msg, suffix: nil, atSomeOne: self.atRanges.count > 0 ? "${{\((self.atPhones as NSArray).componentsJoined(by: ","))}}" : nil)
         //        page = 1
         localUpdate(msg: msg, suffix: nil)
     }
     
     func sendAudioMessage(path: String) {
-        JTManager.shareManager().sendMessage(targetModel: contactor, msg: path, suffix: "wav")
+        JTManager.shareManager().sendMessage(targetModel: contactor, msg: path, suffix: "wav", atSomeOne: nil)
         localUpdate(msg: path, suffix: "wav")
     }
     
@@ -57,12 +139,12 @@ class ChatViewModel: BaseViewModel {
             case .photo(p: let img):
                 ChatimagManager.manager.saveImage(image: img.image)
                 let msg = ChatimagManager.manager.MD5StrBy(image: img.image)
-                JTManager.shareManager().sendMessage(targetModel: contactor, msg: msg, suffix: "jpg")
+                JTManager.shareManager().sendMessage(targetModel: contactor, msg: msg, suffix: "jpg", atSomeOne: nil)
                 self.localUpdate(msg: ChatimagManager.manager.MD5StrBy(image: img.image), suffix: "jpg")
             case .video(v: let video):
                 
                 let msg = AVFManager().saveLocalVideo(tmpPath: video.url.absoluteString)
-                JTManager.shareManager().sendMessage(targetModel: contactor, msg: msg, suffix: "mp4")
+                JTManager.shareManager().sendMessage(targetModel: contactor, msg: msg, suffix: "mp4", atSomeOne: nil)
             default: break
                 
             }
@@ -100,6 +182,10 @@ class ChatViewModel: BaseViewModel {
             DBManager.manager.updateRecentChat(model: model)
         }
         //        self.subject.onNext(1)
+    }
+    
+    func getChatViewBG(forID contactorID: String) -> UIImage? {
+        return ChatimagManager.manager.GetChatBGImageBy(groupID: contactorID)
     }
     
     func refreshData(scrollView: UIScrollView) {

@@ -19,7 +19,7 @@ open class MessageViewModel: BaseViewModel {
     override init() {
         super.init()
         
-    
+        
         NotificationCenter.default.addObserver(self, selector: #selector(updateRecentList), name: NotificationHelper.kChatOnlineNotiName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateRecentList), name: NotificationHelper.kReLoginName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(getAllGroupData), name: NotificationHelper.kChatOnGroupNotiName, object: nil)
@@ -38,7 +38,7 @@ open class MessageViewModel: BaseViewModel {
             SVPShowError(content: errorInfo.message)
         }
         let sub2 = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_CHATGROUPlIST, params: [:], success: { (msg, code, response, data) in
-
+            
         }) { (errorInfo) in
             scrollView?.jt_endRefresh()
             SVPShowError(content: errorInfo.message)
@@ -118,16 +118,34 @@ open class MessageViewModel: BaseViewModel {
         }
     }
     
-        func getInfoOf(qrContent: String, result: @escaping(_ cinfo: ContactInfoModel)->Void) {
-            _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: "/v1/chat/decryptEmpInfo", params: ["empQrcodeContent":qrContent], success: { (msg, code, repose, data) in
-                let m = JSONDeserializer<ContactInfoModel>.deserializeFrom(dict: ((JTManager.manager.isSafeQrCode ? data["data"] : data["Data"]) as! Dictionary<String, Any>))
-                if let mm = m {
-                    result(mm)
-                }
+    func getInfoOf(qrContent: String, result: @escaping(_ cinfo: ContactInfoModel)->Void) {
+        _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: "/v1/chat/decryptEmpInfo", params: ["empQrcodeContent":qrContent], success: { (msg, code, repose, data) in
+            let m = JSONDeserializer<ContactInfoModel>.deserializeFrom(dict: ((JTManager.manager.isSafeQrCode ? data["data"] : data["Data"]) as! Dictionary<String, Any>))
+            if let mm = m {
+                result(mm)
+            }
+        }, fail: { (errorInfo) in
+            
+        })
+    }
+    
+    func setTop(model: FriendModel) {
+        if model.topicGroupID.count > 0 {
+            _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_UPDATEGROUPINFO, params: ["topicGroupID":model.topicGroupID,"topicGroupName":"","topicGroupDesc":"","isTop":(model.topTime.count > 0 ? "false" : "true")], success: { (msg, code, respones, data) in
+                SVPShowSuccess(content: msg)
+                self.getAllRecentContactor(scrollView: UIScrollView())
             }, fail: { (errorInfo) in
-                
+                SVPShowError(content: errorInfo.message)
+            })
+        } else {
+            _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_SETALIAS, params: ["friendPhone":model.friendPhone,"aliasName":"","isTop":(model.topTime.count > 0 ? "false" : "true")], success: { (msg, code, response, data) in
+                SVPShowSuccess(content: msg)
+                self.getAllRecentContactor(scrollView: UIScrollView())
+            }, fail: { (errorInfo) in
+                SVPShowError(content: errorInfo.message)
             })
         }
+    }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -135,7 +153,9 @@ open class MessageViewModel: BaseViewModel {
 }
 
 open class FriendModel: BaseModel {
+    var id: NSInteger = 0
     var avatar: String = ""
+    var avatarUrl: String = ""//组头像
     var createTime: String = ""
     var timeStamp: TimeInterval = 0
     var enable: String = ""
@@ -155,6 +175,7 @@ open class FriendModel: BaseModel {
     var creator: String = ""
     open var unreadCount: Int = 0
     var voiceIsReaded: Bool = false
+    var topTime: String = ""
     public required init() {
         
     }

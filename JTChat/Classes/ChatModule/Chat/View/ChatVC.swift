@@ -9,7 +9,14 @@
 import UIKit
 import SnapKit
 class ChatVC: BaseViewController,InputToolViewDelegate {
+    
     var viewModel: ChatViewModel = ChatViewModel()
+    lazy var bgImgv: UIImageView = {
+        let bgv = UIImageView.init(frame: self.view.bounds)
+        bgv.contentMode = .scaleAspectFill
+        bgv.clipsToBounds = true
+        return bgv
+    }()
     fileprivate lazy var tableView: ChatTableView = {
         let tv = ChatTableView.init(frame: CGRect.zero, style: .grouped, viewModel: self.viewModel)
         return tv
@@ -27,6 +34,11 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         super.viewWillAppear(animated)
 //        JTManager.manager.updateUnreadedCount()
         self.viewModel.clearRedPot()
+        if let gid = viewModel.contactor?.topicGroupID, gid.count > 0 {
+            self.bgImgv.image = viewModel.getChatViewBG(forID: gid)
+        } else {
+            self.bgImgv.image = viewModel.getChatViewBG(forID: viewModel.contactor?.phone ?? "")
+        }
     }
     
 //    override func viewDidAppear(_ animated: Bool) {
@@ -78,6 +90,8 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
     }
 
     func initView() {
+        view.backgroundColor = HEX_COLOR(hexStr: "#EBEBEB");
+        view.addSubview(bgImgv)
         view.addSubview(tableView)
         tableView.snp_makeConstraints { (make) in
             make.top.left.right.equalTo(view)
@@ -135,6 +149,34 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
             make.bottom.equalTo(view).offset(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? -34 : 0) : 0)
         }
         self.tableView.reloadData()
+    }
+    
+    func needAtSomeOne(atRange: NSRange) {
+        self.toolView.textV.resignFirstResponder()
+        let vc = SelectGroupMemVC()
+        vc.viewModel.groupID = self.viewModel.contactor!.topicGroupID
+        _ = vc.subject.subscribe(onNext: { [weak self](arr) in
+            var selera = atRange
+            if arr.count == 1 {
+                let m = arr[0]
+                let ra = NSRange(location: atRange.location, length: m.nickname.count+1)
+                selera = NSRange(location: ra.location+ra.length, length: 0)
+                var text = String(self!.toolView.textV.text ?? "")
+                text.insert(contentsOf: "\(m.nickname) ", at: text.index(text.startIndex, offsetBy: atRange.location))
+                self?.toolView.textV.text = text
+                self!.viewModel.addRange(range:ra, addPhone: "@\(m.memberPhone)", addName: m.nickname)
+            } else {
+                let ra = NSRange(location: atRange.location, length: "所有人".count+1)
+                selera = NSRange(location: ra.location+ra.length, length: 0)
+                var text = String(self!.toolView.textV.text ?? "")
+                text.insert(contentsOf: "\("所有人") ", at: text.index(text.startIndex, offsetBy: atRange.location))
+                self?.toolView.textV.text = text
+                self!.viewModel.addRange(range:ra, addPhone: "@\(self!.viewModel.contactor!.topicGroupID)", addName: "所有人")
+            }
+            self?.toolView.textV.becomeFirstResponder()
+            self?.toolView.textV.selectedRange = selera
+        })
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     deinit {

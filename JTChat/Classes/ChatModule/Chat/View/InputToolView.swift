@@ -14,6 +14,7 @@ import Photos
 public protocol InputToolViewDelegate: NSObjectProtocol {
     func keyboardChangeFrame(inY: CGFloat)
     func keyboardHideFrame(inY: CGFloat)
+    func needAtSomeOne(atRange: NSRange)
 }
 
 class InputToolView: UIView {
@@ -47,6 +48,7 @@ class InputToolView: UIView {
         tv.returnKeyType = .send
         tv.inputAccessoryView = nil
         tv.reloadInputViews()
+//        tv.selectedRange
         return tv
     }()
     
@@ -532,6 +534,7 @@ class InputToolView: UIView {
         }
     }
     
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -546,6 +549,15 @@ class InputToolView: UIView {
 
 extension InputToolView: UITextViewDelegate {
     
+    func textViewDidChangeSelection(_ textView: UITextView) {
+        let range = self.textV.selectedRange
+        for ra in self.viewModel.atRanges {
+            if ra.location+ra.length >= range.location && range.location >= ra.location {
+                self.textV.selectedRange = NSRange(location: ra.location+ra.length, length: 0)
+            }
+        }
+    }
+    
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         var newStr = (textView.text as NSString).replacingCharacters(in: range, with: text)
         if text == "\n" {
@@ -557,6 +569,41 @@ extension InputToolView: UITextViewDelegate {
             frameChage(newStr: newStr)
             return false
         }
+        
+        if self.viewModel.contactor!.topicGroupID.count > 0 {
+            if var ctext = textView.text, newStr.count > 0, text == "" {
+                let fromIndex = ctext.index(ctext.startIndex, offsetBy: range.location)
+                let endIndex = ctext.index(ctext.startIndex, offsetBy: range.location+range.length)
+                let srange = fromIndex..<endIndex
+                let replacedStr = String(ctext[srange])
+                if replacedStr == " " && ctext.contains("@") {
+                    for ra in self.viewModel.atRanges {
+                        if ra.location+ra.length-1 == range.location {
+                            ctext.removeSubrange(ctext.index(ctext.startIndex, offsetBy: ra.location-1)...ctext.index(ctext.startIndex, offsetBy: ra.location+ra.length-1))
+                            self.textV.text = ctext
+                            let rindex = self.viewModel.atRanges.lastIndex(of: ra)!
+                            self.viewModel.removeAtRange(atIndex: rindex)
+                            self.textV.selectedRange = NSRange(location: ra.location-1, length: 0)
+                            return false
+                        }
+                    }
+                }
+            }
+            
+            if text == "@" && !isEmailSuffixEqualToAt(textStr: newStr) {
+                if let de = self.delegate {
+                    self.textV.text = newStr
+                    frameChage(newStr: newStr)
+                    de.needAtSomeOne(atRange: NSRange(location: range.location+1, length: 0))
+                    return false
+                }
+            }
+            
+            if range.location < self.textV.text.count {
+                self.viewModel.updateRangeBy(addingStr: text, withRange:range)
+            }
+        }
+        
         frameChage(newStr: newStr)
         return true
     }

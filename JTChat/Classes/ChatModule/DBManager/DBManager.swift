@@ -72,7 +72,10 @@ open class DBManager: NSObject {
             }
         })
         alert(table: "ChatLogList", arg: "alias_name", type: "VARCHAR(16)")
+        alert(table: "ChatLogList", arg: "avatar_url", type: "VARCHAR(255)")
         alert(table: "RecentChatList", arg: "alias_name", type: "VARCHAR(16)")
+        alert(table: "RecentChatList", arg: "avatar_url", type: "VARCHAR(255)")
+        alert(table: "RecentChatList", arg: "top_time", type: "TIMESTAMP")
         alert(table: "ContactorList", arg: "alias_name", type: "VARCHAR(16)")
         alert(table: "ChatLogList", arg: "voice_is_read", type: "INTEGER")
     }
@@ -125,7 +128,7 @@ open class DBManager: NSObject {
         self.dbQueue?.inDatabase({ (db) in
             print("currentDBQueueThread:\(Thread.current)")
             if db.open() {
-                let queryPersonSQL = "SELECT * FROM RecentChatList ORDER BY create_time DESC"
+                let queryPersonSQL = "SELECT * FROM RecentChatList ORDER BY top_time DESC, create_time DESC "
                 let pResult = db.executeQuery(queryPersonSQL, withArgumentsIn: [])
                 if let pr = pResult {
                     while pr.next() {
@@ -143,6 +146,10 @@ open class DBManager: NSObject {
                         model.topicGroupName = pr["topic_group_name"] as! String
                         model.creator = pr["creator"] as! String
                         model.unreadCount = pr["unread_count"] as! Int
+                        model.avatarUrl = pr["avatar_url"] as! String
+                        if let tit = pr["top_time"] as? TimeInterval, tit > 0 {
+                            model.topTime = ChatDateManager.manager.dealDate(byTimestamp: tit)
+                        }
                         if model.topicGroupID.count > 0  {
                             gArr.append(model)
                         } else {
@@ -182,7 +189,7 @@ open class DBManager: NSObject {
             DispatchQueue.global().async {
                 self.dbQueue?.inDatabase({ (db) in
                     if db.open() {
-                        let insertSQL = "INSERT INTO RecentChatList (sender,alias_name,sender_phone,sender_avantar,package_type,package_content,create_time,topic_group,topic_group_name,creator,is_read, unread_count) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"
+                        let insertSQL = "INSERT INTO RecentChatList (sender,alias_name,sender_phone,sender_avantar,package_type,package_content,create_time,topic_group,topic_group_name,creator,is_read, unread_count,avatar_url,top_time) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
                         
                         if model.createTime.count > 0 {
                             if model.createTime.contains(":") {
@@ -190,26 +197,48 @@ open class DBManager: NSObject {
                                 format.dateFormat = "yyyy-MM-dd HH:mm:ss"
                                 if let date = format.date(from: model.createTime) {
                                     let timeInterval = date.timeIntervalSince1970
-                                    db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname,model.aliasName, model.friendPhone, model.avatar, model.packageType, model.msgContent,timeInterval, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
+                                    var topt : TimeInterval?
+                                    if let tt = format.date(from: model.topTime) {
+                                        topt = tt.timeIntervalSince1970
+                                    }
+                                    db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname,model.aliasName, model.friendPhone, model.avatar, model.packageType, model.msgContent,timeInterval, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount,model.avatarUrl,topt ?? 0])
                                     if !db.interrupt() {
                                         print("db.lastError()")
                                     }
                                 }
                             } else {
-                                db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname,model.aliasName, model.friendPhone, model.avatar, model.packageType, model.msgContent,(Int(model.createTime) ?? 0)/1000, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
+                                let format = DateFormatter()
+                                format.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                                var topt : TimeInterval?
+                                if let tt = format.date(from: model.topTime) {
+                                    topt = tt.timeIntervalSince1970
+                                }
+                                db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname,model.aliasName, model.friendPhone, model.avatar, model.packageType, model.msgContent,(Int(model.createTime) ?? 0)/1000, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount,model.avatarUrl,topt ?? 0])
                                 if !db.interrupt() {
                                     print("db.lastError()")
                                 }
                             }
                             
                         } else if model.timeStamp > 0 {
-                            db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname,model.aliasName, model.friendPhone, model.avatar, model.packageType, model.msgContent,model.timeStamp, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
+                            let format = DateFormatter()
+                            format.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                            var topt : TimeInterval?
+                            if let tt = format.date(from: model.topTime) {
+                                topt = tt.timeIntervalSince1970
+                            }
+                            db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname,model.aliasName, model.friendPhone, model.avatar, model.packageType, model.msgContent,model.timeStamp, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount,model.avatarUrl,topt ?? 0])
                             if !db.interrupt() {
                                 print("db.lastError()")
                             }
                         } else {
                             let timeInterval = Date().timeIntervalSince1970
-                            db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname,model.aliasName, model.friendPhone, model.avatar, model.packageType, model.msgContent,timeInterval, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount])
+                            let format = DateFormatter()
+                            format.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                            var topt : TimeInterval?
+                            if let tt = format.date(from: model.topTime) {
+                                topt = tt.timeIntervalSince1970
+                            }
+                            db.executeUpdate(insertSQL, withArgumentsIn: [model.nickname,model.aliasName, model.friendPhone, model.avatar, model.packageType, model.msgContent,timeInterval, model.topicGroupID,model.topicGroupName,model.creator, model.isReaded, model.unreadCount,model.avatarUrl,topt ?? 0])
                             if !db.interrupt() {
                                 print("db.lastError()")
                             }
@@ -228,6 +257,8 @@ open class DBManager: NSObject {
                 let m = GroupInfoModel()
                 m.topicGroupName = model.topicGroupName
                 m.topicGroupID = model.topicGroupID
+                m.avatarUrl = model.avatarUrl
+                m.topTime = model.topTime;
                 updateGroupInfo(model: m)
             }
             if model.friendPhone.count > 0 {
@@ -404,7 +435,14 @@ open class DBManager: NSObject {
         if model.friendPhone.count > 0 {
             DispatchQueue.global().async {
                 self.dbQueue?.inDatabase({ (db) in
-                    let updateSQL = "UPDATE RecentChatList SET sender='\(model.nickname)',alias_name='\(model.aliasName)',sender_avantar='\(model.avatar)' WHERE sender_phone='\(model.friendPhone)'"
+                    let format = DateFormatter()
+                    format.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                    var timeInterval: TimeInterval = 0
+                    if let date = format.date(from: model.topTime ) {
+                        timeInterval = TimeInterval(Int(date.timeIntervalSince1970))
+                        
+                    }
+                    let updateSQL = "UPDATE RecentChatList SET sender='\(model.nickname)',alias_name='\(model.aliasName)',sender_avantar='\(model.avatar)',top_time=\(timeInterval) WHERE sender_phone='\(model.friendPhone)'"
                     if db.open() {
                         if db.executeStatements(updateSQL) {
                             if !db.interrupt() {
@@ -423,7 +461,13 @@ open class DBManager: NSObject {
             DispatchQueue.global().async {
                 self.dbQueue?.inDatabase({ (db) in
                     if db.open() {
-                        let updateSQL = "UPDATE RecentChatList SET topic_group_name='\(model.topicGroupName)' WHERE topic_group='\(model.topicGroupID)'"
+                        let format = DateFormatter()
+                        format.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                        var timeInterval: TimeInterval = 0
+                        if let date = format.date(from: model.topTime) {
+                            timeInterval = date.timeIntervalSince1970
+                        }
+                        let updateSQL = "UPDATE RecentChatList SET topic_group_name='\(model.topicGroupName)', avatar_url='\(model.avatarUrl)',top_time=\(timeInterval) WHERE topic_group='\(model.topicGroupID)'"
                         if db.executeUpdate(updateSQL, withArgumentsIn: []) {
                             if !db.interrupt() {
                                 print("db.lastError()")
@@ -502,6 +546,7 @@ open class DBManager: NSObject {
                                 while rSet.next() {
                                     model.topicGroupID = rSet["topic_group"] as! String
                                     model.topicGroupName = rSet["topic_group_name"] as! String
+                                    model.avatarUrl = rSet["avatar_url"] as! String
                                     model.creator = rSet["creator"] as! String
                                     model.unreadCount = rSet["unread_count"] as! Int
                                 }
@@ -515,6 +560,29 @@ open class DBManager: NSObject {
             }
         }
         return model
+    }
+    
+    func deleteChatLog(model: MessageModel) ->Bool {
+        var b = false
+        DispatchQueue.global().async {
+            self.dbQueue?.inDatabase({ (db) in
+                if db.open() {
+                    
+                    let deletSQL = "DELETE FROM ChatLogList WHERE id = \(model.id)"
+                    b = db.executeStatements(deletSQL)
+                    if !db.interrupt() {
+                        print("db.lastError()")
+                    }
+                    if b {
+                        DispatchQueue.main.async {
+                            print("聊天数据删除成功")
+                        }
+                    }
+                }
+                db.close()
+            })
+        }
+        return b
     }
     
     func AddChatLog(model: MessageModel)->Bool {
@@ -709,6 +777,7 @@ open class DBManager: NSObject {
                                 if let rs = result {
                                     while(rs.next()) {
                                         let m = MessageModel()
+                                        m.id = rs["id"] as! NSInteger
                                         m.sender = rs["sender"] as! String
                                         m.senderPhone = rs["sender_phone"] as! String
                                         m.senderAvanter = rs["sender_avantar"] as! String
@@ -719,7 +788,7 @@ open class DBManager: NSObject {
                                         m.creatTime = ChatDateManager.manager.dealDate(byTimeStr: timestamp)
                                         let oFormat = DateFormatter()
                                         oFormat.dateFormat = "yyyy-MM-dd HH:mm:ss"
-                                        m.timeStamp = oFormat.date(from: timestamp)!.timeIntervalSince1970
+                                        m.timeStamp = rs["time_stamp"] as! TimeInterval
                                         m.packageType = rs["package_type"] as! Int
                                         let msgStr = rs["package_content"] as! String
                                         if m.packageType == 2 {
@@ -781,6 +850,7 @@ open class DBManager: NSObject {
                                         if let rs = result {
                                             while(rs.next()) {
                                                 let m = MessageModel()
+                                                m.id = rs["id"] as! NSInteger
                                                 m.sender = rs["sender"] as! String
                                                 m.senderPhone = rs["sender_phone"] as! String
                                                 m.senderAvanter = rs["sender_avantar"] as! String
@@ -789,9 +859,7 @@ open class DBManager: NSObject {
                                                 m.receiverAvanter = rs["receiver_avantar"] as! String
                                                 let timestamp = rs["create_time"] as! String
                                                 m.creatTime = ChatDateManager.manager.dealDate(byTimeStr: timestamp)
-                                                let oFormat = DateFormatter()
-                                                oFormat.dateFormat = "yyyy-MM-dd HH:mm:ss"
-                                                m.timeStamp = oFormat.date(from: timestamp)!.timeIntervalSince1970
+                                                m.timeStamp = rs["time_stamp"] as! TimeInterval
                                                 m.packageType = rs["package_type"] as! Int
                                                 let msgStr = rs["package_content"] as! String
                                                 if m.packageType == 2 {

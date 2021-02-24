@@ -150,7 +150,7 @@ open class JTManager: NSObject {
         DBManager.manager.updateRecentChat(model: mmodel)
     }
     
-    func sendMessage(targetModel: ContactorModel?, msg: String?, suffix: String?) {
+    func sendMessage(targetModel: ContactorModel?, msg: String?, suffix: String?, atSomeOne:String?) {
         if let cmodel = targetModel, (cmodel.phone.count > 0 || cmodel.topicGroupID.count > 0){
             let model = MessageModel()
             model.sender = cmodel.nickName
@@ -184,7 +184,11 @@ open class JTManager: NSObject {
                     socketData.contentString = ChatimagManager.manager.GetImageDataBy(MD5Str: msg ?? "").base64EncodedString()
                 }
             } else {
-                socketData.contentString = msg ?? ""
+                var extendStr = ""
+                if let ast = atSomeOne {
+                    extendStr = ast
+                }
+                socketData.contentString = "\(msg ?? "")\(extendStr)"
             }
             let messageOfSend = socketData.getFullData()
             if let de = self.delegate {

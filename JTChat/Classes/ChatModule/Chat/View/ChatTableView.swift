@@ -20,7 +20,7 @@ class ChatTableView: UITableView {
     init(frame: CGRect, style: UITableView.Style, viewModel vm: ChatViewModel) {
         super.init(frame: frame, style: style)
         viewModel = vm
-        backgroundColor = HEX_COLOR(hexStr: "#EBEBEB")
+        backgroundColor = UIColor.clear
         separatorStyle = .none
         delegate = self
         dataSource = self
@@ -82,7 +82,35 @@ class ChatTableView: UITableView {
     
 }
 
-extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
+extension ChatTableView: UITableViewDelegate, UITableViewDataSource, JTChatMenuViewDelegate {
+    func retweetMessage(fromMessageView: JTChatMenuView) {
+        let index = fromMessageView.indexPath
+    }
+    
+    func deleteMessage(fromMessageView: JTChatMenuView) {
+        let index = fromMessageView.indexPath
+        _ = DBManager.manager.deleteChatLog(model: self.dataArr[index.section].rowsArr[index.row])
+        self.beginUpdates()
+        self.deleteRows(at: [index], with: UITableView.RowAnimation.fade)
+        if self.dataArr[index.section].rowsArr.count-1 > 0 {
+            self.reloadSections(IndexSet.init([index.section]), with: .fade)
+            let m = self.dataArr[index.section].rowsArr[index.row]
+            let i = (self.viewModel!.originArr as NSArray).index(of: m)
+            self.viewModel!.originArr.remove(at: i)
+            self.dataArr[index.section].rowsArr.remove(at: index.row)
+            self.viewModel?.clearRedPot()
+        } else {
+            self.deleteSections(IndexSet.init([index.section]), with: .fade)
+            let m = self.dataArr[index.section].rowsArr[index.row]
+            let i = (self.viewModel!.originArr as NSArray).index(of: m)
+            self.viewModel!.originArr.remove(at: i)
+            self.dataArr.remove(at: index.section)
+            self.viewModel?.clearRedPot()
+        }
+        
+        self.endUpdates()
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         return dataArr.count
     }
@@ -107,6 +135,7 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 cell.contentV.indexPath = indexPath
                 let tap = UITapGestureRecognizer.init(target: self, action: #selector(tag(tap:)))
                 cell.contentV.addGestureRecognizer(tap)
+                cell.contentV.delegate = self
                 return cell
             } else if model.packageType == 2 && model.msgContent.contains(".mp4") {
                 let cell: RightVideoCell = tableView.dequeueReusableCell(withIdentifier: "RightVideoCell", for: indexPath) as! RightVideoCell
@@ -114,6 +143,7 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 cell.contentV.indexPath = indexPath
                 let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
                 cell.contentV.addGestureRecognizer(tap)
+                cell.contentV.delegate = self
                 return cell
             } else if model.packageType == 2 {
                 let cell: RightImgVCell = tableView.dequeueReusableCell(withIdentifier: "RightImgVCell", for: indexPath) as! RightImgVCell
@@ -121,6 +151,7 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 cell.contentV.indexPath = indexPath
                 //                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
                 //                cell.contentV.addGestureRecognizer(tap)
+                cell.contentV.delegate = self
                 return cell
             }  else {
                 let cell: ChatTableRightCell = tableView.dequeueReusableCell(withIdentifier: "ChatTableRightCell", for: indexPath) as! ChatTableRightCell
@@ -128,6 +159,7 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 cell.contentV.indexPath = indexPath
                 //                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
                 //                cell.contentV.addGestureRecognizer(tap)
+                cell.contentV.delegate = self
                 return cell
             }
         } else {
@@ -137,6 +169,7 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 cell.model = model
                 cell.contentV.indexPath = indexPath
                 cell.contentV.addGestureRecognizer(tap)
+                cell.contentV.delegate = self
                 return cell
             } else if model.packageType == 2 && model.msgContent.contains(".mp4") {
                 let cell: LeftVideoCell = tableView.dequeueReusableCell(withIdentifier: "LeftVideoCell", for: indexPath) as! LeftVideoCell
@@ -144,6 +177,7 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 cell.contentV.indexPath = indexPath
                 let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
                 cell.contentV.addGestureRecognizer(tap)
+                cell.contentV.delegate = self
                 return cell
             } else if model.packageType == 2 {
                 let cell: LeftImgVCell = tableView.dequeueReusableCell(withIdentifier: "LeftImgVCell", for: indexPath) as! LeftImgVCell
@@ -151,6 +185,7 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 cell.contentV.indexPath = indexPath
                 //                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
                 //                cell.contentV.addGestureRecognizer(tap)
+                cell.contentV.delegate = self
                 return cell
             } else {
                 let cell: ChatTableLeftCell = tableView.dequeueReusableCell(withIdentifier: "ChatTableLeftCell", for: indexPath) as! ChatTableLeftCell
@@ -158,6 +193,7 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
                 cell.contentV.indexPath = indexPath
                 //                let tap = UITapGestureRecognizer.init(target: self, action: #selector(tapNormalCell(tap:)))
                 //                cell.contentV.addGestureRecognizer(tap)
+                cell.contentV.delegate = self
                 return cell
             }
         }
@@ -217,29 +253,6 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource {
         
     }
     
-    @objc func longPress(long: UILongPressGestureRecognizer) {
-        let menu = UIMenuController.shared
-        let cItem = UIMenuItem.init(title: "复制", action: #selector(copyItem))
-        let reItem = UIMenuItem.init(title: "转发", action: #selector(retweetItem))
-        let deItem = UIMenuItem.init(title: "删除", action: #selector(deletItem))
-        menu.menuItems = [cItem,reItem,deItem]
-        menu.setTargetRect(CGRect(x: 30, y: 5, width: 100, height: 30), in: long.view!)
-        menu.setMenuVisible(true, animated: true)
-    }
-    
-    
-    
-    @objc func copyItem() {
-        
-    }
-    
-    @objc func retweetItem() {
-        
-    }
-    
-    @objc func deletItem() {
-        
-    }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let model = dataArr[indexPath.section].rowsArr[indexPath.row]
@@ -308,8 +321,8 @@ class ChatTableLeftCell: BaseTableCell {
         pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
-    lazy var contentV: UIView = {
-        let cv = UIView()
+    lazy var contentV: JTChatMenuView = {
+        let cv = JTChatMenuView.init(frame: CGRect.zero)
         cv.layer.cornerRadius = 3
         cv.backgroundColor = HEX_FFF
         return cv
@@ -367,13 +380,6 @@ class ChatTableLeftCell: BaseTableCell {
         return true
     }
     
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(ChatTableView.copyItem) || action == #selector(ChatTableView.retweetItem) || action == #selector(ChatTableView.deletItem) {
-            return true
-        }
-        return false
-    }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -407,8 +413,8 @@ class LeftImgVCell: BaseTableCell {
         pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
-    lazy var contentV: UIView = {
-        let cv = UIView()
+    lazy var contentV: JTChatMenuView = {
+        let cv = JTChatMenuView.init(frame: CGRect.zero)
         cv.layer.cornerRadius = 3
         cv.backgroundColor = HEX_FFF
         return cv
@@ -456,13 +462,6 @@ class LeftImgVCell: BaseTableCell {
         return true
     }
     
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(ChatTableView.copyItem) || action == #selector(ChatTableView.retweetItem) || action == #selector(ChatTableView.deletItem) {
-            return true
-        }
-        return false
-    }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -496,8 +495,8 @@ class LeftVideoCell: BaseTableCell {
         pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
-    lazy var contentV: UIView = {
-        let cv = UIView()
+    lazy var contentV: JTChatMenuView = {
+        let cv = JTChatMenuView.init(frame: CGRect.zero)
         cv.layer.cornerRadius = 3
         cv.backgroundColor = HEX_FFF
         return cv
@@ -556,13 +555,6 @@ class LeftVideoCell: BaseTableCell {
         return true
     }
     
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(ChatTableView.copyItem) || action == #selector(ChatTableView.retweetItem) || action == #selector(ChatTableView.deletItem) {
-            return true
-        }
-        return false
-    }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -598,8 +590,8 @@ class LeftVoiceCell: BaseTableCell {
         pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
-    lazy var contentV: UIView = {
-        let cv = UIView()
+    lazy var contentV: JTChatMenuView = {
+        let cv = JTChatMenuView.init(frame: CGRect.zero)
         cv.layer.cornerRadius = 3
         cv.backgroundColor = HEX_FFF
         return cv
@@ -691,13 +683,6 @@ class LeftVoiceCell: BaseTableCell {
         return true
     }
     
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(ChatTableView.copyItem) || action == #selector(ChatTableView.retweetItem) || action == #selector(ChatTableView.deletItem) {
-            return true
-        }
-        return false
-    }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -720,8 +705,8 @@ class ChatTableRightCell: BaseTableCell {
         pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
-    lazy var contentV: UIView = {
-        let cv = UIView()
+    lazy var contentV: JTChatMenuView = {
+        let cv = JTChatMenuView.init(frame: CGRect.zero)
         cv.layer.cornerRadius = 3
         cv.backgroundColor = HEX_COLOR(hexStr: "#CEE6FA")
         return cv
@@ -771,13 +756,7 @@ class ChatTableRightCell: BaseTableCell {
     override var canBecomeFirstResponder: Bool {
         return true
     }
-    
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(ChatTableView.copyItem) || action == #selector(ChatTableView.retweetItem) || action == #selector(ChatTableView.deletItem) {
-            return true
-        }
-        return false
-    }
+
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -802,8 +781,8 @@ class RightImgVCell: BaseTableCell {
         return pv
     }()
     
-    lazy var contentV: UIView = {
-        let cv = UIView()
+    lazy var contentV: JTChatMenuView = {
+        let cv = JTChatMenuView.init(frame: CGRect.zero)
         cv.layer.cornerRadius = 3
         cv.backgroundColor = HEX_COLOR(hexStr: "#CEE6FA")
         return cv
@@ -843,13 +822,6 @@ class RightImgVCell: BaseTableCell {
         return true
     }
     
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(ChatTableView.copyItem) || action == #selector(ChatTableView.retweetItem) || action == #selector(ChatTableView.deletItem) {
-            return true
-        }
-        return false
-    }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -875,8 +847,8 @@ class RightVideoCell: BaseTableCell {
         return pv
     }()
     
-    lazy var contentV: UIView = {
-        let cv = UIView()
+    lazy var contentV: JTChatMenuView = {
+        let cv = JTChatMenuView.init(frame: CGRect.zero)
         cv.layer.cornerRadius = 3
         cv.backgroundColor = HEX_COLOR(hexStr: "#CEE6FA")
         return cv
@@ -927,13 +899,6 @@ class RightVideoCell: BaseTableCell {
         return true
     }
     
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(ChatTableView.copyItem) || action == #selector(ChatTableView.retweetItem) || action == #selector(ChatTableView.deletItem) {
-            return true
-        }
-        return false
-    }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -957,8 +922,8 @@ class RightVoiceCell: BaseTableCell {
         pv.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
         return pv
     }()
-    lazy var contentV: UIView = {
-        let cv = UIView()
+    lazy var contentV: JTChatMenuView = {
+        let cv = JTChatMenuView.init(frame: CGRect.zero)
         cv.layer.cornerRadius = 3
         cv.backgroundColor = HEX_COLOR(hexStr: "#CEE6FA")
         return cv
@@ -1042,13 +1007,6 @@ class RightVoiceCell: BaseTableCell {
     
     override var canBecomeFirstResponder: Bool {
         return true
-    }
-    
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(ChatTableView.copyItem) || action == #selector(ChatTableView.retweetItem) || action == #selector(ChatTableView.deletItem) {
-            return true
-        }
-        return false
     }
     
     required init?(coder: NSCoder) {

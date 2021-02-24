@@ -46,6 +46,17 @@ class GroupInfoViewModel: BaseViewModel {
         })
     }
     
+    func updateGroupPortrait(image:UIImage) {
+        NetServiceManager.manager.UploadImage(images: [image], api: "/v1/chat/uploadTopicGroupAvatar", param: ["topicGroupId":groupID], isShowHUD: false, progressBlock: { (a) in
+//            SVProgressHUD.showProgress(Float(a))
+        }, successBlock: { (msg, code, response, data) in
+            SVPShowSuccess(content: msg)
+            self.refreshData()
+        }, faliedBlock: { (errorInfo) in
+            SVPShowError(content: errorInfo.message)
+        })
+    }
+    
     func leaveGroup() {
         _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_REMOVEMEMFROMGROUP, params: ["topicGroupID" : groupID, "memberPhone":(USERDEFAULT.object(forKey: "phone") ?? "")], success: { (msg, code, response, data) in
             SVPShowSuccess(content: "退出成功")
@@ -56,8 +67,12 @@ class GroupInfoViewModel: BaseViewModel {
         })
     }
     
+    func setGroupChatViewBG(image: UIImage) {
+        ChatimagManager.manager.saveChatBGImage(image: image, forGroup: self.groupID)
+    }
+    
     func updateInfo() {
-        _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_UPDATEGROUPINFO, params: ["topicGroupID":groupID,"topicGroupName":groupName,"topicGroupDesc":groupDescrip], success: { (msg, code, response, data) in
+        _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_UPDATEGROUPINFO, params: ["topicGroupID":groupID,"topicGroupName":groupName,"topicGroupDesc":groupDescrip,"isTop":""], success: { (msg, code, response, data) in
             SVPShowSuccess(content: "修改成功")
             let m = GroupInfoModel()
             m.topicGroupID = self.groupID
@@ -75,9 +90,11 @@ class GroupInfoModel: BaseModel {
     var createTime: String = ""
     var creator: String = ""
     var members: Int = 1
+    var avatarUrl: String = ""
     var topicGroupDesc: String = ""
     var topicGroupID: String = ""
     var topicGroupName: String = ""
+    var topTime: String = ""
     var membersList: Array<GroupMemberModel> = []
 }
 

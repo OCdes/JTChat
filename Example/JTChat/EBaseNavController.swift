@@ -18,6 +18,7 @@ class EBaseNavController: UINavigationController {
         ]
         UINavigationBar.appearance().titleTextAttributes = attributes
         UINavigationBar.appearance().shadowImage = UIImage()
+        UINavigationBar.appearance().barTintColor = UIColor.brown
 //        self.navigationBar.setBackgroundImage(UIImage.imageWith(color: HEX_ThemeBlack), for: UIBarMetrics.default)
         // Do any additional setup after loading the view.
     }

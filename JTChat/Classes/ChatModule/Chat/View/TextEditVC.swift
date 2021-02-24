@@ -33,6 +33,8 @@ class TextEditVC: BaseViewController {
         tf.layer.borderWidth = 0.5
         tf.layer.cornerRadius = 3
         tf.layer.masksToBounds = true
+        tf.leftView = UIView.init(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        tf.leftViewMode = .always
         return tf
     }()
     override func viewDidLoad() {
@@ -61,7 +63,7 @@ class TextEditVC: BaseViewController {
         if self.model.topicGroupID.count > 0 {
             if let str = self.textf.text, str.count > 0, str != self.model.topicGroupName {
                 self.textf.resignFirstResponder()
-                _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_UPDATEGROUPINFO, params: ["topicGroupID":model.topicGroupID,"topicGroupName":str,"topicGroupDesc":model.topicGroupDesc], success: { (msg, code, response, data) in
+                _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_UPDATEGROUPINFO, params: ["topicGroupID":model.topicGroupID,"topicGroupName":str,"topicGroupDesc":model.topicGroupDesc,"isTop":""], success: { (msg, code, response, data) in
                     SVPShowSuccess(content: "修改成功")
                     let m = GroupInfoModel()
                     m.topicGroupID = self.model.topicGroupID
@@ -77,7 +79,7 @@ class TextEditVC: BaseViewController {
         } else if self.contactModel.phone.count > 0 {
             if let str = self.textf.text, str.count > 0, str != self.contactModel.nickName {
                 self.textf.resignFirstResponder()
-                let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_SETALIAS, params: ["friendPhone":self.contactModel.phone,"aliasName":str]) { (msg, code, response, data) in
+                let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_SETALIAS, params: ["friendPhone":self.contactModel.phone,"aliasName":str,"isTop":""]) { (msg, code, response, data) in
                     self.subject.onNext("")
                     self.navigationController?.popViewController(animated: true)
                 } fail: { (errorInfo) in

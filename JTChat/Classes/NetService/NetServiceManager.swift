@@ -117,6 +117,7 @@ class NetServiceManager: NSObject {
     
     public func requestByType(requestType: RequestType, url: String, params: [String: Any], success: @escaping RequestSuccess, fail: @escaping RequestFail)->PublishSubject<Any> {
         let sub: PublishSubject = PublishSubject<Any>()
+        self.header = SessionManager.defaultHTTPHeaders
         if let a = USERDEFAULT.object(forKey: "jwt") {
             self.header["jwt"] = a
         }
@@ -163,6 +164,7 @@ class NetServiceManager: NSObject {
     }
     
     public func requestByType(requestType: RequestType, api: String, params: [String: Any], success: @escaping RequestSuccess, fail: @escaping RequestFail)->PublishSubject<Any> {
+        self.header = SessionManager.defaultHTTPHeaders
         let sub: PublishSubject = PublishSubject<Any>()
         if let a = USERDEFAULT.object(forKey: "jwt") {
             self.header["jwt"] = a
@@ -238,30 +240,28 @@ extension NetServiceManager {
     }
     
     func UploadImage(images: [UIImage], api: String, param: Dictionary<String, Any>, isShowHUD: Bool, progressBlock: @escaping NetworkProgress, successBlock:@escaping RequestSuccess,faliedBlock:@escaping RequestFail) {
-        if let a = USERDEFAULT.object(forKey: "jwt") {
-            self.header["jwt"] = a
-            self.header["content-type"] = "multipart/form-data"
-        }
-        images.forEach { (image) in
-            postImage(image: image, url: BASE_URL+api, param: param, headers: self.header as! HTTPHeaders, isShowHUD: isShowHUD, progressBlock: progressBlock, successBlock: successBlock, faliedBlock: faliedBlock)
-        }
+        let a = JTManager.manager.jwt
+        self.header["jwt"] = a
+        self.header["content-type"] = "multipart/form-data"
+        postImage(images: images, url: BASE_URL+api, param: param, headers: self.header as! HTTPHeaders, isShowHUD: isShowHUD, progressBlock: progressBlock, successBlock: successBlock, faliedBlock: faliedBlock)
     }
         
     //    上传图片
-        func postImage(image: UIImage, url: String, param: Parameters?, headers: HTTPHeaders, isShowHUD: Bool, progressBlock: @escaping NetworkProgress, successBlock:@escaping RequestSuccess,faliedBlock:@escaping RequestFail) {
-            
-            let imageData = image.jpegData(compressionQuality: 1.0) 
+    func postImage(images: [UIImage], url: String, param: Parameters?, headers: HTTPHeaders, isShowHUD: Bool, progressBlock: @escaping NetworkProgress, successBlock:@escaping RequestSuccess,faliedBlock:@escaping RequestFail) {
             self.sessionManager?.upload(multipartFormData: { (multipartFormData) in
                 //采用post表单上传
                 // 参数解释
-                let dataStr = DateFormatter.init()
-                dataStr.dateFormat = "yyyyMMddHHmmss"
-                let fileName = "\(dataStr.string(from: Date.init())).png"
-                multipartFormData.append(imageData!, withName: "file", fileName: fileName, mimeType: "image/jpg/png/jpeg")
                 if let dict = param {
                     for (key, value) in dict {
                         multipartFormData.append((value as! String).data(using: String.Encoding.utf8)!, withName: key)
                     }
+                }
+                for img in images {
+                    let imageData = img.jpegData(compressionQuality: 0.0001)
+                    let dataStr = DateFormatter.init()
+                    dataStr.dateFormat = "yyyyMMddHHmmss"
+                    let fileName = "\(dataStr.string(from: Date.init())).png"
+                    multipartFormData.append(imageData!, withName: "file", fileName: fileName, mimeType: "image/jpg/png/jpeg")
                 }
                 
             }, to: url, headers: headers, encodingCompletion: { (encodingResult) in
@@ -328,7 +328,7 @@ extension NetServiceManager {
         if code == REQUEST_SUCCESSFUL {
             successBlock(msg,code,value as AnyObject,data)
         } else if code == 501 || code == 6601 {
-            
+            SVPShowError(content: msg)
         } else {
             var errorInfo = AFSErrorInfo();
             errorInfo.code = code;

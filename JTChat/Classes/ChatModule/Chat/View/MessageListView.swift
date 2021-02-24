@@ -76,17 +76,51 @@ extension MessageListView: UITableViewDelegate, UITableViewDataSource {
         self.viewModel?.navigationVC?.pushViewController(vc, animated: true)
     }
     
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return UITableViewCell.EditingStyle.init(rawValue: UITableViewCell.EditingStyle.delete.rawValue | UITableViewCell.EditingStyle.insert.rawValue)!
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let fm = self.dataArr[indexPath.row]
+        let setTop = UITableViewRowAction.init(style: .default, title: "置顶") { (action, indexpath) in
+            self.viewModel?.setTop(model: fm)
+        }
+        setTop.backgroundColor = HEX_LightBlue
+        let setNormal = UITableViewRowAction.init(style: .normal, title: "取消置顶") { (action, indexpath) in
+            self.viewModel?.setTop(model: fm)
+        }
+        if fm.topTime.count > 0 {
+            return [setNormal]
+        } else {
+            return [setTop]
+        }
+        
+    }
+    
 }
 
 class MessageListCell: BaseTableCell {
     var model: FriendModel? {
         didSet {
             if model!.nickname.count > 0 || model!.topicGroupName.count > 0 {
-                portraitV.kf.setImage(with: URL(string: model!.avatar), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+                let imgurl = model!.topicGroupID.count > 0 ? model!.avatarUrl : model!.avatar
+                if imgurl.count > 0 {
+                    portraitV.kf.setImage(with: URL(string: "\(imgurl)?tmp=\(arc4random())"), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+                } else {
+                    portraitV.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
+                }
                 nameLa.text = model!.topicGroupName.count > 0 ? model!.topicGroupName : (model!.aliasName.count > 0 ? model!.aliasName: model!.nickname)
             } else {
                 let m = DBManager.manager.getContactor(phone: model!.friendPhone)
-                portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+                if m.avatarUrl.count > 0 {
+                    portraitV.kf.setImage(with: URL(string: "\(m.avatarUrl)?tmp=\(arc4random())"), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+                } else {
+                    portraitV.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
+                }
                 nameLa.text = model!.topicGroupName.count > 0 ? m.topicGroupName : (model!.aliasName.count > 0 ? model!.aliasName: model!.nickname)
             }
             
@@ -94,6 +128,12 @@ class MessageListCell: BaseTableCell {
             messageLa.text = model!.packageType == 2 ? (model!.msgContent.contains(".wav") ? "[语音]" : (model!.msgContent.contains("mp4") ? "[视频]" : "[图片]")) : model!.msgContent
             redDot.isHidden = (model!.isReaded || !(model!.unreadCount > 0))
             redDot.text = model!.unreadCount >= 99 ? "99+" : "\(model!.unreadCount)"
+            if let ti = model?.topTime, ti.count > 0 {
+                backgroundColor = HEX_COLOR(hexStr: "#e2e2e2").withAlphaComponent(0.3)
+            } else {
+                backgroundColor = UIColor.clear
+//                backgroundColor = HEX_COLOR(hexStr: "#e2e2e2").withAlphaComponent(0.3)
+            }
         }
     }
     lazy var portraitV: UIImageView = {

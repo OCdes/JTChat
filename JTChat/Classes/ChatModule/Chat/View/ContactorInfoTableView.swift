@@ -7,10 +7,10 @@
 //
 
 import UIKit
-
+import YPImagePicker
 class ContactorInfoTableView: UITableView {
     var titlesArr: Array<String> = ["手机","部门"]
-    var contentsArr: Array<String> = ["",""]
+    var contentsArr: Array<String> = ["","",""]
     var viewModel: ContactorInfoViewModel?
     lazy var footerV: UIView = {
         let fv = UIView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: 174))
@@ -97,12 +97,27 @@ class ContactorInfoTableView: UITableView {
             
         } else {
             self.tableFooterView = (viewModel?.employeeModel.isFriend ?? false) ? footerV : footerV2
+            if viewModel?.employeeModel.isFriend ?? false {
+                titlesArr.append("设置聊天背景")
+            } else {
+                if let index = titlesArr.firstIndex(of: "设置聊天背景") {
+                    titlesArr.remove(at: index)
+                }
+                
+            }
         }
         let _ = viewModel!.subject.subscribe { [weak self](a) in
             if let a = self!.viewModel?.employeeModel.phone, let b = USERDEFAULT.object(forKey: "phone") as? String, a == b {
                 self!.tableFooterView = self!.footerV
             } else {
                 self!.tableFooterView = (self!.viewModel?.employeeModel.isFriend ?? false) ? self!.footerV : self!.footerV2
+                if self?.viewModel?.employeeModel.isFriend ?? false {
+                    self?.titlesArr.append("设置聊天背景")
+                } else {
+                    if let index = self?.titlesArr.firstIndex(of: "设置聊天背景") {
+                        self?.titlesArr.remove(at: index)
+                    }
+                }
             }
             self!.contentsArr[1] = self!.viewModel?.employeeModel.department ?? ""
             self!.reloadData()
@@ -148,10 +163,18 @@ extension ContactorInfoTableView: UITableViewDelegate, UITableViewDataSource {
             return cell
         case 2:
             let cell: ContactorInfoCell = tableView.dequeueReusableCell(withIdentifier: "ContactorInfoCell", for: indexPath) as! ContactorInfoCell
-            cell.titleLa.text = titlesArr[indexPath.row]
-            cell.contentLa.text = contentsArr[indexPath.row]
-            cell.contentLa.textColor = titlesArr[indexPath.row] == "手机" ? HEX_COLOR(hexStr: "#3F80CB") : HEX_333
-            cell.accessoryType = titlesArr[indexPath.row] == "部门" ? .none : .none
+            if indexPath.row == 2 {
+                cell.textLabel?.text = titlesArr[indexPath.row]
+                cell.textLabel?.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+                cell.textLabel?.textColor = HEX_333
+                cell.accessoryType = .disclosureIndicator
+            } else {
+                cell.titleLa.text = titlesArr[indexPath.row]
+                cell.contentLa.text = contentsArr[indexPath.row]
+                cell.contentLa.textColor = titlesArr[indexPath.row] == "手机" ? HEX_COLOR(hexStr: "#3F80CB") : HEX_333
+                cell.accessoryType = titlesArr[indexPath.row] == "部门" ? .none : .none
+            }
+            
             return cell
         default:
             let cell: ContactorInfoCell = tableView.dequeueReusableCell(withIdentifier: "ContactorInfoCell", for: indexPath) as! ContactorInfoCell
@@ -210,6 +233,44 @@ extension ContactorInfoTableView: UITableViewDelegate, UITableViewDataSource {
                 vc.contactModel = vm.employeeModel
                 self.viewModel?.navigationVC?.pushViewController(vc, animated: true)
             }
+        } else if (indexPath.section == 2) {
+            var config: YPImagePickerConfiguration = YPImagePickerConfiguration.init()
+            config.isScrollToChangeModesEnabled = false
+            config.onlySquareImagesFromCamera = false
+            config.showsPhotoFilters = false
+            config.usesFrontCamera = true
+            config.hidesBottomBar = true
+            config.screens = [.library]
+            config.library.maxNumberOfItems = 1
+            config.library.mediaType = .photoAndVideo
+            config.video.trimmerMinDuration = 1
+            config.video.trimmerMaxDuration = 10
+            config.video.fileType = .mp4
+            config.startOnScreen = YPPickerScreen.library
+            config.albumName = "精特"
+            config.wordings.next = "下一步"
+            config.wordings.cancel = "取消"
+            config.wordings.libraryTitle = "相册"
+            config.wordings.cameraTitle = "相机"
+            config.wordings.albumsTitle = "全部相册"
+            config.library.defaultMultipleSelection = true
+            let picker: YPImagePicker = YPImagePicker.init(configuration: config)
+            picker.imagePickerDelegate = self as? YPImagePickerDelegate
+            picker.didFinishPicking { [unowned picker] items, _  in
+                if items.count > 0 {
+                    let itemOne = items[0]
+                    switch itemOne {
+                    case .photo(p: let img):
+                        self.viewModel?.setPersonalChatViewBG(image: img.image)
+                        break;
+                    default:
+                        break;
+                    }
+                    
+                }
+                picker.dismiss(animated: true, completion: nil)
+            }
+            self.viewModel?.navigationVC?.present(picker, animated: true, completion: nil)
         }
     }
     

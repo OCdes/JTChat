@@ -106,6 +106,16 @@ func isNum(str: String) -> Bool {
     }
 }
 
+func isEmailSuffixEqualToAt(textStr: String) -> Bool {
+    if textStr.count > 0 , textStr.hasSuffix("@") {
+        let regex = "[0-9a-zA-Z]@"
+        let predicate = NSPredicate.init(format: "SELF MATCHES %@", regex)
+        return predicate.evaluate(with: textStr)
+    } else {
+        return false
+    }
+}
+
 func currentDateStr() -> String {
     let date = Date()
     let dateFormatter = DateFormatter.init()

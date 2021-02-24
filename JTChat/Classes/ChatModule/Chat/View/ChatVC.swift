@@ -95,7 +95,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         view.addSubview(tableView)
         tableView.snp_makeConstraints { (make) in
             make.top.left.right.equalTo(view)
-            make.bottom.equalTo(view).offset(-62-(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 49) : 0))
+            make.bottom.equalTo(view).offset(-62-(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) : 0))
         }
         view.addSubview(toolView)
         toolView.snp_makeConstraints { (make) in

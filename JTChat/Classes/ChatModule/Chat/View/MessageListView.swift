@@ -128,7 +128,11 @@ class MessageListCell: BaseTableCell {
             messageLa.text = model!.packageType == 2 ? (model!.msgContent.contains(".wav") ? "[语音]" : (model!.msgContent.contains("mp4") ? "[视频]" : "[图片]")) : model!.msgContent
             redDot.isHidden = (model!.isReaded || !(model!.unreadCount > 0))
             redDot.text = model!.unreadCount >= 99 ? "99+" : "\(model!.unreadCount)"
-            self.atRemarkLa.text = model?.fileSuffix ?? ""
+            if let sf = model?.fileSuffix {
+                self.atRemarkLa.text = sf.count > 0 ? "[有人@我]" : ""
+            } else {
+                self.atRemarkLa.text = ""
+            }
             if let ti = model?.topTime, ti.count > 0 {
                 backgroundColor = HEX_COLOR(hexStr: "#e2e2e2").withAlphaComponent(0.3)
             } else {
@@ -242,7 +246,7 @@ class MessageListCell: BaseTableCell {
         messageLa.snp_makeConstraints { (make) in
             make.top.equalTo(nameLa.snp_bottom)
             make.left.equalTo(atRemarkLa.snp_right)
-            make.height.right.equalTo(self.atRemarkLa)
+            make.height.right.equalTo(self.nameLa)
         }
         
         let line = LineView.init(frame: CGRect.zero)

@@ -73,7 +73,16 @@ extension GroupManagerTableView: UITableViewDelegate, UITableViewDataSource {
         case "解散群组":
             self.viewModel?.deleGroup()
         case "转让群主":
-            SVPShow(content: "")
+            let vc = GroupMemVC()
+            vc.tableView.selectMode = true
+            _ = vc.tableView.subject.subscribe(onNext: { (a) in
+                if let mm = a as? GroupMemberModel, mm.memberPhone != JTManager.shareManager().phone{
+                    self.viewModel?.signGroupOwnerTo(targetPhone: mm.memberPhone)
+                    self.viewModel?.navigationVC?.popViewController(animated: true)
+                } else {
+//                    SVPShowError(content: "请选则要转让的人")
+                }
+            })
         default:
             break
         }

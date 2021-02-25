@@ -78,6 +78,7 @@ class GroupChatSelectVC: BaseViewController {
             self.dismiss(animated: true, completion: nil)
             let cm = ContactorModel()
             cm.topicGroupID = self.viewModel.topicGroupID
+            cm.topicGroupName = self.viewModel.topicGroupName
             let vc = ChatVC()
             vc.viewModel.contactor = cm
             vc.title = self.viewModel.topicGroupName

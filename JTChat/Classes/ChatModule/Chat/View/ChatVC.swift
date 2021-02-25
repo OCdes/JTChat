@@ -110,7 +110,9 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         if let m = self.viewModel.contactor {
             if m.topicGroupID.count > 0 {
 //                let cm = DBManager.manager.getRecent(byPhone: nil, byTopicID: m.topicGroupID)
-                self.title = m.topicGroupName
+                if m.topicGroupName.count > 0 {
+                    self.title = m.topicGroupName
+                }
                 USERDEFAULT.set(m.topicGroupID, forKey: "currentID")
             } else {
 //                let cm = DBManager.manager.getRecent(byPhone: m.phone, byTopicID: nil)

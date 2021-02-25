@@ -7,10 +7,12 @@
 //
 
 import UIKit
-
+import RxSwift
 class GroupMemTableView: UITableView {
     var dataArr: Array<GroupMemberModel> = []
     var viewModel: GroupInfoViewModel?
+    var selectMode: Bool = false
+    var subject: PublishSubject<Any> = PublishSubject<Any>()
     init(frame: CGRect, style: UITableView.Style, viewModel vm: GroupInfoViewModel) {
         super.init(frame: frame, style: style)
         viewModel = vm
@@ -99,12 +101,17 @@ extension GroupMemTableView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let em = dataArr[indexPath.row]
-        let mm = ContactorInfoViewModel()
-        mm.employeeModel.phone = em.memberPhone
-        let vc = ContacterInfoVC()
-        vc.viewModel = mm
-        viewModel?.navigationVC?.pushViewController(vc, animated: true)
+        if selectMode {
+            let em = dataArr[indexPath.row]
+            self.subject.onNext(em)
+        } else {
+            let em = dataArr[indexPath.row]
+            let mm = ContactorInfoViewModel()
+            mm.employeeModel.phone = em.memberPhone
+            let vc = ContacterInfoVC()
+            vc.viewModel = mm
+            viewModel?.navigationVC?.pushViewController(vc, animated: true)
+        }
     }
     
 }

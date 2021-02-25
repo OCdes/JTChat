@@ -37,6 +37,15 @@ class GroupInfoViewModel: BaseViewModel {
         })
     }
     
+    func signGroupOwnerTo(targetPhone: String) {
+        _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_UPDATEGROUPINFO, params: ["topicGroupID":groupID,"topicGroupName":"","topicGroupDesc":"","isTop":"","groupOwnerPhone":targetPhone], success: { (msg, code, response, data) in
+            SVPShowSuccess(content: "修改成功")
+            self.navigationVC?.popViewController(animated: true)
+        }, fail: { (errorinfo) in
+            SVPShowError(content: errorinfo.message)
+        })
+    }
+    
     func removeMember(m: GroupMemberModel) {
         _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_REMOVEMEMFROMGROUP, params: ["topicGroupID" : groupID, "memberPhone":m.memberPhone], success: { (msg, code, response, data) in
             SVPShowSuccess(content: "移除成功")

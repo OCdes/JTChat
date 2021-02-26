@@ -13,6 +13,7 @@ public protocol JTChatDelegate: NSObjectProtocol {
     
     func JTChatNeedToSendMessage(data: Data)
     func JTChatNeedUpdateReadedCount()
+    func JTChatNeedRelogin()
 }
 
 open class JTManager: NSObject {

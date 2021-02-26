@@ -173,81 +173,97 @@ extension GroupInfoTableView: UITableViewDelegate, UITableViewDataSource, UIText
             
             print(str)
         case "群头像":
-            var config: YPImagePickerConfiguration = YPImagePickerConfiguration.init()
-            config.isScrollToChangeModesEnabled = false
-            config.onlySquareImagesFromCamera = false
-            config.showsPhotoFilters = false
-            config.usesFrontCamera = true
-            config.hidesBottomBar = true
-            config.screens = [.library]
-            config.library.maxNumberOfItems = 1
-            config.library.mediaType = .photoAndVideo
-            config.video.trimmerMinDuration = 1
-            config.video.trimmerMaxDuration = 10
-            config.video.fileType = .mp4
-            config.startOnScreen = YPPickerScreen.library
-            config.albumName = "精特"
-            config.wordings.next = "下一步"
-            config.wordings.cancel = "取消"
-            config.wordings.libraryTitle = "相册"
-            config.wordings.cameraTitle = "相机"
-            config.wordings.albumsTitle = "全部相册"
-            config.library.defaultMultipleSelection = true
-            let picker: YPImagePicker = YPImagePicker.init(configuration: config)
-            picker.imagePickerDelegate = self as? YPImagePickerDelegate
-            picker.didFinishPicking { [unowned picker] items, _  in
-                if items.count > 0 {
-                    let itemOne = items[0]
-                    switch itemOne {
-                    case .photo(p: let img):
-                        self.viewModel.updateGroupPortrait(image: img.image)
-                        break;
-                    default:
-                        break;
+            if checkPhotoLibaray() {
+                var config: YPImagePickerConfiguration = YPImagePickerConfiguration.init()
+                config.isScrollToChangeModesEnabled = false
+                config.onlySquareImagesFromCamera = false
+                config.showsPhotoFilters = false
+                config.usesFrontCamera = true
+                config.hidesBottomBar = true
+                config.screens = [.library]
+                config.library.maxNumberOfItems = 1
+                config.library.mediaType = .photoAndVideo
+                config.video.trimmerMinDuration = 1
+                config.video.trimmerMaxDuration = 10
+                config.video.fileType = .mp4
+                config.startOnScreen = YPPickerScreen.library
+                config.albumName = "精特"
+                config.wordings.next = "下一步"
+                config.wordings.cancel = "取消"
+                config.wordings.libraryTitle = "相册"
+                config.wordings.cameraTitle = "相机"
+                config.wordings.albumsTitle = "全部相册"
+                config.library.defaultMultipleSelection = true
+                let picker: YPImagePicker = YPImagePicker.init(configuration: config)
+                picker.imagePickerDelegate = self as? YPImagePickerDelegate
+                picker.didFinishPicking { [unowned picker] items, _  in
+                    if items.count > 0 {
+                        let itemOne = items[0]
+                        switch itemOne {
+                        case .photo(p: let img):
+                            self.viewModel.updateGroupPortrait(image: img.image)
+                            break;
+                        default:
+                            break;
+                        }
+                        
                     }
-                    
+                    picker.dismiss(animated: true, completion: nil)
                 }
-                picker.dismiss(animated: true, completion: nil)
+                self.viewModel.navigationVC?.present(picker, animated: true, completion: nil)
             }
-            self.viewModel.navigationVC?.present(picker, animated: true, completion: nil)
         case "群聊天背景":
-            var config: YPImagePickerConfiguration = YPImagePickerConfiguration.init()
-            config.isScrollToChangeModesEnabled = false
-            config.onlySquareImagesFromCamera = false
-            config.showsPhotoFilters = false
-            config.usesFrontCamera = true
-            config.hidesBottomBar = true
-            config.screens = [.library]
-            config.library.maxNumberOfItems = 1
-            config.library.mediaType = .photoAndVideo
-            config.video.trimmerMinDuration = 1
-            config.video.trimmerMaxDuration = 10
-            config.video.fileType = .mp4
-            config.startOnScreen = YPPickerScreen.library
-            config.albumName = "精特"
-            config.wordings.next = "下一步"
-            config.wordings.cancel = "取消"
-            config.wordings.libraryTitle = "相册"
-            config.wordings.cameraTitle = "相机"
-            config.wordings.albumsTitle = "全部相册"
-            config.library.defaultMultipleSelection = true
-            let picker: YPImagePicker = YPImagePicker.init(configuration: config)
-            picker.imagePickerDelegate = self as? YPImagePickerDelegate
-            picker.didFinishPicking { [unowned picker] items, _  in
-                if items.count > 0 {
-                    let itemOne = items[0]
-                    switch itemOne {
-                    case .photo(p: let img):
-                        self.viewModel.setGroupChatViewBG(image: img.image)
-                        break;
-                    default:
-                        break;
+            let alertController = UIAlertController.init(title: "", message: "", preferredStyle: .actionSheet)
+            let actionSelect = UIAlertAction.init(title: "选择背景图", style: .default) { (action) in
+                if checkPhotoLibaray() {
+                    var config: YPImagePickerConfiguration = YPImagePickerConfiguration.init()
+                    config.isScrollToChangeModesEnabled = false
+                    config.onlySquareImagesFromCamera = false
+                    config.showsPhotoFilters = false
+                    config.hidesBottomBar = true
+                    config.screens = [.library]
+                    config.library.maxNumberOfItems = 1
+                    config.library.mediaType = .photo
+                    config.startOnScreen = YPPickerScreen.library
+                    config.albumName = "精特"
+                    config.wordings.next = "下一步"
+                    config.wordings.cancel = "取消"
+                    config.wordings.libraryTitle = "相册"
+                    config.wordings.cameraTitle = "相机"
+                    config.wordings.albumsTitle = "全部相册"
+                    config.library.defaultMultipleSelection = true
+                    let picker: YPImagePicker = YPImagePicker.init(configuration: config)
+                    picker.imagePickerDelegate = self as? YPImagePickerDelegate
+                    picker.didFinishPicking { [unowned picker] items, _  in
+                        if items.count > 0 {
+                            let itemOne = items[0]
+                            switch itemOne {
+                            case .photo(p: let img):
+                                self.viewModel.setGroupChatViewBG(image: img.image)
+                                break;
+                            default:
+                                break;
+                            }
+                            
+                        }
+                        picker.dismiss(animated: true, completion: nil)
                     }
-                    
+                    self.viewModel.navigationVC?.present(picker, animated: true, completion: nil)
                 }
-                picker.dismiss(animated: true, completion: nil)
             }
-            self.viewModel.navigationVC?.present(picker, animated: true, completion: nil)
+            
+            let actionReset = UIAlertAction.init(title: "重置背景图", style: .destructive) { (action) in
+                self.viewModel.resetChatViewBG()
+            }
+            
+            let actionCancle = UIAlertAction.init(title: "取消", style: .cancel) { (action) in
+                
+            }
+            
+            alertController.addAction(actionSelect)
+            alertController.addAction(actionReset)
+            alertController.addAction(actionCancle)
+            self.viewModel.navigationVC?.present(alertController, animated: true, completion: nil)
         case "添加成员":
             let vc = GroupChatSelectVC.init()
             vc.viewModel.topicGroupID = self.model.topicGroupID

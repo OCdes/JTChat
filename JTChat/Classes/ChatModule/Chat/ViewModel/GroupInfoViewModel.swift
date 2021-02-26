@@ -80,6 +80,10 @@ class GroupInfoViewModel: BaseViewModel {
         ChatimagManager.manager.saveChatBGImage(image: image, forGroup: self.groupID)
     }
     
+    func resetChatViewBG() {
+        ChatimagManager.manager.deletChatBgBy(groupID: self.groupID)
+    }
+    
     func updateInfo() {
         _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_UPDATEGROUPINFO, params: ["topicGroupID":groupID,"topicGroupName":groupName,"topicGroupDesc":groupDescrip,"isTop":""], success: { (msg, code, response, data) in
             SVPShowSuccess(content: "修改成功")

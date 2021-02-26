@@ -101,6 +101,28 @@ class ChatimagManager: NSObject {
         }
     }
     
+    func deletChatBgBy(groupID: String) {
+        let docuPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first ?? ""
+        let creatPath = docuPath + "/chatBGimages"
+        if !fileManager.fileExists(atPath: creatPath) {
+            SVPShowError(content: "当前暂未设置背景")
+            return
+        } else {
+            let imgcreatPath = docuPath + "/chatBGimages" + "/\(groupID)"
+            if fileManager.fileExists(atPath: imgcreatPath) {
+                do {
+                    try fileManager.removeItem(atPath: imgcreatPath)
+                } catch {
+                    SVPShowError(content: "背景重置失败")
+                }
+                
+            } else {
+                SVPShowError(content: "当前暂未设置背景")
+                return
+            }
+        }
+    }
+    
     func MD5StrBy(image: UIImage)->String {
         
         let data = image.jpegData(compressionQuality: 1.0)

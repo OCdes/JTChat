@@ -1,6 +1,6 @@
 {
   "name": "JTChat",
-  "version": "0.8.9",
+  "version": "0.9.0",
   "summary": "精特聊天演示",
   "description": "精特聊天演示初始化",
   "homepage": "https://github.com/OCdes/JTChat",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/OCdes/JTChat.git",
-    "tag": "0.8.9"
+    "tag": "0.9.0"
   },
   "libraries": [
     "c++",

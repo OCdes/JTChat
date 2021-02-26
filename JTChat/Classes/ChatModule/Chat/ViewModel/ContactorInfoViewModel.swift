@@ -62,6 +62,10 @@ class ContactorInfoViewModel: BaseViewModel {
     func setPersonalChatViewBG(image: UIImage) {
         ChatimagManager.manager.saveChatBGImage(image: image, forGroup: self.employeeModel.phone)
     }
+    
+    func resetChatViewBG() {
+        ChatimagManager.manager.deletChatBgBy(groupID: self.employeeModel.phone)
+    }
 }
 
 class ContactInfoModel: BaseModel {

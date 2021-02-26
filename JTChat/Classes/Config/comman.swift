@@ -14,6 +14,7 @@ import Moya
 import SVProgressHUD
 import HandyJSON
 import Kingfisher
+import Photos
 
 let USERDEFAULT = UserDefaults.standard
 //屏幕尺寸
@@ -121,6 +122,70 @@ func currentDateStr() -> String {
     let dateFormatter = DateFormatter.init()
     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
     return dateFormatter.string(from: date)
+}
+
+func checkCameraAuth()->Bool {
+    let auth = AVCaptureDevice.authorizationStatus(for: .video)
+    if auth == .denied {
+        let alertvc = UIAlertController(title: "提示", message: "您的相机权限未开启，请开启权限以扫描二维码", preferredStyle: .alert)
+        alertvc.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
+        let sureAction = UIAlertAction.init(title: "去打开", style: .destructive) { (ac) in
+            let url = URL(string: UIApplication.openSettingsURLString)
+            if let u = url, UIApplication.shared.canOpenURL(u) {
+                UIApplication.shared.open(u, options: [:], completionHandler: nil)
+            }
+        }
+        alertvc.addAction(sureAction)
+        APPWINDOW.rootViewController?.present(alertvc, animated: true, completion: nil)
+        return false
+    }
+    return true
+}
+
+func checkPhotoLibaray()->Bool {
+    if #available(iOS 14, *) {
+        let status = PHPhotoLibrary.authorizationStatus(for:.readWrite)
+        if status == .denied {
+            let alertvc = UIAlertController(title: "提示", message: "您的照片权限未开启，请开启权限以发送图片", preferredStyle: .alert)
+            alertvc.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
+            let sureAction = UIAlertAction.init(title: "去打开", style: .destructive) { (ac) in
+                let url = URL(string: UIApplication.openSettingsURLString)
+                if let u = url, UIApplication.shared.canOpenURL(u) {
+                    UIApplication.shared.open(u, options: [:], completionHandler: nil)
+                }
+            }
+            alertvc.addAction(sureAction)
+            APPWINDOW.rootViewController?.present(alertvc, animated: true, completion: nil)
+            return false
+        } else if status == .limited {
+            let resut = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: nil)
+            for i in 0..<resut.count {
+                let re = resut[i]
+                let asset = PHAsset.fetchAssets(in: re, options: nil)
+                if asset.count == 0 && i == 0 {
+                    return false
+                }
+            }
+        }
+        return true
+    } else {
+        // Fallback on earlier versions
+        let status = PHPhotoLibrary.authorizationStatus()
+        if status == .denied {
+            let alertvc = UIAlertController(title: "提示", message: "您的照片权限未开启，请开启权限以发送图片", preferredStyle: .alert)
+            alertvc.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
+            let sureAction = UIAlertAction.init(title: "去打开", style: .destructive) { (ac) in
+                let url = URL(string: UIApplication.openSettingsURLString)
+                if let u = url, UIApplication.shared.canOpenURL(u) {
+                    UIApplication.shared.open(u, options: [:], completionHandler: nil)
+                }
+            }
+            alertvc.addAction(sureAction)
+            APPWINDOW.rootViewController?.present(alertvc, animated: true, completion: nil)
+            return false
+        }
+        return true
+    }
 }
 
 func SVPShowSuccess(content str: String) {

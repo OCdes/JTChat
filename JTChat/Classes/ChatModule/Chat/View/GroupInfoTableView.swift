@@ -280,6 +280,8 @@ extension GroupInfoTableView: UITableViewDelegate, UITableViewDataSource, UIText
         case "群管理":
             let vc = GroupManagerVC()
             vc.viewModel.groupID = self.viewModel.groupID
+            vc.viewModel.model
+                = self.viewModel.model
             vc.title = str
             self.viewModel.navigationVC?.pushViewController(vc, animated: true)
             print(str)

@@ -74,6 +74,7 @@ extension GroupManagerTableView: UITableViewDelegate, UITableViewDataSource {
             self.viewModel?.deleGroup()
         case "转让群主":
             let vc = GroupMemVC()
+            vc.viewModel.model = self.viewModel!.model
             vc.tableView.selectMode = true
             _ = vc.tableView.subject.subscribe(onNext: { (a) in
                 if let mm = a as? GroupMemberModel, mm.memberPhone != JTManager.shareManager().phone{
@@ -83,6 +84,7 @@ extension GroupManagerTableView: UITableViewDelegate, UITableViewDataSource {
 //                    SVPShowError(content: "请选则要转让的人")
                 }
             })
+            self.viewModel?.navigationVC?.pushViewController(vc, animated: true)
         default:
             break
         }

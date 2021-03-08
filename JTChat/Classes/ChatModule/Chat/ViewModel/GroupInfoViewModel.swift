@@ -16,12 +16,12 @@ class GroupInfoViewModel: BaseViewModel {
     var groupDescrip: String = ""
     var subject: PublishSubject<Any> = PublishSubject<Any>()
     func refreshData() {
-        _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_DETAILOFGROUP, params: ["topicGroupID":groupID], success: { (msg, code, response, data) in
+        _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_DETAILOFGROUP, params: ["topicGroupID":groupID], success: { [weak self](msg, code, response, data) in
             
-            self.model = JSONDeserializer<GroupInfoModel>.deserializeFrom(dict: ((data["data"] ?? data["Data"]) as! Dictionary<String, Any>))!
-            self.groupName = self.model.topicGroupName
-            self.groupDescrip = self.model.topicGroupDesc
-            self.subject.onNext("")
+            self?.model = JSONDeserializer<GroupInfoModel>.deserializeFrom(dict: ((data["data"] ?? data["Data"]) as! Dictionary<String, Any>))!
+            self?.groupName = self?.model.topicGroupName ?? ""
+            self?.groupDescrip = self?.model.topicGroupDesc ?? ""
+            self?.subject.onNext("")
         }, fail: { (errorInfo) in
             SVPShowError(content: errorInfo.message)
         })

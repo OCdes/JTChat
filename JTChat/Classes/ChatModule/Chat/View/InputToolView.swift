@@ -21,6 +21,7 @@ class InputToolView: UIView {
     private var previousOffsetY: CGFloat = 0
     private var bottomHeight = kScreenWidth-90
     private var bottomOffset: CGFloat = 0
+    private var atRange: NSRange?
     var bottomUpDistance: CGFloat = 0
     var subject: PublishSubject<CGFloat> = PublishSubject<CGFloat>()
     var recorder: RecorderManager?
@@ -583,13 +584,15 @@ extension InputToolView: UITextViewDelegate {
                 }
             }
             
-            if text == "@" && !isEmailSuffixEqualToAt(textStr: newStr) {
-                if let de = self.delegate {
-                    self.textV.text = newStr
-                    frameChage(newStr: newStr)
-                    de.needAtSomeOne(atRange: NSRange(location: range.location+1, length: 0))
-                    return false
+            if text == "@" && !isEmailSuffixEqualToAt(textStr: newStr) && (textView.text as NSString).substring(with: range) != "@" {
+                if newStr.count > textView.text.count {
+                    if let de = self.delegate {
+                        self.textV.text = newStr
+                        frameChage(newStr: newStr)
+                        de.needAtSomeOne(atRange: NSRange(location: range.location+1, length: 0))
+                    }
                 }
+                
             }
             
             if range.location < self.textV.text.count {

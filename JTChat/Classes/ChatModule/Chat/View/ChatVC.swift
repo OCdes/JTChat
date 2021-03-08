@@ -39,6 +39,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         } else {
             self.bgImgv.image = viewModel.getChatViewBG(forID: viewModel.contactor?.phone ?? "")
         }
+        self.toolView.textV.becomeFirstResponder()
     }
     
 //    override func viewDidAppear(_ animated: Bool) {
@@ -175,8 +176,8 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
                 self?.toolView.textV.text = text
                 self!.viewModel.addRange(range:ra, addPhone: "@\(self!.viewModel.contactor!.topicGroupID)", addName: "所有人")
             }
-            self?.toolView.textV.becomeFirstResponder()
             self?.toolView.textV.selectedRange = selera
+            self?.toolView.textV.becomeFirstResponder()
         })
         self.navigationController?.pushViewController(vc, animated: true)
     }

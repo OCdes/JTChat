@@ -99,7 +99,10 @@ class ContactorInfoTableView: UITableView {
         } else {
             self.tableFooterView = (viewModel?.employeeModel.isFriend ?? false) ? footerV : footerV2
             if viewModel?.employeeModel.isFriend ?? false {
-                titlesArr.append("设置聊天背景")
+                if !self.titlesArr.contains("设置聊天背景") {
+                    titlesArr.append("设置聊天背景")
+                }
+                
             } else {
                 if let index = titlesArr.firstIndex(of: "设置聊天背景") {
                     titlesArr.remove(at: index)
@@ -113,7 +116,9 @@ class ContactorInfoTableView: UITableView {
             } else {
                 self!.tableFooterView = (self!.viewModel?.employeeModel.isFriend ?? false) ? self!.footerV : self!.footerV2
                 if self?.viewModel?.employeeModel.isFriend ?? false {
-                    self?.titlesArr.append("设置聊天背景")
+                    if !self!.titlesArr.contains("设置聊天背景") {
+                        self!.titlesArr.append("设置聊天背景")
+                    }
                 } else {
                     if let index = self?.titlesArr.firstIndex(of: "设置聊天背景") {
                         self?.titlesArr.remove(at: index)

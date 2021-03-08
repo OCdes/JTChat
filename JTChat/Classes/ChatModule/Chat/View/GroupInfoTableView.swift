@@ -36,14 +36,14 @@ class GroupInfoTableView: UITableView {
         register(GroupPortraitCell.self, forCellReuseIdentifier: "GroupPortraitCell")
         register(GroupAnnouncementCell.self, forCellReuseIdentifier: "GroupAnnouncementCell")
         _ = viewModel.subject.subscribe(onNext: { [weak self](a) in
-            self!.isUserInteractionEnabled = true
-            if self!.viewModel.model.creator == ((USERDEFAULT.object(forKey: "phone") ?? "") as? String) {
-                self!.dataArr = ["群聊名称","群头像","群公告","","群成员","","群聊天背景","添加成员","群管理","退出群聊"]
+            self?.isUserInteractionEnabled = true
+            if self?.viewModel.model.creator == ((USERDEFAULT.object(forKey: "phone") ?? "") as? String) {
+                self?.dataArr = ["群聊名称","群头像","群公告","","群成员","","群聊天背景","添加成员","群管理","退出群聊"]
             } else {
-                self!.dataArr = ["群聊名称","群头像","群公告","","群成员","","群聊天背景","退出群聊"]
+                self?.dataArr = ["群聊名称","群头像","群公告","","群成员","","群聊天背景","退出群聊"]
             }
-            self!.model = self!.viewModel.model
-            self!.reloadData()
+            self?.model = self!.viewModel.model
+            self?.reloadData()
         })
     }
     

@@ -16,6 +16,7 @@ class JTSysMessageListVC: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "消息列表"
+        viewModel.navigationVC = self.navigationController
         // Do any additional setup after loading the view.
         view.addSubview(self.tableView)
         self.tableView.snp_makeConstraints { (make) in

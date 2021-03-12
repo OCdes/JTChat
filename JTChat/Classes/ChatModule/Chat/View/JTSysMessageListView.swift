@@ -8,7 +8,7 @@
 import UIKit
 
 class JTSysMessageListView: BaseTableView {
-    var dataArr: Array<Any> = []
+    var dataArr: Array<JTSysMessageItemModel> = []
     var viewModel: JTSysMessageListViewModel?
     init(frame: CGRect, style: UITableView.Style, viewModel vm: JTSysMessageListViewModel) {
         super.init(frame: frame, style: style)
@@ -18,7 +18,12 @@ class JTSysMessageListView: BaseTableView {
         delegate = self
         dataSource = self
         register(JTSysMessageItemCell.self, forCellReuseIdentifier: "JTSysMessageItemCell")
-        reloadData()
+        _ = viewModel?.rx.observe([Any].self, "dataArr").subscribe(onNext: { [weak self](arr) in
+            if let a = arr as? [JTSysMessageItemModel] {
+                self?.dataArr = a
+            }
+            self?.reloadData()
+        })
     }
     
     required init?(coder: NSCoder) {
@@ -30,7 +35,7 @@ class JTSysMessageListView: BaseTableView {
 extension JTSysMessageListView: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return dataArr.count + 1
+        return dataArr.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -39,14 +44,16 @@ extension JTSysMessageListView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: JTSysMessageItemCell = tableView.dequeueReusableCell(withIdentifier: "JTSysMessageItemCell", for: indexPath) as! JTSysMessageItemCell
-        if indexPath.section == 0 {
-            let m = JTSysMessageItemModel()
-            m.title = "精特消息"
-            m.creatTime = "2021-03-12"
-            m.sender = "财务专员"
-            m.content = "定积分大奖哦发就发放假啊索朗多吉开发接口芬达发即将开始的啊烦死了就发拉屎坑发掘发发就立刻发链接阿斯顿发生发就打算开发了"
-            cell.model = m
-        }
+        let m = dataArr[indexPath.section]
+//        if indexPath.section == 0 {
+//            let m = JTSysMessageItemModel()
+//            m.title = "精特消息"
+//            m.creatTime = "2021-03-12"
+//            m.sender = "财务专员"
+//            m.content = "定积分大奖哦发就发放假啊索朗多吉开发接口芬达发即将开始的啊烦死了就发拉屎坑发掘发发就立刻发链接阿斯顿发生发就打算开发了"
+//            cell.model = m
+//        }
+        cell.model = m
         return cell
     }
     
@@ -63,8 +70,9 @@ extension JTSysMessageListView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let m = dataArr[section]
         let timeLa = UILabel()
-        timeLa.text = "2021-03-12"
+        timeLa.text = m.creatTime
         timeLa.textAlignment = .center
         timeLa.font = UIFont(name: "\(timeLa.font.fontName)-Medium", size: 11)
         return timeLa
@@ -75,7 +83,14 @@ extension JTSysMessageListView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        let m = dataArr[indexPath.section]
+        if m.jumpUrl.count > 0 {
+            let vc = JTSysMessageDetailVC()
+            vc.url = m.jumpUrl
+            viewModel?.navigationVC?.pushViewController(vc, animated: true)
+        } else {
+            SVPShowError(content: "当前消息暂无详情")
+        }
     }
     
 }

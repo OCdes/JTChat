@@ -504,3 +504,5 @@ let POST_DEALFRIENDAPPLY = "/v1/chat/applyFriendHandle"
 let POST_FETCHMYADDAPPLY = "/v1/chat/getFriendApproveRecord"
 ///设置好友别名
 let POST_SETALIAS = "/v1/chat/setFriendAliasName"
+///获取系统消息列表
+let POST_FETCHSYSMESSAGELIST = "/v1/chat/getJtSystemMessage"

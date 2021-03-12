@@ -22,6 +22,11 @@ class MessageListView: BaseTableView {
         dataSource = self
         register(MessageListCell.self, forCellReuseIdentifier: "MessageListCell")
         separatorStyle = .none
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadListView), name: Notification.Name("NewJTMessageIsComing"), object: nil)
+    }
+    
+    @objc func reloadListView() {
+        reloadData()
     }
     
     required init?(coder: NSCoder) {
@@ -32,18 +37,41 @@ class MessageListView: BaseTableView {
 
 extension MessageListView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataArr.count
+        return dataArr.count+1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: MessageListCell = tableView.dequeueReusableCell(withIdentifier: "MessageListCell", for: indexPath) as! MessageListCell
-        let m = dataArr[indexPath.row]
-        cell.model = m
+        if indexPath.row == 0 {
+            cell.portraitV.image = JTBundleTool.getBundleImg(with: "jtsystem")
+            cell.nameLa.text = "精特消息"
+            if let arr = USERDEFAULT.object(forKey: "latestJTMessageList") as? [[String:Any]], arr.count > 0, let dict = arr.first {
+                cell.messageLa.text = (dict["content"] as? String) ?? ""
+                if let ti = Double(dict["time"] as! String), ti > 0 {
+                    cell.dateLa.text = ChatDateManager.manager.dealDate(byTimestamp: ti)
+                }
+                if let b = dict["isReaded"] as? Bool, b == true {
+                    cell.redDot.isHidden = true
+                } else {
+                    cell.redDot.isHidden = false
+                    cell.redDot.text = "\(arr.count)"
+                }
+            } else {
+                cell.messageLa.text = "暂无新的系统消息"
+                cell.dateLa.text = ""
+                cell.miniRedDot.isHidden = true
+                cell.redDot.isHidden = true
+            }
+        } else {
+            let m = dataArr[indexPath.row-1]
+            cell.model = m
+        }
+        
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return  60
+        return  74
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -63,17 +91,22 @@ extension MessageListView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let fm = self.dataArr[indexPath.row]
-        let cm = ContactorModel()
-        cm.nickName = fm.nickname
-        cm.avatarUrl = fm.avatar
-        cm.phone = fm.friendPhone
-        cm.topicGroupID = fm.topicGroupID
-        cm.topicGroupName = fm.topicGroupName
-        cm.aliasName = fm.aliasName
-        let vc = ChatVC()
-        vc.viewModel.contactor = cm
-        self.viewModel?.navigationVC?.pushViewController(vc, animated: true)
+        if indexPath.row == 0 {
+            let vc = JTSysMessageListVC()
+            self.viewModel?.navigationVC?.pushViewController(vc, animated: true)
+        } else {
+            let fm = self.dataArr[indexPath.row-1]
+            let cm = ContactorModel()
+            cm.nickName = fm.nickname
+            cm.avatarUrl = fm.avatar
+            cm.phone = fm.friendPhone
+            cm.topicGroupID = fm.topicGroupID
+            cm.topicGroupName = fm.topicGroupName
+            cm.aliasName = fm.aliasName
+            let vc = ChatVC()
+            vc.viewModel.contactor = cm
+            self.viewModel?.navigationVC?.pushViewController(vc, animated: true)
+        }
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -143,7 +176,8 @@ class MessageListCell: BaseTableCell {
     }
     lazy var portraitV: UIImageView = {
         let pv = UIImageView()
-        pv.layer.cornerRadius = 18
+        pv.layer.cornerRadius = 28
+        pv.layer.masksToBounds = true
         return pv
     }()
     
@@ -157,7 +191,7 @@ class MessageListCell: BaseTableCell {
     lazy var nameLa: UILabel = {
         let nl = UILabel()
         nl.textColor = HEX_333
-        nl.font = UIFont.systemFont(ofSize: 16)
+        nl.font = UIFont.systemFont(ofSize: 17)
         return nl
     }()
     
@@ -191,7 +225,7 @@ class MessageListCell: BaseTableCell {
     lazy var miniRedDot: UILabel = {
         let md = UILabel()
         md.backgroundColor = UIColor.red
-        md.layer.cornerRadius = 1.5
+        md.layer.cornerRadius = 2.5
         md.layer.masksToBounds = true
         md.isHidden = true
         return md
@@ -203,14 +237,14 @@ class MessageListCell: BaseTableCell {
         portraitV.snp_makeConstraints { (make) in
             make.left.equalTo(contentView).offset(12)
             make.centerY.equalTo(contentView)
-            make.size.equalTo(CGSize(width: 36, height: 36))
+            make.size.equalTo(CGSize(width: 56, height: 56))
         }
         
         contentView.addSubview(miniRedDot)
         miniRedDot.snp_makeConstraints { (make) in
-            make.centerX.equalTo(portraitV.snp_right)
-            make.centerY.equalTo(portraitV.snp_top)
-            make.size.equalTo(CGSize(width: 3, height: 3))
+            make.centerX.equalTo(portraitV.snp_right).offset(-10)
+            make.centerY.equalTo(portraitV.snp_top).offset(8)
+            make.size.equalTo(CGSize(width: 5, height: 5))
         }
         
         contentView.addSubview(redDot)
@@ -221,19 +255,20 @@ class MessageListCell: BaseTableCell {
             make.width.greaterThanOrEqualTo(16)
         }
         
+        contentView.addSubview(nameLa)
+        nameLa.snp_makeConstraints { (make) in
+            make.left.equalTo(portraitV.snp_right).offset(9)
+            make.bottom.equalTo(portraitV.snp_centerY)
+            make.right.equalTo(contentView).offset(-142)
+            make.height.equalTo(22)
+        }
+        
         contentView.addSubview(dateLa)
         dateLa.snp_makeConstraints { (make) in
             make.right.equalTo(contentView).offset(-12)
-            make.top.equalTo(contentView)
-            make.size.equalTo(CGSize(width: 120, height: 22))
-        }
-        
-        contentView.addSubview(nameLa)
-        nameLa.snp_makeConstraints { (make) in
-            make.left.equalTo(portraitV.snp_right).offset(22)
-            make.bottom.equalTo(portraitV.snp_centerY)
-            make.right.equalTo(dateLa.snp_right).offset(-10)
-            make.height.equalTo(22)
+            make.centerY.height.equalTo(nameLa)
+            make.left.equalTo(nameLa.snp_right).offset(10)
+            
         }
         
         contentView.addSubview(self.atRemarkLa)

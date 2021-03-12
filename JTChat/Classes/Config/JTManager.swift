@@ -152,6 +152,11 @@ open class JTManager: NSObject {
         DBManager.manager.updateRecentChat(model: mmodel)
     }
     
+    @objc func didRecieveJTSystemMessage() {
+        NotificationCenter.default.post(name: NotificationHelper.kUpdateRecentList, object: nil)
+        NotificationCenter.default.post(name: NotificationHelper.kUpdateRedDot, object: nil)
+    }
+    
     func sendMessage(targetModel: ContactorModel?, msg: String?, suffix: String?, atSomeOne:String?) {
         if let cmodel = targetModel, (cmodel.phone.count > 0 || cmodel.topicGroupID.count > 0){
             let model = MessageModel()

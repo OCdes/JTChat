@@ -141,6 +141,7 @@ open class MessageListVC: BaseViewController {
     func initView() {
         let btn = UIButton.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth/2, height: 45))
         btn.setImage(JTBundleTool.getBundleImg(with:"createMessage"), for: .normal)
+        btn.setImage(JTBundleTool.getBundleImg(with:"createMessageSelected"), for: .selected)
         btn.setTitle("    聊天", for: .normal)
         btn.setTitleColor(HEX_COLOR(hexStr: "#4F525B"), for: .normal)
         btn.setTitleColor(HEX_LightBlue, for: .selected)
@@ -152,6 +153,7 @@ open class MessageListVC: BaseViewController {
         view.addSubview(btn)
         let btn2 = UIButton.init(frame: CGRect(x: kScreenWidth/2, y: 0, width: kScreenWidth/2, height: 45))
         btn2.setImage(JTBundleTool.getBundleImg(with:"createGroup"), for: .normal)
+        btn2.setImage(JTBundleTool.getBundleImg(with:"createMessageSelected"), for: .selected)
         btn2.setTitle("    群聊", for: .normal)
         btn2.setTitleColor(HEX_COLOR(hexStr: "#4F525B"), for: .normal)
         btn2.setTitleColor(HEX_LightBlue, for: .selected)

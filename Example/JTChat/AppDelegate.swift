@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         JTManager.manager.url = "http://192.168.0.82:14002"//"https://api.hzjtyh.com"
         JTManager.manager.placeID = 2040
         JTManager.manager.isHideBottom = false
-        JTManager.manager.jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN1c3RvbSI6eyJ1c2VyT3BlbklEIjoiIiwicGxhY2VLZXkiOiJlYThkZjVhYTBhMWRkNzgxNWE3MGIzY2QxNWUxMWE0YSIsIm1lcmNoYW50SUQiOjEwMzcsInBob25lIjoiMTU2NjkwMTk1NTciLCJwbGFjZUlEIjoyMDQwLCJ2ZXJzaW9uTm8iOiIxLjIuNSIsInRlcm1pbmFsVHlwZSI6IkFwcCJ9fQ.eyJzdWIiOiLmjojmnYNBUFDnq6_ku6TniYwiLCJpc3MiOiLnsr7nibnlqLHmsYfmnInpmZDlhazlj7giLCJleHAiOjE2MTQxNTc5ODgsImlhdCI6MTYxNDA3MTU4OCwianRpIjoiMWE3ZjVkYzdlMzA2NGU4NWEyYWYxNDM1YzRlYzNmYzMifQ.sOyGhb2wrdyoCkRqhOAvdRrOl4kPD9G8knkYIE4uhJs"
+        JTManager.manager.jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN1c3RvbSI6eyJ1c2VyT3BlbklEIjoiIiwicGxhY2VLZXkiOiJlYThkZjVhYTBhMWRkNzgxNWE3MGIzY2QxNWUxMWE0YSIsIm1lcmNoYW50SUQiOjEwMzcsInBob25lIjoiMTU2NjkwMTk1NTciLCJwbGFjZUlEIjoyMDQwLCJ2ZXJzaW9uTm8iOiIxLjIuOCIsInRlcm1pbmFsVHlwZSI6IkFwcCJ9fQ.eyJzdWIiOiLmjojmnYNBUFDnq6_ku6TniYwiLCJpc3MiOiLnsr7nibnlqLHmsYfmnInpmZDlhazlj7giLCJleHAiOjE2MTU1MjgxODYsImlhdCI6MTYxNTQ0MTc4NiwianRpIjoiMDExMjY1NzJhMTc3NDRmN2I2OTU3Yzc3MzhmM2ExMTgifQ._mdHodzLbOaVr0GOzZ2DyRAyPW3Dmu5lpfWJpFinQPQ"
 //        JTManager.manager.ctoken = "dd24c20a94584991a0cf1023032c954e"//51eb8aff2d8149c2bd18d533c0515f94
         JTManager.manager.phone = "15669019557"//13516776244
         setRootVC()

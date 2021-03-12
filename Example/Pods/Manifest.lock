@@ -34,7 +34,7 @@ PODS:
     - YPImagePicker
   - JTVoiceConvert (0.2.0)
   - KeychainSwift (18.0.0)
-  - Kingfisher (6.1.1)
+  - Kingfisher (6.2.1)
   - MJRefresh (3.5.0)
   - Moya (13.0.1):
     - Moya/Core (= 13.0.1)
@@ -116,7 +116,7 @@ SPEC CHECKSUMS:
   JTChat: c263160d8722466fb765a07f686be16552132074
   JTVoiceConvert: 27f535ef93d233b219f2314c00c43e0ac1963391
   KeychainSwift: c46e1438d121e47459fb304ac88c5e058a2a91ed
-  Kingfisher: 676d63307fbef6ed5d5ed400bff36983480d7500
+  Kingfisher: e71c6fac2aebb1262888cabc2cb13d313362a48f
   MJRefresh: 6afc955813966afb08305477dd7a0d9ad5e79a16
   Moya: f4a4b80ff2f8a4ffc208dfb31cd91636622fee6e
   Nimble: 051e3d8912d40138fa5591c78594f95fb172af37

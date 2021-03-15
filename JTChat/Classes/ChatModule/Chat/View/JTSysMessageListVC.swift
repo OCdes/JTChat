@@ -22,6 +22,10 @@ class JTSysMessageListVC: BaseViewController {
         self.tableView.snp_makeConstraints { (make) in
             make.edges.equalTo(self.view)
         }
+//        self.tableView.jt_addRefreshHeader {
+            self.viewModel.refreshData(scroll: self.tableView)
+//        }
+        self.tableView.jt_startRefresh()
     }
     
 

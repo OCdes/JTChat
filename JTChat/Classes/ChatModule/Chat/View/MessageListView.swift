@@ -47,7 +47,7 @@ extension MessageListView: UITableViewDelegate, UITableViewDataSource {
             cell.nameLa.text = "精特消息"
             if let arr = USERDEFAULT.object(forKey: "latestJTMessageList") as? [[String:Any]], arr.count > 0, let dict = arr.first {
                 cell.messageLa.text = (dict["content"] as? String) ?? ""
-                if let ti = Double(dict["time"] as! String), ti > 0 {
+                if let ti = Double(dict["times"] as! String), ti > 0 {
                     cell.dateLa.text = ChatDateManager.manager.dealDate(byTimestamp: ti)
                 }
                 if let b = dict["isReaded"] as? Bool, b == true {

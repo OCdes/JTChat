@@ -38,7 +38,7 @@ class JTSysMessageListViewModel: BaseViewModel {
 class JTSysMessageItemModel: BaseModel {
     var title: String = ""
     var content: String = ""
-    var creatTime: String = ""
+    var createTime: String = ""
     var sender: String = ""
     var jumpUrl: String = ""
 }

@@ -72,7 +72,7 @@ extension JTSysMessageListView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let m = dataArr[section]
         let timeLa = UILabel()
-        timeLa.text = m.creatTime
+        timeLa.text = m.createTime
         timeLa.textAlignment = .center
         timeLa.font = UIFont(name: "\(timeLa.font.fontName)-Medium", size: 11)
         return timeLa
@@ -99,7 +99,7 @@ class JTSysMessageItemCell: BaseTableCell {
     var model: JTSysMessageItemModel = JTSysMessageItemModel() {
         didSet {
             self.titlelLa.text = model.title
-            self.timeLa.text = "\(model.creatTime)         \(model.sender)"
+            self.timeLa.text = "\(model.createTime)         \(model.sender)"
             let parastyle = NSMutableParagraphStyle.init()
             parastyle.lineSpacing = 15
             parastyle.lineBreakMode = .byTruncatingTail

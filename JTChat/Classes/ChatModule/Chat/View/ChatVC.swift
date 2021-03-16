@@ -39,7 +39,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         } else {
             self.bgImgv.image = viewModel.getChatViewBG(forID: viewModel.contactor?.phone ?? "")
         }
-        self.toolView.textV.becomeFirstResponder()
+//        self.toolView.textV.becomeFirstResponder()
     }
     
 //    override func viewDidAppear(_ animated: Bool) {

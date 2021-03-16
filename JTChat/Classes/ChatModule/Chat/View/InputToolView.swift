@@ -590,6 +590,7 @@ extension InputToolView: UITextViewDelegate {
                         self.textV.text = newStr
                         frameChage(newStr: newStr)
                         de.needAtSomeOne(atRange: NSRange(location: range.location+1, length: 0))
+                        return false
                     }
                 }
                 

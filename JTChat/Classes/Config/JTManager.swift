@@ -152,7 +152,7 @@ open class JTManager: NSObject {
         DBManager.manager.updateRecentChat(model: mmodel)
     }
     
-    @objc func didRecieveJTSystemMessage() {
+    @objc open func didRecieveJTSystemMessage() {
         NotificationCenter.default.post(name: NotificationHelper.kUpdateRecentList, object: nil)
         NotificationCenter.default.post(name: NotificationHelper.kUpdateRedDot, object: nil)
     }

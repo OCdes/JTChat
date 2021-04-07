@@ -23,7 +23,7 @@ class JTSysMessageDetailVC: BaseViewController, WKNavigationDelegate {
         self.webView?.snp_makeConstraints({ (make) in
             make.edges.equalTo(self.view)
         })
-        
+        self.webView?.load(URLRequest(url: URL(string: url)!))
         // Do any additional setup after loading the view.
     }
     

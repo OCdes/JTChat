@@ -23,7 +23,7 @@ class JTSysMessageListViewModel: BaseViewModel {
     
     func refreshData(scroll : UIScrollView) {
         _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_FETCHSYSMESSAGELIST, params: [:], success: { (msg, code, response, data) in
-            if let arr = data["data"] as? [[String:Any]] {
+            if let arr = (data["data"] ?? data["Data"]) as? [[String:Any]] {
                 scroll.jt_startRefresh()
                 self.dataArr = ([JTSysMessageItemModel].deserialize(from: arr) ?? []) as [Any]
             }

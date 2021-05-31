@@ -118,7 +118,7 @@ extension MessageListView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let fm = self.dataArr[indexPath.row]
+        let fm = self.dataArr[indexPath.row-1]
         let setTop = UITableViewRowAction.init(style: .default, title: "置顶") { (action, indexpath) in
             self.viewModel?.setTop(model: fm)
         }

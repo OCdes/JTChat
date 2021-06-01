@@ -6395,67 +6395,6 @@
 			};
 			name = Release;
 		};
-		0C6297C4C62D55252B0EDF2941216ECE /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = DEFD74CB5E5E4A7B565F5230B321CFB0 /* JTVoiceConvert.release.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/JTVoiceConvert/JTVoiceConvert-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/JTVoiceConvert/JTVoiceConvert-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/JTVoiceConvert/JTVoiceConvert.modulemap";
-				PRODUCT_MODULE_NAME = JTVoiceConvert;
-				PRODUCT_NAME = JTVoiceConvert;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		13CFD1BC340816C8E3295E66683BFE41 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 82353D85DDBCB5F0E341285897678FB1 /* JTVoiceConvert.debug.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/JTVoiceConvert/JTVoiceConvert-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/JTVoiceConvert/JTVoiceConvert-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/JTVoiceConvert/JTVoiceConvert.modulemap";
-				PRODUCT_MODULE_NAME = JTVoiceConvert;
-				PRODUCT_NAME = JTVoiceConvert;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
 		1CF32F31BF693D625D713BC4994DE2E9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 04336B37B4394B0A83DD56B2169DF271 /* CocoaAsyncSocket.release.xcconfig */;
@@ -6486,6 +6425,36 @@
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
+		};
+		1FB785A68BC00B9B120F2DC88A9230FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 82353D85DDBCB5F0E341285897678FB1 /* JTVoiceConvert.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/JTVoiceConvert/JTVoiceConvert-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/JTVoiceConvert/JTVoiceConvert-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/JTVoiceConvert/JTVoiceConvert.modulemap";
+				PRODUCT_MODULE_NAME = JTVoiceConvert;
+				PRODUCT_NAME = JTVoiceConvert;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
 		};
 		2111D65824D085D7EBB111E82E29FCDA /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -6877,6 +6846,37 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.1;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		6AD540EAADDE9BC8DD32F7649E6C90B0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DEFD74CB5E5E4A7B565F5230B321CFB0 /* JTVoiceConvert.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/JTVoiceConvert/JTVoiceConvert-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/JTVoiceConvert/JTVoiceConvert-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/JTVoiceConvert/JTVoiceConvert.modulemap";
+				PRODUCT_MODULE_NAME = JTVoiceConvert;
+				PRODUCT_NAME = JTVoiceConvert;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -8174,8 +8174,8 @@
 		F72C40BA6FD3B8B4C9530BDFC283D7FA /* Build configuration list for PBXNativeTarget "JTVoiceConvert" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				13CFD1BC340816C8E3295E66683BFE41 /* Debug */,
-				0C6297C4C62D55252B0EDF2941216ECE /* Release */,
+				1FB785A68BC00B9B120F2DC88A9230FC /* Debug */,
+				6AD540EAADDE9BC8DD32F7649E6C90B0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

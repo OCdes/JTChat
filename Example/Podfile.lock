@@ -17,7 +17,7 @@ PODS:
     - FMDB
     - HandyJSON
     - IQKeyboardManagerSwift
-    - JTVoiceConvert (~> 0.2.2)
+    - JTVoiceConvert
     - KeychainSwift (~> 18.0.0)
     - Kingfisher
     - MJRefresh
@@ -27,7 +27,7 @@ PODS:
     - SnapKit (~> 4.0.0)
     - SVProgressHUD
     - YPImagePicker
-  - JTVoiceConvert (0.2.2)
+  - JTVoiceConvert (0.2.0)
   - KeychainSwift (18.0.0)
   - Kingfisher (6.3.0)
   - MJRefresh (3.6.1)
@@ -55,9 +55,7 @@ DEPENDENCIES:
   - JTChat (from `../`)
 
 SPEC REPOS:
-  "git@github.com:OCdes/JTVoiceConvertSpecRepo.git":
-    - JTVoiceConvert
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
     - Alamofire
     - ALQRCode
     - CocoaAsyncSocket
@@ -66,6 +64,7 @@ SPEC REPOS:
     - FMDB
     - HandyJSON
     - IQKeyboardManagerSwift
+    - JTVoiceConvert
     - KeychainSwift
     - Kingfisher
     - MJRefresh
@@ -93,8 +92,8 @@ SPEC CHECKSUMS:
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
   IQKeyboardManagerSwift: c7df9d2deb356c04522f5c4b7b6e4ce4d8ed94fe
-  JTChat: 1e7c136680d83983b0a8470c3bf53eda279b82e0
-  JTVoiceConvert: 7652707fcbf7736572d1c9da857654ef0d462326
+  JTChat: 9612627d4c3cecc07fb36155c99d1b42d86fe1dc
+  JTVoiceConvert: 27f535ef93d233b219f2314c00c43e0ac1963391
   KeychainSwift: c46e1438d121e47459fb304ac88c5e058a2a91ed
   Kingfisher: 6c3df386db71d82c0817a429d2c9421a77396529
   MJRefresh: d2c1970d1cf6e77fcfcdfe76c943dfab8dbfa5c1
@@ -109,6 +108,6 @@ SPEC CHECKSUMS:
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   YPImagePicker: 6f410f475bd22fa8cd430495b54d4b2f15865c2d
 
-PODFILE CHECKSUM: 5ee45bea3cfb3b1d48094264d52d7113f283a9f1
+PODFILE CHECKSUM: 11fa637f8187f7482b52b78e6669e39b001dbf51
 
 COCOAPODS: 1.10.1

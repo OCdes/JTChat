@@ -87,7 +87,7 @@
 
     ],
     "JTVoiceConvert": [
-
+      "~> 0.2.2"
     ]
   },
   "swift_version": "5.0"

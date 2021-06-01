@@ -56,5 +56,5 @@ Pod::Spec.new do |s|
   s.dependency "ALQRCode"
   s.dependency "CocoaAsyncSocket"
   s.dependency "FMDB"
-  s.dependency "JTVoiceConvert"
+  s.dependency "JTVoiceConvert", "~> 0.2.2"
 end

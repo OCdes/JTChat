@@ -14,6 +14,7 @@ class GroupInfoViewModel: BaseViewModel {
     var groupID: String = ""
     var groupName: String = ""
     var groupDescrip: String = ""
+    var isFromChat: Bool = false
     var subject: PublishSubject<Any> = PublishSubject<Any>()
     func refreshData() {
         _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_DETAILOFGROUP, params: ["topicGroupID":groupID], success: { [weak self](msg, code, response, data) in

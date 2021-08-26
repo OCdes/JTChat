@@ -59,6 +59,11 @@ open class JTManager: NSObject {
             USERDEFAULT.set(isHideBottom, forKey: "isHideBottom")
         }
     }
+    @objc open var isFlagShip: Bool = false {
+        didSet {
+            USERDEFAULT.set(isHideBottom, forKey: "isFlagShip")
+        }
+    }
     @objc open var placeID: Int = 0 {
         didSet {
             USERDEFAULT.set(placeID, forKey: "placeID")

@@ -101,7 +101,7 @@ class InputToolView: UIView {
     init(frame: CGRect, viewModel vm: ChatViewModel) {
         super.init(frame: CGRect(x: 0, y: kScreenHeight-(62+(kiPhoneXOrXS ? 122 : 64)), width: kScreenWidth, height: (kiPhoneXOrXS ? 96 : 62)))
         viewModel = vm
-        backgroundColor = HEX_COLOR(hexStr: "#F5F5F5")
+        backgroundColor = kIsFlagShip ? HEX_ThemeBlack : HEX_COLOR(hexStr: "#F5F5F5")
         
         addSubview(toolV)
         toolV.snp_makeConstraints { (make) in

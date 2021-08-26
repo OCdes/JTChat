@@ -37,7 +37,7 @@ class EmojiKeyboardView: UIView {
     }()
     lazy var maskV: UIView = {
         let mv = UIView()
-        mv.backgroundColor = HEX_COLOR(hexStr: "#F5F5F5")
+        mv.backgroundColor = kIsFlagShip ? UIColor.clear : HEX_COLOR(hexStr: "#F5F5F5")
         mv.alpha = 1
         return mv
     }()
@@ -45,7 +45,6 @@ class EmojiKeyboardView: UIView {
     let keyheight = kScreenWidth-90
     override init(frame: CGRect) {
         super.init(frame: frame)
-        collection?.backgroundColor = HEX_COLOR(hexStr: "#F5F5F5")
         viewModel.refreshData()
         let lay = UICollectionViewFlowLayout.init()
         lay.itemSize = CGSize(width: width, height: width)
@@ -53,7 +52,7 @@ class EmojiKeyboardView: UIView {
         lay.minimumInteritemSpacing = width
         lay.sectionInset = UIEdgeInsets(top: 14, left: 14, bottom: width+30, right: 14)
         collection = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: lay)
-        collection?.backgroundColor = UIColor.clear
+        collection?.backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_COLOR(hexStr: "#F5F5F5")
         collection?.delegate = self
         collection?.dataSource = self
         collection?.register(EmojiItem.self, forCellWithReuseIdentifier: "EmojiItem")
@@ -69,7 +68,7 @@ class EmojiKeyboardView: UIView {
         })
         
         let msBgv = UIView()
-        msBgv.backgroundColor = HEX_COLOR(hexStr: "#F5F5F5")
+        msBgv.backgroundColor = kIsFlagShip ? UIColor.clear : HEX_COLOR(hexStr: "#F5F5F5")
         self.addSubview(msBgv)
         msBgv.snp_makeConstraints { (make) in
             make.right.bottom.equalTo(self)

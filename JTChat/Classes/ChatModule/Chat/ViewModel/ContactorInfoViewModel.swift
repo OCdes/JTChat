@@ -12,7 +12,7 @@ import RxSwift
 class ContactorInfoViewModel: BaseViewModel {
     var subject: PublishSubject<Any> = PublishSubject<Any>()
     var employeeModel: ContactInfoModel = ContactInfoModel()
-    
+    var isFromChat: Bool = false
     func getDetail() {
         if employeeModel.phone.count > 0 {
             let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_DETAILOFCHATEMPLOYEE, params: ["targetPhone":employeeModel.phone], success: { [weak self](msg, code, response, data) in

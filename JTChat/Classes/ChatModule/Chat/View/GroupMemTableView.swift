@@ -8,7 +8,7 @@
 
 import UIKit
 import RxSwift
-class GroupMemTableView: UITableView {
+class GroupMemTableView: BaseTableView {
     var dataArr: Array<GroupMemberModel> = []
     var viewModel: GroupInfoViewModel?
     var selectMode: Bool = false
@@ -41,7 +41,7 @@ class GroupMemTableView: UITableView {
         let indexPath = self.indexPathForRow(at: point)
         if let i = indexPath {
             let m = self.dataArr[i.row]
-            if m.memberPhone != viewModel!.model.creator {
+            if m.memberPhone != viewModel!.model.creator && viewModel!.model.creator == JTManager.manager.phone {
                 let vc = UIAlertController.init(title: "提示", message: "是否要将\(m.nickname)移除群组", preferredStyle: .alert)
                 let sure = UIAlertAction.init(title: "确定", style: .default) { (a) in
                     self.dataArr.remove(at: i.row)

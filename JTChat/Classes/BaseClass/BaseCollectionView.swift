@@ -16,7 +16,7 @@ import RxSwift
 
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout)
-        backgroundColor = HEX_FFF
+        backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         showsVerticalScrollIndicator = false
         showsHorizontalScrollIndicator = false
         emptyDataSetSource = self

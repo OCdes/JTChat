@@ -17,7 +17,7 @@ import RxSwift
 
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
-        backgroundColor = HEX_FFF
+        backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         emptyDataSetSource = self
         emptyDataSetDelegate = self
         if #available(iOS 11.0, *) {

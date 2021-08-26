@@ -9,7 +9,7 @@
 import UIKit
 import YPImagePicker
 import Photos
-class ContactorInfoTableView: UITableView {
+class ContactorInfoTableView: BaseTableView {
     var titlesArr: Array<String> = ["手机","部门"]
     var contentsArr: Array<String> = ["","",""]
     var viewModel: ContactorInfoViewModel?
@@ -21,18 +21,23 @@ class ContactorInfoTableView: UITableView {
         messageBtn.setTitle("发消息", for: .normal)
         messageBtn.setTitleColor(HEX_FFF, for: .normal)
         let _ = messageBtn.rx.tap.subscribe(onNext: { [weak self](e) in
-            let vc = ChatVC()
-            let cmodel = ContactorModel()
-            cmodel.phone = self!.viewModel!.employeeModel.phone
-            cmodel.nickName = self!.viewModel!.employeeModel.nickName
-            vc.viewModel.contactor = cmodel
-            vc.title = self!.viewModel!.employeeModel.nickName
-            self!.viewModel?.navigationVC?.pushViewController(vc, animated: true)
+            if self?.viewModel?.isFromChat ?? false {
+                self?.viewModel?.navigationVC?.popViewController(animated: true)
+            } else {
+                let vc = ChatVC()
+                let cmodel = ContactorModel()
+                cmodel.phone = self!.viewModel!.employeeModel.phone
+                cmodel.nickName = self!.viewModel!.employeeModel.nickName
+                vc.viewModel.contactor = cmodel
+                vc.title = self!.viewModel!.employeeModel.nickName
+                self!.viewModel?.navigationVC?.pushViewController(vc, animated: true)
+            }
+            
         })
         fv.addSubview(messageBtn)
         let voiceCallBtn = UIButton.init(frame: CGRect(x: 16, y: messageBtn.frame.maxY + 10, width: kScreenWidth-32, height: 44))
         voiceCallBtn.layer.cornerRadius = 5
-        voiceCallBtn.backgroundColor = HEX_FFF
+        voiceCallBtn.backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#333") : HEX_FFF
         voiceCallBtn.setTitle("语音通话", for: .normal)
         voiceCallBtn.setTitleColor(HEX_333, for: .normal)
         fv.addSubview(voiceCallBtn)
@@ -86,7 +91,7 @@ class ContactorInfoTableView: UITableView {
                 // Fallback on earlier versions
             }
         }
-        backgroundColor = HEX_COLOR(hexStr: "#F5F6F8")
+        backgroundColor = kIsFlagShip ? HEX_ThemeBlack : HEX_COLOR(hexStr: "#F5F6F8")
         register(ContactorInfoCell.self, forCellReuseIdentifier: "ContactorInfoCell")
         register(ContactInfoDetailCell.self, forCellReuseIdentifier: "ContactInfoDetailCell")
         register(ContactInfoAlisaCell.self, forCellReuseIdentifier: "ContactInfoAlisaCell")
@@ -174,11 +179,13 @@ extension ContactorInfoTableView: UITableViewDelegate, UITableViewDataSource {
                 cell.textLabel?.font = UIFont.systemFont(ofSize: 18, weight: .medium)
                 cell.textLabel?.textColor = HEX_333
                 cell.accessoryType = .disclosureIndicator
+                cell.accessoryView = UIImageView.init(image: JTBundleTool.getBundleImg(with: "rightArrow"))
             } else {
                 cell.titleLa.text = titlesArr[indexPath.row]
                 cell.contentLa.text = contentsArr[indexPath.row]
                 cell.contentLa.textColor = titlesArr[indexPath.row] == "手机" ? HEX_COLOR(hexStr: "#3F80CB") : HEX_333
                 cell.accessoryType = titlesArr[indexPath.row] == "部门" ? .none : .none
+                cell.accessoryView = UIImageView.init(image: JTBundleTool.getBundleImg(with: "rightArrow"))
             }
             
             return cell
@@ -220,7 +227,7 @@ extension ContactorInfoTableView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let v = UIView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: 7.5))
-        v.backgroundColor = HEX_COLOR(hexStr: "#F5F6F8")
+        v.backgroundColor = kIsFlagShip ? HEX_ThemeBlack : HEX_COLOR(hexStr: "#F5F6F8")
         return v
     }
     
@@ -311,7 +318,7 @@ class ContactorInfoCell: BaseTableCell {
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = HEX_FFF
+        backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         contentView.addSubview(titleLa)
         titleLa.snp_makeConstraints { (make) in
             make.left.equalTo(contentView).offset(12.5)
@@ -324,6 +331,14 @@ class ContactorInfoCell: BaseTableCell {
             make.left.equalTo(titleLa.snp_right).offset(5)
             make.top.bottom.equalTo(contentView)
             make.right.equalTo(contentView).offset(-15)
+        }
+        
+        let line = LineView.init(frame: CGRect.zero)
+        contentView.addSubview(line)
+        line.snp_makeConstraints { make in
+            make.left.equalTo(contentView).offset(14)
+            make.bottom.right.equalTo(contentView)
+            make.height.equalTo(0.5)
         }
     }
     
@@ -349,7 +364,7 @@ class ContactInfoDetailCell: BaseTableCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = HEX_FFF
+        backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         contentView.addSubview(portraitV)
         portraitV.snp_makeConstraints { (make) in
             make.left.equalTo(contentView).offset(12.5)
@@ -378,7 +393,7 @@ class ContactInfoAlisaCell: BaseTableCell {
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = HEX_FFF
+        backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         accessoryType = .disclosureIndicator
         contentView.addSubview(alisaLa)
         alisaLa.snp_makeConstraints { (make) in

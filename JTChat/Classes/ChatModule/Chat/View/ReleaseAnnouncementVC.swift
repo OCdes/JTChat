@@ -17,7 +17,7 @@ class ReleaseAnnouncementVC: BaseViewController {
     }
     private lazy var textV: UITextView = {
         let tv = UITextView()
-        tv.backgroundColor = HEX_COLOR(hexStr: "#e1e1e1")
+        tv.backgroundColor = kIsFlagShip ? HEX_ThemeBlack : HEX_COLOR(hexStr: "#e1e1e1")
         tv.textColor = HEX_333
         tv.font = UIFont.systemFont(ofSize: 16)
         tv.layer.borderColor = HEX_999.cgColor

@@ -25,8 +25,8 @@ class FunctionKeyboardView: UIView {
     }()
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = HEX_COLOR(hexStr: "#F5F5F5")
-        collectionView.backgroundColor = HEX_COLOR(hexStr: "#F5F5F5")
+        backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_COLOR(hexStr: "#F5F5F5")
+        collectionView.backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_COLOR(hexStr: "#F5F5F5")
         addSubview(collectionView)
         collectionView.snp_makeConstraints { (make) in
             make.left.top.right.equalTo(self)

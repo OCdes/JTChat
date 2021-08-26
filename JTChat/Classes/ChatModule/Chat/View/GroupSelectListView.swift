@@ -8,7 +8,7 @@
 
 import UIKit
 import RxSwift
-class GroupSelectListView: UITableView {
+class GroupSelectListView: BaseTableView {
     var dataArr: Array<Any> = [] {
         didSet {
             self.reloadData()
@@ -140,13 +140,14 @@ class GroupSelectListCell: BaseTableCell {
     }()
     lazy var titleLa: UILabel = {
         let tl = UILabel()
+        tl.textColor = HEX_333
         return tl
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        backgroundColor = HEX_FFF
+        backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         
         contentView.addSubview(seleBtn)
         seleBtn.snp_makeConstraints { (make) in

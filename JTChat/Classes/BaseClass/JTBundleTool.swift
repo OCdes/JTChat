@@ -15,14 +15,27 @@ public class JTBundleTool {
     
     public static func getBundleImg(with name: String)->UIImage? {
         var image: UIImage?
+        let nstr = "\(name)Gold"
         if #available(iOS 13.0, *) {
-            image = UIImage(named: name, in: bundle, with: nil)
+            if let img = UIImage(named: nstr, in: bundle, with: nil) {
+                image = img
+            } else {
+                image = UIImage(named: name, in: bundle, with: nil)
+            }
         } else {
             // Fallback on earlier versions
-            image = UIImage.init(named: name, in: bundle, compatibleWith: nil)
+            if let img = UIImage.init(named: nstr, in: bundle, compatibleWith: nil) {
+                image = img
+            } else {
+                image = UIImage.init(named: name, in: bundle, compatibleWith: nil)
+            }
         }
         if image == nil {
-            image = UIImage(named: name)
+            if let img = UIImage(named: nstr) {
+                image = img
+            } else {
+                image = UIImage(named: name)
+            }
         }
         return image
     }

@@ -28,14 +28,38 @@ open class ContactorModel: BaseModel {
     var aliasName: String = ""
     
     public override func mapping(mapper: HelpingMapper) {
-        mapper <<<
-            self.avatarUrl <-- "avatar"
-        mapper <<<
-            self.nickName <-- "nickname"
-        mapper <<<
-            self.phone <-- "friendPhone"
+//        mapper <<<
+//            self.avatarUrl <-- "avatar"
+//        mapper <<<
+//            self.nickName <-- "nickname"
+//        mapper <<<
+//            self.phone <-- "friendPhone"
+        mapper.specify(property: &avatarUrl, name: "avatar")
+        mapper.specify(property: &nickName, name: "nickname")
+        mapper.specify(property: &phone, name: "friendPhone")
     }
 }
+
+open class ContactorSearchModel: BaseModel {
+    var avatarUrl: String = ""
+    var createTime: String = ""
+    var defaultPhotoUrl: String = ""
+    var department: String = ""
+    var friend: String = ""
+    var gender: Bool = false
+    var iD: String = ""
+    var isFriend: Bool = false
+    var jobNumber: String = ""
+    @objc var nickName: String = ""
+    var phone: String = ""
+    var placeID: String = ""
+    var roleID: String = ""
+    var isSelected: Bool = false
+    var topicGroupID: String = ""
+    var topicGroupName: String = ""
+    var aliasName: String = ""
+}
+
 
 class ContactDataModel: BaseModel {
     var departmentName: String = ""

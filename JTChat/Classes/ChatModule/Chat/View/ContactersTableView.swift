@@ -19,28 +19,39 @@ open class ContactersTableView: BaseTableView {
         attach.image = JTBundleTool.getBundleImg(with: "search")!
         attach.bounds = CGRect(x: 0, y: 0, width: 16, height: 16)
         let att = NSMutableAttributedString.init(attachment: attach)
-        att.append(NSAttributedString.init(string: "  搜索"))
+        att.append(NSAttributedString.init(string: "  搜索",attributes: [.foregroundColor : (kIsFlagShip ? HEX_999 : HEX_666)]))
         stf.attributedPlaceholder = att
         stf.delegate = self
-        stf.backgroundColor = HEX_COLOR(hexStr: "#e1e1e1")
+        stf.backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_COLOR(hexStr: "#e1e1e1")
         stf.layer.cornerRadius = 7.5
         stf.layer.masksToBounds = true
         return stf
     }()
     lazy var headerV: UIView = {
         let hv = UIView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: 128))
-        hv.backgroundColor = HEX_FFF
+        hv.backgroundColor = kIsFlagShip ? HEX_GOLDBLACK : HEX_FFF
         hv.addSubview(self.searchTf)
         self.searchTf.snp_makeConstraints { (make) in
             make.edges.equalTo(UIEdgeInsets(top: 10, left: 10, bottom: 84, right: 10))
         }
         
         let separatorLine = LineView.init(frame: CGRect.zero)
+        separatorLine.isHidden = true
         hv.addSubview(separatorLine)
         separatorLine.snp_makeConstraints { (make) in
             make.left.right.equalTo(hv)
             make.top.equalTo(self.searchTf.snp_bottom).offset(10)
             make.height.equalTo(10)
+        }
+        
+        let btn = UIButton()
+        btn.addTarget(self, action: #selector(goToApplyList), for: .touchUpInside)
+        btn.backgroundColor = HEX_VIEWBACKCOLOR
+        hv.addSubview(btn)
+        btn.snp_makeConstraints { (make) in
+            make.top.equalTo(separatorLine.snp_bottom)
+            make.left.right.equalTo(hv)
+            make.bottom.equalTo(hv)
         }
         
         let imgv = UIImageView()
@@ -89,13 +100,7 @@ open class ContactersTableView: BaseTableView {
         delegate = self
         dataSource = self
         separatorStyle = .none
-        backgroundColor = HEX_COLOR(hexStr: "#F5F6F8")
-        let btn = UIButton()
-        btn.addTarget(self, action: #selector(goToApplyList), for: .touchUpInside)
-        self.headerV.addSubview(btn)
-        btn.snp_makeConstraints { (make) in
-            make.edges.equalTo(UIEdgeInsets(top: 74, left: 0, bottom: 0, right: 0))
-        }
+        backgroundColor = kIsFlagShip ? HEX_GOLDBLACK : HEX_COLOR(hexStr: "#F5F6F8")
         
         register(ContactersTableCell.self, forCellReuseIdentifier: "ContactersTableCell")
         if #available(iOS 11.0, *) {
@@ -273,11 +278,12 @@ class ContactersTableCell: BaseTableCell {
     }()
     lazy var titleLa: UILabel = {
         let tl = UILabel()
+        tl.textColor = HEX_333
         return tl
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = HEX_FFF
+        backgroundColor = HEX_VIEWBACKCOLOR
         contentView.addSubview(portraitV)
         portraitV.snp_makeConstraints { (make) in
             make.left.equalTo(contentView).offset(11.5)

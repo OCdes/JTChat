@@ -231,15 +231,20 @@ func timeExchange(time: String)-> String {
 }
 
 //--------------------------------------------------------------
-let HEX_333 = HEX_COLOR(hexStr: "#333333")
+let kIsFlagShip = JTManager.manager.isFlagShip
+let HEX_FFF = HEX_COLOR(hexStr: "#FFFFFF")
+let HEX_333 = kIsFlagShip ? HEX_FFF : HEX_COLOR(hexStr: "#333333")
 let HEX_666 = HEX_COLOR(hexStr: "#666666")
 let HEX_999 = HEX_COLOR(hexStr: "#999999")
-let HEX_FFF = HEX_COLOR(hexStr: "#FFFFFF")
 let HEX_LightBlue = HEX_COLOR(hexStr: "#408CE2")
 let HEX_ThemeBlack = HEX_COLOR(hexStr: "#1A1C29")
 let HEX_F5F5F5 = HEX_COLOR(hexStr: "#f5f5f5")
 let PLACEHOLDERIMG = JTBundleTool.getBundleImg(with:"placeHolder")
-
+let HEX_VIEWBACKCOLOR = HEX_COLOR(hexStr: "#2C3039")
+let HEX_GOLDTEXTCOLOR = HEX_COLOR(hexStr: "#E1D1AC")
+let HEX_GOLDGRATYCOLOR = HEX_COLOR(hexStr: "#a29d95")
+let HEX_GOLDBLACK = HEX_COLOR(hexStr: "#151722")
+let HEX_GOLDYELLOW = HEX_COLOR(hexStr: "#D0A72F")
 
 
 let APPWINDOW: UIWindow = (UIApplication.shared.delegate?.window!)!

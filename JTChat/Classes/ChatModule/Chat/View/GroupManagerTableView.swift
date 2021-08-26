@@ -8,7 +8,7 @@
 
 import UIKit
 import YPImagePicker
-class GroupManagerTableView: UITableView {
+class GroupManagerTableView: BaseTableView {
     var dataArr: Array<String> = ["解散群组","转让群主"]
     var viewModel: GroupInfoViewModel?
     init(frame: CGRect, style: UITableView.Style, viewModel vm: GroupInfoViewModel) {
@@ -44,6 +44,8 @@ extension GroupManagerTableView: UITableViewDelegate, UITableViewDataSource {
         let m = dataArr[indexPath.row]
         let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "UITableViewCell", for: indexPath)
         cell.textLabel?.text = m
+        cell.textLabel?.textColor = HEX_333
+        cell.backgroundColor = kIsFlagShip ? HEX_GOLDBLACK : HEX_FFF
         return cell
     }
     

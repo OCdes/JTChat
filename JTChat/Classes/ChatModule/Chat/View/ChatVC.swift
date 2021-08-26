@@ -75,6 +75,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
             if self!.viewModel.contactor!.topicGroupID.count > 0 {
                 let vc = GroupInfoVC()
                 vc.viewModel.groupID = self!.viewModel.contactor!.topicGroupID
+                vc.viewModel.isFromChat = true
                 vc.title = self!.title
                 self!.viewModel.navigationVC?.pushViewController(vc, animated: true)
             } else {
@@ -82,6 +83,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
                 mm.employeeModel.phone = self!.viewModel.contactor!.phone
                 let vc = ContacterInfoVC()
                 vc.viewModel = mm
+                vc.viewModel.isFromChat = true
                 vc.title = self!.title
                 self!.viewModel.navigationVC?.pushViewController(vc, animated: true)
             }
@@ -91,7 +93,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
     }
 
     func initView() {
-        view.backgroundColor = HEX_COLOR(hexStr: "#EBEBEB");
+        view.backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_COLOR(hexStr: "#EBEBEB");
         view.addSubview(bgImgv)
         view.addSubview(tableView)
         tableView.snp_makeConstraints { (make) in

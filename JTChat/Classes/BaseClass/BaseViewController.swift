@@ -57,7 +57,7 @@ open class BaseViewController: UIViewController , UINavigationControllerDelegate
     
     open override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         // Do any additional setup after loading the view.
         self.navigationController?.delegate = self as UINavigationControllerDelegate
         edgesForExtendedLayout = UIRectEdge.bottom

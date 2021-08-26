@@ -21,7 +21,7 @@ class DialogAlertView: UIView {
     lazy var animateV: UIView = {
         let bgv = UIView.init(frame: CGRect(x: 75, y: 10 - btnArr.count*22, width: 135, height: btnArr.count*44))
         bgv.layer.cornerRadius = 10
-        bgv.backgroundColor = HEX_FFF
+        bgv.backgroundColor = kIsFlagShip ? HEX_ThemeBlack : HEX_FFF
         return bgv
     }()
     override init(frame: CGRect) {
@@ -34,7 +34,7 @@ class DialogAlertView: UIView {
             let c = UIGraphicsGetCurrentContext()
             if let context = c {
                 context.saveGState()
-                context.setFillColor(HEX_FFF.cgColor)
+                context.setFillColor((kIsFlagShip ? HEX_ThemeBlack : HEX_FFF).cgColor)
                 var points = [CGPoint](repeating: CGPoint.zero, count: 3)
                 points[0] = CGPoint(x: 0, y: 6)
                 points[1] = CGPoint(x: 10, y: 6)
@@ -59,7 +59,7 @@ class DialogAlertView: UIView {
             btn.setImage(JTBundleTool.getBundleImg(with:imageArr[i]), for: .normal)
             btn.setTitle(btnArr[i], for: .normal)
             btn.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-            btn.setTitleColor(HEX_COLOR(hexStr: "#3F80CB"), for: .normal)
+            btn.setTitleColor(kIsFlagShip ? HEX_GOLDTEXTCOLOR : HEX_COLOR(hexStr: "#3F80CB"), for: .normal)
             btn.tag = 2000+i
             btn.addTarget(self, action: #selector(btnClicked(btn:)), for: .touchUpInside)
             animateV.addSubview(btn)

@@ -8,7 +8,7 @@
 import UIKit
 
 class ContactorResultTableView: BaseTableView {
-    var dataArr: Array<ContactorModel> = []
+    var dataArr: Array<ContactorSearchModel> = []
     var viewModel: ContactorResultViewModel?
     init(frame: CGRect, style: UITableView.Style, viewModel vm: ContactorResultViewModel) {
         super.init(frame: frame, style: style)
@@ -17,7 +17,7 @@ class ContactorResultTableView: BaseTableView {
         dataSource = self
         register(ContactersTableCell.self, forCellReuseIdentifier: "ContactersTableCell")
         _ = viewModel!.rx.observe(Array<Any>.self, "dataArr").subscribe(onNext: { [weak self](arr) in
-            self!.dataArr = (arr ?? []) as! Array<ContactorModel>
+            self!.dataArr = (arr ?? []) as! Array<ContactorSearchModel>
             self!.reloadData()
         })
     }

@@ -8,7 +8,7 @@
 
 import UIKit
 import YPImagePicker
-class GroupInfoTableView: UITableView {
+class GroupInfoTableView: BaseTableView {
     var dataArr: Array<String> = []
     var viewModel: GroupInfoViewModel = GroupInfoViewModel()
     var model: GroupInfoModel = GroupInfoModel()
@@ -29,7 +29,7 @@ class GroupInfoTableView: UITableView {
                 // Fallback on earlier versions
             }
         }
-        backgroundColor = HEX_F5F5F5
+        backgroundColor = kIsFlagShip ? HEX_GOLDBLACK : HEX_F5F5F5
         register(GroupSigleTextCell.self, forCellReuseIdentifier: "GroupSigleTextCell")
         register(GroupEditStyleCell.self, forCellReuseIdentifier: "GroupEditStyleCell")
         register(GroupMemberCell.self, forCellReuseIdentifier: "GroupMemberCell")
@@ -68,12 +68,15 @@ extension GroupInfoTableView: UITableViewDelegate, UITableViewDataSource, UIText
             let cell: GroupEditStyleCell = tableView.dequeueReusableCell(withIdentifier: "GroupEditStyleCell", for: indexPath) as! GroupEditStyleCell
             cell.tf.text = indexPath.section == 0 ? self.model.topicGroupName : (indexPath.section == 4 ? "共\(self.model.membersList.count)人" : "")
             cell.titleLa.text = dataArr[indexPath.section]
-            if indexPath.section == 0 {
+            if indexPath.section != 4 {
                 if self.model.creator != JTManager.manager.phone {
-                    cell.accessoryType = .none
+                    cell.accessoryView = nil
                 } else {
-                    cell.accessoryType = .disclosureIndicator
+                    cell.accessoryType = .none
+                    cell.accessoryView = UIImageView.init(image: JTBundleTool.getBundleImg(with: "rightArrow"))
                 }
+            } else {
+                cell.accessoryView = UIImageView.init(image: JTBundleTool.getBundleImg(with: "rightArrow"))
             }
             return cell
         } else if (indexPath.section == 5) {
@@ -85,6 +88,12 @@ extension GroupInfoTableView: UITableViewDelegate, UITableViewDataSource, UIText
             cell.titleLa.text = dataArr[indexPath.section]
             if self.model.avatarUrl.count > 0 {
                 cell.portraitV.kf.setImage(with: URL(string: "\(self.model.avatarUrl)?tmp=\(arc4random())"), placeholder: PLACEHOLDERIMG)
+            }
+            if self.model.creator != JTManager.manager.phone {
+                cell.accessoryView = nil
+            } else {
+                cell.accessoryType = .none
+                cell.accessoryView = UIImageView.init(image: JTBundleTool.getBundleImg(with: "rightArrow"))
             }
             return cell
         } else if (indexPath.section == 3) {
@@ -157,6 +166,7 @@ extension GroupInfoTableView: UITableViewDelegate, UITableViewDataSource, UIText
             let vc = GroupMemVC()
             vc.viewModel.groupID = self.viewModel.groupID
             vc.viewModel.model = self.model
+            vc.viewModel.isFromChat = true
             vc.title = str
             self.viewModel.navigationVC?.pushViewController(vc, animated: true)
             print(str)
@@ -173,6 +183,9 @@ extension GroupInfoTableView: UITableViewDelegate, UITableViewDataSource, UIText
             
             print(str)
         case "群头像":
+            if self.viewModel.model.creator != JTManager.manager.phone {
+                return
+            }
             if checkPhotoLibaray() {
                 var config: YPImagePickerConfiguration = YPImagePickerConfiguration.init()
                 config.isScrollToChangeModesEnabled = false
@@ -213,7 +226,7 @@ extension GroupInfoTableView: UITableViewDelegate, UITableViewDataSource, UIText
                 self.viewModel.navigationVC?.present(picker, animated: true, completion: nil)
             }
         case "群聊天背景":
-            let alertController = UIAlertController.init(title: "", message: "", preferredStyle: .actionSheet)
+            let alertController = UIAlertController.init(title: "设置背景", message: "", preferredStyle: .actionSheet)
             let actionSelect = UIAlertAction.init(title: "选择背景图", style: .default) { (action) in
                 if checkPhotoLibaray() {
                     var config: YPImagePickerConfiguration = YPImagePickerConfiguration.init()
@@ -267,6 +280,7 @@ extension GroupInfoTableView: UITableViewDelegate, UITableViewDataSource, UIText
         case "添加成员":
             let vc = GroupChatSelectVC.init()
             vc.viewModel.topicGroupID = self.model.topicGroupID
+            vc.viewModel.isFromChat = true
             var arr: Array<String> = []
             for m in self.model.membersList {
                 arr.append(m.memberPhone)
@@ -314,7 +328,7 @@ class GroupSigleTextCell: BaseTableCell {
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = HEX_FFF
+        backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         contentView.addSubview(titleLa)
         titleLa.snp_makeConstraints { (make) in
             make.edges.equalTo(UIEdgeInsets.zero)
@@ -344,7 +358,8 @@ class GroupEditStyleCell: BaseTableCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         accessoryType = .disclosureIndicator
-        backgroundColor = HEX_FFF
+        accessoryView = UIImageView.init(image: JTBundleTool.getBundleImg(with: "rightArrow"))
+        backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         contentView.addSubview(titleLa)
         titleLa.snp_makeConstraints { (make) in
             make.left.equalTo(contentView).offset(14)
@@ -380,7 +395,7 @@ class GroupMemberCell: BaseTableCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = HEX_FFF
+        backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         contentView.addSubview(memView)
         memView.snp_makeConstraints { (make) in
             make.left.right.equalTo(contentView)
@@ -420,7 +435,8 @@ class GroupPortraitCell: BaseTableCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         accessoryType = .disclosureIndicator
-        backgroundColor = HEX_FFF
+        accessoryView = UIImageView.init(image: JTBundleTool.getBundleImg(with: "rightArrow"))
+        backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         contentView.addSubview(titleLa)
         titleLa.snp_makeConstraints { (make) in
             make.left.equalTo(contentView).offset(14)
@@ -446,11 +462,12 @@ class GroupAnnouncementCell: BaseTableCell {
         tv.font = UIFont.systemFont(ofSize: 16)
         tv.textColor = HEX_333
         tv.isUserInteractionEnabled = false
+        tv.backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         return tv
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = HEX_FFF
+        backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         contentView.addSubview(textV)
         textV.snp_makeConstraints { (make) in
             make.edges.equalTo(UIEdgeInsets(top: 10, left: 14, bottom: 10, right: 12.5))

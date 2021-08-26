@@ -13,8 +13,8 @@ class ContactorResultViewModel: BaseViewModel {
     func search(scrollView: UIScrollView) {
         let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POSST_FETCHEMPLOYEETOCHAT, params: [:]) { [weak self](msg, code, response, data) in
             scrollView.jt_endRefresh()
-            let arr = JSONDeserializer<ContactorModel>.deserializeModelArrayFrom(array: (data["Data"] as! Array<Dictionary<String, Any>>))!
-            var marr = [ContactorModel]()
+            let arr = JSONDeserializer<ContactorSearchModel>.deserializeModelArrayFrom(array: ((data["data"] ?? data["Data"]) as! Array<Dictionary<String, Any>>))!
+            var marr = [ContactorSearchModel]()
             for model in arr {
                 if let m = model, m.phone.contains(self!.key) {
                     marr.append(m)

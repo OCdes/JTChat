@@ -31,7 +31,7 @@ class GroupChatSelectVC: BaseViewController {
         btn.setTitle("点击取消", for: .normal)
         btn.setTitleColor(HEX_999, for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        btn.backgroundColor = HEX_COLOR(hexStr: "#f2f2f2")
+        btn.backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_COLOR(hexStr: "#f2f2f2")
         btn.addTarget(self, action: #selector(dismissClicked), for: .touchUpInside)
         view.addSubview(btn)
         btn.snp_makeConstraints { (make) in
@@ -74,15 +74,20 @@ class GroupChatSelectVC: BaseViewController {
             self.viewModel.creatGroup()
         })
         
-        _ = self.viewModel.doneSubject.subscribe(onNext: { (a) in
-            self.dismiss(animated: true, completion: nil)
-            let cm = ContactorModel()
-            cm.topicGroupID = self.viewModel.topicGroupID
-            cm.topicGroupName = self.viewModel.topicGroupName
-            let vc = ChatVC()
-            vc.viewModel.contactor = cm
-            vc.title = self.viewModel.topicGroupName
-            self.viewModel.navigationVC?.pushViewController(vc, animated: true)
+        _ = self.viewModel.doneSubject.subscribe(onNext: { [weak self](a) in
+            self?.dismiss(animated: true, completion: nil)
+            if self?.viewModel.isFromChat ?? false {
+                self?.viewModel.navigationVC?.popViewController(animated: true)
+            } else {
+                let cm = ContactorModel()
+                cm.topicGroupID = self!.viewModel.topicGroupID
+                cm.topicGroupName = self!.viewModel.topicGroupName
+                let vc = ChatVC()
+                vc.viewModel.contactor = cm
+                vc.title = self!.viewModel.topicGroupName
+                self?.viewModel.navigationVC?.pushViewController(vc, animated: true)
+            }
+            
         })
     }
 

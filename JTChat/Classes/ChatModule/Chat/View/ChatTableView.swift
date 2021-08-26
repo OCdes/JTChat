@@ -10,7 +10,7 @@ import UIKit
 import RxSwift
 import AVFoundation
 import AVKit
-class ChatTableView: UITableView {
+class ChatTableView: BaseTableView {
     var dataArr: Array<MessageSectionModel> = []
     var viewModel: ChatViewModel?
     var recordManager: RecorderManager = RecorderManager()
@@ -51,15 +51,18 @@ class ChatTableView: UITableView {
     
     func scrollTo(offsetY:CGFloat, animated: Bool?) {
         if self.dataArr.count > 0 {
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: 2)) {
+            DispatchQueue.main.async {
+                if self.contentSize.height-self.contentOffset.y > self.frame.size.height {
+                    self.setContentOffset(CGPoint(x: 0, y: self.contentSize.height-self.frame.size.height), animated: false)
+                }
+                usleep(5000)
                 let section = self.numberOfSections(in: self)
                 if section > 0 {
-                    let rows = self.dataArr[section-1].rowsArr.count-1
+                    let rows = self.dataArr[section-1].rowsArr.count
                     if rows > 0 {
-                        self.scrollToRow(at: IndexPath(row: rows-1, section:section-1), at: .middle, animated: animated ?? false)
+                        self.scrollToRow(at: IndexPath(row: rows-1, section:section-1), at: .bottom, animated: animated ?? false)
                     }
                 }
-                
             }
         }
     }

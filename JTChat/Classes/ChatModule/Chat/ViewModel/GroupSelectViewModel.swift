@@ -15,6 +15,7 @@ class GroupSelectViewModel: BaseViewModel {
     var selePhones: Array<String> = []
     var disables: Array<String> = []
     var doneSubject: PublishSubject<Any> = PublishSubject<Any>()
+    var isFromChat: Bool = false
     var seleDataArr: Array<GeneralSelectModel>? {
         set {
             

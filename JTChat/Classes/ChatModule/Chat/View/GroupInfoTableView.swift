@@ -72,7 +72,6 @@ extension GroupInfoTableView: UITableViewDelegate, UITableViewDataSource, UIText
                 if self.model.creator != JTManager.manager.phone {
                     cell.accessoryView = nil
                 } else {
-                    cell.accessoryType = .none
                     cell.accessoryView = UIImageView.init(image: JTBundleTool.getBundleImg(with: "rightArrow"))
                 }
             } else {
@@ -357,8 +356,6 @@ class GroupEditStyleCell: BaseTableCell {
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        accessoryType = .disclosureIndicator
-        accessoryView = UIImageView.init(image: JTBundleTool.getBundleImg(with: "rightArrow"))
         backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         contentView.addSubview(titleLa)
         titleLa.snp_makeConstraints { (make) in
@@ -434,8 +431,6 @@ class GroupPortraitCell: BaseTableCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        accessoryType = .disclosureIndicator
-        accessoryView = UIImageView.init(image: JTBundleTool.getBundleImg(with: "rightArrow"))
         backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         contentView.addSubview(titleLa)
         titleLa.snp_makeConstraints { (make) in

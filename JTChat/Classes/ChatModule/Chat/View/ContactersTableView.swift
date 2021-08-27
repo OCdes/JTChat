@@ -36,7 +36,7 @@ open class ContactersTableView: BaseTableView {
         }
         
         let separatorLine = LineView.init(frame: CGRect.zero)
-        separatorLine.isHidden = true
+        separatorLine.isHidden = kIsFlagShip ? true : false
         hv.addSubview(separatorLine)
         separatorLine.snp_makeConstraints { (make) in
             make.left.right.equalTo(hv)
@@ -46,7 +46,7 @@ open class ContactersTableView: BaseTableView {
         
         let btn = UIButton()
         btn.addTarget(self, action: #selector(goToApplyList), for: .touchUpInside)
-        btn.backgroundColor = HEX_VIEWBACKCOLOR
+        btn.backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         hv.addSubview(btn)
         btn.snp_makeConstraints { (make) in
             make.top.equalTo(separatorLine.snp_bottom)
@@ -283,7 +283,7 @@ class ContactersTableCell: BaseTableCell {
     }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = HEX_VIEWBACKCOLOR
+        backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
         contentView.addSubview(portraitV)
         portraitV.snp_makeConstraints { (make) in
             make.left.equalTo(contentView).offset(11.5)

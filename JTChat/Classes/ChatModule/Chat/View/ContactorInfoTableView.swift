@@ -171,6 +171,7 @@ extension ContactorInfoTableView: UITableViewDelegate, UITableViewDataSource {
         case 1:
             let cell: ContactInfoAlisaCell = tableView.dequeueReusableCell(withIdentifier: "ContactInfoAlisaCell", for: indexPath) as! ContactInfoAlisaCell
             cell.alisaLa.text = viewModel!.employeeModel.aliasName.count > 0 ? viewModel!.employeeModel.aliasName : (viewModel?.employeeModel.nickName ?? "")
+            cell.accessoryView = UIImageView.init(image: JTBundleTool.getBundleImg(with: "rightArrow"))
             return cell
         case 2:
             let cell: ContactorInfoCell = tableView.dequeueReusableCell(withIdentifier: "ContactorInfoCell", for: indexPath) as! ContactorInfoCell
@@ -178,14 +179,12 @@ extension ContactorInfoTableView: UITableViewDelegate, UITableViewDataSource {
                 cell.textLabel?.text = titlesArr[indexPath.row]
                 cell.textLabel?.font = UIFont.systemFont(ofSize: 18, weight: .medium)
                 cell.textLabel?.textColor = HEX_333
-                cell.accessoryType = .disclosureIndicator
                 cell.accessoryView = UIImageView.init(image: JTBundleTool.getBundleImg(with: "rightArrow"))
             } else {
                 cell.titleLa.text = titlesArr[indexPath.row]
                 cell.contentLa.text = contentsArr[indexPath.row]
                 cell.contentLa.textColor = titlesArr[indexPath.row] == "手机" ? HEX_COLOR(hexStr: "#3F80CB") : HEX_333
-                cell.accessoryType = titlesArr[indexPath.row] == "部门" ? .none : .none
-                cell.accessoryView = UIImageView.init(image: JTBundleTool.getBundleImg(with: "rightArrow"))
+                cell.accessoryView = titlesArr[indexPath.row] != "设置聊天背景" ? nil : UIImageView.init(image: JTBundleTool.getBundleImg(with: "rightArrow"))
             }
             
             return cell
@@ -247,57 +246,60 @@ extension ContactorInfoTableView: UITableViewDelegate, UITableViewDataSource {
                 self.viewModel?.navigationVC?.pushViewController(vc, animated: true)
             }
         } else if (indexPath.section == 2) {
-            let alertController = UIAlertController.init(title: "", message: "", preferredStyle: .actionSheet)
-            let actionSelect = UIAlertAction.init(title: "选择背景图", style: .default) { (action) in
-                if checkPhotoLibaray() {
-                    var config: YPImagePickerConfiguration = YPImagePickerConfiguration.init()
-                    config.isScrollToChangeModesEnabled = false
-                    config.onlySquareImagesFromCamera = false
-                    config.showsPhotoFilters = false
-                    config.hidesBottomBar = true
-                    config.screens = [.library]
-                    config.library.maxNumberOfItems = 1
-                    config.library.mediaType = .photo
-                    config.startOnScreen = YPPickerScreen.library
-                    config.albumName = "精特"
-                    config.wordings.next = "下一步"
-                    config.wordings.cancel = "取消"
-                    config.wordings.libraryTitle = "相册"
-                    config.wordings.cameraTitle = "相机"
-                    config.wordings.albumsTitle = "全部相册"
-                    config.library.defaultMultipleSelection = true
-                    let picker: YPImagePicker = YPImagePicker.init(configuration: config)
-                    picker.imagePickerDelegate = self as? YPImagePickerDelegate
-                    picker.didFinishPicking { [unowned picker] items, _  in
-                        if items.count > 0 {
-                            let itemOne = items[0]
-                            switch itemOne {
-                            case .photo(p: let img):
-                                self.viewModel?.setPersonalChatViewBG(image: img.image)
-                                break;
-                            default:
-                                break;
+            if titlesArr[indexPath.row] == "设置聊天背景" {
+                let alertController = UIAlertController.init(title: "设置聊天背景", message: "", preferredStyle: .actionSheet)
+                let actionSelect = UIAlertAction.init(title: "选择背景图", style: .default) { (action) in
+                    if checkPhotoLibaray() {
+                        var config: YPImagePickerConfiguration = YPImagePickerConfiguration.init()
+                        config.isScrollToChangeModesEnabled = false
+                        config.onlySquareImagesFromCamera = false
+                        config.showsPhotoFilters = false
+                        config.hidesBottomBar = true
+                        config.screens = [.library]
+                        config.library.maxNumberOfItems = 1
+                        config.library.mediaType = .photo
+                        config.startOnScreen = YPPickerScreen.library
+                        config.albumName = "精特"
+                        config.wordings.next = "下一步"
+                        config.wordings.cancel = "取消"
+                        config.wordings.libraryTitle = "相册"
+                        config.wordings.cameraTitle = "相机"
+                        config.wordings.albumsTitle = "全部相册"
+                        config.library.defaultMultipleSelection = true
+                        let picker: YPImagePicker = YPImagePicker.init(configuration: config)
+                        picker.imagePickerDelegate = self as? YPImagePickerDelegate
+                        picker.didFinishPicking { [unowned picker] items, _  in
+                            if items.count > 0 {
+                                let itemOne = items[0]
+                                switch itemOne {
+                                case .photo(p: let img):
+                                    self.viewModel?.setPersonalChatViewBG(image: img.image)
+                                    break;
+                                default:
+                                    break;
+                                }
+                                
                             }
-                            
+                            picker.dismiss(animated: true, completion: nil)
                         }
-                        picker.dismiss(animated: true, completion: nil)
+                        self.viewModel?.navigationVC?.present(picker, animated: true, completion: nil)
                     }
-                    self.viewModel?.navigationVC?.present(picker, animated: true, completion: nil)
                 }
-            }
-            
-            let actionReset = UIAlertAction.init(title: "重置背景图", style: .destructive) { (action) in
-                self.viewModel?.resetChatViewBG()
-            }
-            
-            let actionCancle = UIAlertAction.init(title: "取消", style: .cancel) { (action) in
                 
+                let actionReset = UIAlertAction.init(title: "重置背景图", style: .destructive) { (action) in
+                    self.viewModel?.resetChatViewBG()
+                }
+                
+                let actionCancle = UIAlertAction.init(title: "取消", style: .cancel) { (action) in
+                    
+                }
+                
+                alertController.addAction(actionSelect)
+                alertController.addAction(actionReset)
+                alertController.addAction(actionCancle)
+                self.viewModel?.navigationVC?.present(alertController, animated: true, completion: nil)
             }
             
-            alertController.addAction(actionSelect)
-            alertController.addAction(actionReset)
-            alertController.addAction(actionCancle)
-            self.viewModel?.navigationVC?.present(alertController, animated: true, completion: nil)
         }
     }
     
@@ -394,7 +396,6 @@ class ContactInfoAlisaCell: BaseTableCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_FFF
-        accessoryType = .disclosureIndicator
         contentView.addSubview(alisaLa)
         alisaLa.snp_makeConstraints { (make) in
             make.left.equalTo(contentView).offset(12.5)

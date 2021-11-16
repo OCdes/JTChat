@@ -9,8 +9,8 @@
 import UIKit
 import RxSwift
 class DialogAlertView: UIView {
-    var btnArr: Array<String> = ["    发起群聊","    扫一扫    "]
-    var imageArr: Array<String> = ["groupMessage","scanIcon"]
+    var btnArr: Array<String> = ["  发起群聊","  扫一扫    ", "  加好友    "]
+    var imageArr: Array<String> = ["groupMessage","scanIcon","addFriend2"]
     var subject: PublishSubject<Int> = PublishSubject<Int>()
     lazy var bgv: UIView = {
         let bv = UIView.init(frame: APPWINDOW.bounds)
@@ -56,7 +56,7 @@ class DialogAlertView: UIView {
         addSubview(animateV)
         for i in 0..<btnArr.count {
             let btn = UIButton.init(frame: CGRect(x: 0, y: 44*i, width: 135, height: 44))
-            btn.setImage(JTBundleTool.getBundleImg(with:imageArr[i]), for: .normal)
+            btn.setImage(JTBundleTool.getBundleImg(with:imageArr[i])?.withRenderingMode(.alwaysOriginal), for: .normal)
             btn.setTitle(btnArr[i], for: .normal)
             btn.titleLabel?.font = UIFont.systemFont(ofSize: 16)
             btn.setTitleColor(kIsFlagShip ? HEX_GOLDTEXTCOLOR : HEX_COLOR(hexStr: "#3F80CB"), for: .normal)

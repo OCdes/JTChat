@@ -127,8 +127,10 @@ open class MessageListVC: BaseViewController {
                         alertvc.addAction(sureAction)
                         self?.navigationController?.present(alertvc, animated: true, completion: nil)
                     }
-                default: break
-                    
+                default:
+                    let vc = SearchVC()
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                    break
                 }
             })
             alert.show()

@@ -41,7 +41,7 @@ class InputToolView: UIView {
     }()
     lazy var textV: UITextView = {
         let tv = UITextView()
-        tv.textColor = HEX_333
+        tv.textColor = HEX_COLOR(hexStr: "#333333")
         tv.font = UIFont.systemFont(ofSize: 16)
         tv.layer.cornerRadius = 5
         tv.layer.masksToBounds = true

@@ -109,9 +109,10 @@ extension AddFriendTableView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let v = UIView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: 30))
-        v.backgroundColor = HEX_COLOR(hexStr: "#e1e1e1")
+        v.backgroundColor = HEX_COLOR(hexStr: "#272A32")
         let label = UILabel.init(frame: CGRect(x: 14, y: 0, width: kScreenWidth-28, height: 30))
         label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = HEX_333
         v.addSubview(label)
         if self.viewModel.myApplyArr.count > 0 && self.viewModel.dealApplyArr.count > 0 {
             if section == 1 {
@@ -153,10 +154,12 @@ class AddFriendAppyCell: BaseTableCell {
     }()
     private lazy var titleLa: UILabel = {
         let tl = UILabel()
+        tl.textColor = HEX_333
         return tl
     }()
     private lazy var remarkLa: UILabel = {
         let rl = UILabel()
+        rl.textColor = HEX_333
         return rl
     }()
     lazy var statusLa: UILabel = {
@@ -182,7 +185,7 @@ class AddFriendAppyCell: BaseTableCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = HEX_FFF
+//        backgroundColor = HEX_FFF
         contentView.addSubview(portraitV)
         portraitV.snp_makeConstraints { (make) in
             make.left.equalTo(contentView).offset(11.5)
@@ -254,6 +257,7 @@ class MyApplyNoteCell: BaseTableCell {
     }()
     private lazy var titleLa: UILabel = {
         let tl = UILabel()
+        tl.textColor = HEX_333
         return tl
     }()
     lazy var statusLa: UILabel = {
@@ -268,7 +272,7 @@ class MyApplyNoteCell: BaseTableCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = HEX_FFF
+//        backgroundColor = HEX_FFF
         contentView.addSubview(portraitV)
         portraitV.snp_makeConstraints { (make) in
             make.left.equalTo(contentView).offset(11.5)

@@ -23,7 +23,7 @@ class FriendAddAlertView: UIView {
     }()
     private var nameLa: UILabel = {
         let nl = UILabel()
-        nl.textColor = HEX_333
+        nl.textColor = HEX_COLOR(hexStr: "#333333")
         nl.font = UIFont.systemFont(ofSize: 16)
         return nl
     }()
@@ -31,7 +31,7 @@ class FriendAddAlertView: UIView {
         let rt = UITextView()
         rt.layer.borderColor = HEX_999.cgColor
         rt.layer.borderWidth = 1
-        rt.textColor = HEX_333
+        rt.textColor = HEX_COLOR(hexStr: "#333333")
         rt.layer.cornerRadius = 5
         rt.layer.masksToBounds = true
         rt.font = UIFont.systemFont(ofSize: 14)
@@ -40,6 +40,7 @@ class FriendAddAlertView: UIView {
     private var bgV: UIView = {
         let bv = UIView.init(frame: UIScreen.main.bounds)
         bv.backgroundColor = HEX_333.withAlphaComponent(0.3)
+        bv.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(hide)))
         return bv
     }()
     override init(frame: CGRect) {
@@ -49,7 +50,7 @@ class FriendAddAlertView: UIView {
         self.layer.cornerRadius = 10
         self.center = APPWINDOW.center
         let titleLa = UILabel()
-        titleLa.textColor = HEX_333
+        titleLa.textColor = HEX_COLOR(hexStr: "#333333")
         titleLa.font = UIFont.systemFont(ofSize: 16)
         titleLa.textAlignment = .center
         titleLa.text = "您将添加以下好友"
@@ -96,7 +97,7 @@ class FriendAddAlertView: UIView {
         let btnwidth = self.frame.width/2
         let cancleBtn = UIButton()
         cancleBtn.setTitle("取消", for: .normal)
-        cancleBtn.setTitleColor(HEX_333, for: .normal)
+        cancleBtn.setTitleColor(HEX_COLOR(hexStr: "#333333"), for: .normal)
         cancleBtn.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         cancleBtn.addTarget(self, action: #selector(hide), for: .touchUpInside)
         addSubview(cancleBtn)
@@ -117,6 +118,19 @@ class FriendAddAlertView: UIView {
             make.size.equalTo(cancleBtn)
         }
         self.transform = CGAffineTransform.init(scaleX: 0.01, y: 0.01)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(noti:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(noti:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc func keyboardWillShow(noti: Notification) {
+        self.center = CGPoint(x: APPWINDOW.center.x, y: APPWINDOW.center.y-100)
+    }
+    
+    @objc func keyboardWillHide(noti: Notification) {
+//        let dict = noti.userInfo as! Dictionary<String, Any>
+//        let endFrame = dict["UIKeyboardFrameEndUserInfoKey"] as! CGRect
+        self.center = APPWINDOW.center
     }
     
     @objc func sureBtnClicked() {
@@ -133,6 +147,7 @@ class FriendAddAlertView: UIView {
     }
     
     @objc private func hide() {
+        self.remarkTv.resignFirstResponder()
         UIView.animate(withDuration: 0.3) {
             self.transform = CGAffineTransform.init(scaleX: 0.01, y: 0.01)
         } completion: { (true) in

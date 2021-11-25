@@ -43,7 +43,7 @@ extension MessageListView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: MessageListCell = tableView.dequeueReusableCell(withIdentifier: "MessageListCell", for: indexPath) as! MessageListCell
         if indexPath.row == 0 {
-            cell.portraitV.image = JTBundleTool.getBundleImg(with: "jtsystem")
+            cell.portraitV.kf.setImage(with: URL(string: ""), placeholder: JTBundleTool.getBundleImg(with: "jtsystem"))
             cell.nameLa.text = "精特消息"
             if let arr = USERDEFAULT.object(forKey: "latestJTMessageList") as? [[String:Any]], arr.count > 0, let dict = arr.first {
                 cell.messageLa.text = (dict["content"] as? String) ?? ""

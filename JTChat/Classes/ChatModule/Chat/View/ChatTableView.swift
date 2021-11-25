@@ -333,7 +333,7 @@ class ChatTableLeftCell: BaseTableCell {
     lazy var contentLa: UILabel = {
         let cl = UILabel()
         cl.font = UIFont.init(name: "iconfont", size: 16)
-        cl.textColor = HEX_333
+        cl.textColor = HEX_COLOR(hexStr: "#333333")
         cl.numberOfLines = 0
         cl.isUserInteractionEnabled = true
         return cl
@@ -603,7 +603,7 @@ class LeftVoiceCell: BaseTableCell {
         let cl = UILabel()
         cl.font = UIFont.systemFont(ofSize: 16)
         cl.font = UIFont.init(name: "emoji", size: 16)
-        cl.textColor = HEX_333
+        cl.textColor = HEX_COLOR(hexStr: "#333333")
         cl.numberOfLines = 0
         cl.adjustsFontSizeToFitWidth = true
         return cl
@@ -718,7 +718,7 @@ class ChatTableRightCell: BaseTableCell {
         let cl = UILabel()
         cl.font = UIFont.systemFont(ofSize: 16)
         cl.font = UIFont.init(name: "emoji", size: 16)
-        cl.textColor = HEX_333
+        cl.textColor = HEX_COLOR(hexStr: "#333333")
         cl.numberOfLines = 0
         cl.adjustsFontSizeToFitWidth = true
         return cl
@@ -935,7 +935,7 @@ class RightVoiceCell: BaseTableCell {
         let cl = UILabel()
         cl.font = UIFont.systemFont(ofSize: 16)
         cl.font = UIFont.init(name: "emoji", size: 16)
-        cl.textColor = HEX_333
+        cl.textColor = HEX_COLOR(hexStr: "#333333")
         cl.numberOfLines = 0
         cl.adjustsFontSizeToFitWidth = true
         cl.textAlignment = .right

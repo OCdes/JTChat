@@ -109,7 +109,7 @@ extension AddFriendTableView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let v = UIView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: 30))
-        v.backgroundColor = HEX_COLOR(hexStr: "#272A32")
+        v.backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#272A32") : HEX_COLOR(hexStr: "#e1e1e1")
         let label = UILabel.init(frame: CGRect(x: 14, y: 0, width: kScreenWidth-28, height: 30))
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = HEX_333
@@ -167,7 +167,7 @@ class AddFriendAppyCell: BaseTableCell {
         sl.text = "已添加"
         sl.textAlignment = .center
         sl.font = UIFont.systemFont(ofSize: 14)
-        sl.textColor = HEX_COLOR(hexStr: "#e1e1e1")
+        sl.textColor = kIsFlagShip ? HEX_COLOR(hexStr: "#e1e1e1") : HEX_999
         sl.isHidden = true
         return sl
     }()

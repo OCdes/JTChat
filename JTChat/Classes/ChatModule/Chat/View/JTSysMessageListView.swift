@@ -74,7 +74,7 @@ extension JTSysMessageListView: UITableViewDelegate, UITableViewDataSource {
         let timeLa = UILabel()
         timeLa.text = m.createTime
         timeLa.textAlignment = .center
-        timeLa.font = UIFont(name: "\(timeLa.font.fontName)-Medium", size: 11)
+        timeLa.font = UIFont.systemFont(ofSize: 11, weight: .medium)
         return timeLa
     }
     
@@ -115,13 +115,13 @@ class JTSysMessageItemCell: BaseTableCell {
     lazy var timeLa: UILabel = {
         let tl = UILabel()
         tl.textColor = HEX_999
-        tl.font = UIFont(name: "\(tl.font.fontName)-Medium", size: 11)
+        tl.font = UIFont.systemFont(ofSize: 11, weight: .medium)
         return tl
     }()
     lazy var contentLa: UILabel = {
         let cl = UILabel()
         cl.textColor = HEX_COLOR(hexStr: "#040404")
-        cl.font = UIFont(name: "\(cl.font.fontName)-Medium", size: 14)
+        cl.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         cl.numberOfLines = 2
         return cl
     }()
@@ -169,7 +169,7 @@ class JTSysMessageItemCell: BaseTableCell {
         
         let checkLa = UILabel()
         checkLa.textColor = HEX_333
-        checkLa.font = UIFont(name: "\(checkLa.font.fontName)-Medium", size: 14)
+        checkLa.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         checkLa.text = "查看详情"
         bgv.addSubview(checkLa)
         checkLa.snp_makeConstraints { (make) in

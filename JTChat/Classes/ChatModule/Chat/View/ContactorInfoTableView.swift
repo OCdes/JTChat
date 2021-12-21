@@ -37,9 +37,9 @@ class ContactorInfoTableView: BaseTableView {
         fv.addSubview(messageBtn)
         let voiceCallBtn = UIButton.init(frame: CGRect(x: 16, y: messageBtn.frame.maxY + 10, width: kScreenWidth-32, height: 44))
         voiceCallBtn.layer.cornerRadius = 5
-        voiceCallBtn.backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#333") : HEX_FFF
         voiceCallBtn.setTitle("语音通话", for: .normal)
-        voiceCallBtn.setTitleColor(HEX_333, for: .normal)
+        voiceCallBtn.setTitleColor(HEX_COLOR(hexStr: "#333333"), for: .normal)
+        voiceCallBtn.backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#FFFFFF") : HEX_FFF
         fv.addSubview(voiceCallBtn)
         return fv
     }()
@@ -91,7 +91,7 @@ class ContactorInfoTableView: BaseTableView {
                 // Fallback on earlier versions
             }
         }
-        backgroundColor = kIsFlagShip ? HEX_ThemeBlack : HEX_COLOR(hexStr: "#F5F6F8")
+        backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#242830") : HEX_COLOR(hexStr: "#F5F6F8")
         register(ContactorInfoCell.self, forCellReuseIdentifier: "ContactorInfoCell")
         register(ContactInfoDetailCell.self, forCellReuseIdentifier: "ContactInfoDetailCell")
         register(ContactInfoAlisaCell.self, forCellReuseIdentifier: "ContactInfoAlisaCell")
@@ -208,7 +208,7 @@ extension ContactorInfoTableView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch indexPath.section {
+        switch section {
         case 0:
             return 20
         case 1:
@@ -216,12 +216,12 @@ extension ContactorInfoTableView: UITableViewDelegate, UITableViewDataSource {
         case 2:
             return 7.5
         default:
-            return 0.01
+            return 0
         }
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 0.01
+        return 0
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

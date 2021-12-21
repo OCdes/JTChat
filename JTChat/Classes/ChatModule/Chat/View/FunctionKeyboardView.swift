@@ -9,24 +9,27 @@
 import UIKit
 import RxSwift
 import Photos
-class FunctionKeyboardView: UIView {
+class FunctionKeyboardView: UIInputView {
     let keyheight = kScreenWidth-90
     let functionHeight = kScreenWidth-90
     var subject: PublishSubject<String> = PublishSubject<String>()
     lazy var collectionView: FunctionCollectionView = {
         let layout = UICollectionViewFlowLayout.init()
-        
-        layout.itemSize = CGSize(width: (kScreenWidth-110)/4, height: (self.functionHeight-45)/2)
+        layout.itemSize = CGSize(width: (kScreenWidth-110)/4, height: (self.functionHeight-75)/2)
         layout.minimumLineSpacing = 15
         layout.minimumInteritemSpacing = 20
-        layout.sectionInset = UIEdgeInsets(top: 15, left: layout.minimumInteritemSpacing, bottom: 15, right: layout.minimumInteritemSpacing)
+        layout.sectionInset = UIEdgeInsets(top: 30, left: layout.minimumInteritemSpacing, bottom: 15, right: layout.minimumInteritemSpacing)
         let cv = FunctionCollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
         return cv
     }()
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_COLOR(hexStr: "#F5F5F5")
-        collectionView.backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_COLOR(hexStr: "#F5F5F5")
+    override init(frame: CGRect, inputViewStyle: UIInputView.Style) {
+        super.init(frame: frame, inputViewStyle: inputViewStyle)
+        creatUI()
+    }
+    
+    func creatUI() {
+        backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#262a32") : HEX_COLOR(hexStr: "#F5F5F5")
+        collectionView.backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#262a32") : HEX_COLOR(hexStr: "#F5F5F5")
         addSubview(collectionView)
         collectionView.snp_makeConstraints { (make) in
             make.left.top.right.equalTo(self)
@@ -98,7 +101,7 @@ private class FunctionCollectionCell: BaseCollectionCell {
     lazy var nameLa: UILabel = {
         let nl = UILabel()
         nl.font = UIFont.systemFont(ofSize: 14)
-        nl.textColor = HEX_666
+        nl.textColor = kIsFlagShip ? HEX_999 : HEX_666
         nl.textAlignment = .center
         return nl
     }()

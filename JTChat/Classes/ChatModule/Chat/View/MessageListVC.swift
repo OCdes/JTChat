@@ -148,6 +148,7 @@ open class MessageListVC: BaseViewController {
         btn.setTitleColor(kIsFlagShip ? HEX_FFF : HEX_COLOR(hexStr: "#4F525B"), for: .normal)
         btn.setTitleColor(kIsFlagShip ? HEX_GOLDTEXTCOLOR : HEX_LightBlue, for: .selected)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        btn.backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#151722") : HEX_FFF
         btn.isSelected = true
         btn.addTarget(self, action: #selector(personalBtnClicked(btn:)), for: .touchUpInside)
         self.perBtn = btn
@@ -161,6 +162,7 @@ open class MessageListVC: BaseViewController {
         btn2.setTitleColor(kIsFlagShip ? HEX_GOLDTEXTCOLOR : HEX_LightBlue, for: .selected)
         btn2.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         btn2.addTarget(self, action: #selector(groupBtnClicked(btn:)), for: .touchUpInside)
+        btn2.backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#151722") : HEX_FFF
         self.groupBtn = btn2
         view.addSubview(btn2)
         let line = LineView.init(frame: CGRect(x: kScreenWidth/2-1, y: 15, width: 1, height: 15))

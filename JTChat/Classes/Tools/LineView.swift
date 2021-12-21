@@ -12,7 +12,7 @@ import UIKit
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = HEX_COLOR(hexStr: kIsFlagShip ? "#3D424D" : "#e1e1e1")
+        backgroundColor = HEX_COLOR(hexStr: kIsFlagShip ? "#1A1C29" : "#e1e1e1")
     }
     
     required init?(coder: NSCoder) {

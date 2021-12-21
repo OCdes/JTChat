@@ -597,113 +597,111 @@ open class DBManager: NSObject {
     
     func AddChatLog(model: MessageModel)->Bool {
         var b = false
-        DispatchQueue.global().async {
-            self.dbQueue?.inDatabase({ (db) in
-                if db.open() {
-                    let msgStr: String = model.msgContent
-                    if model.packageType == 1 {
-                        let height = MessageAttriManager.manager.exchange(content: model.msgContent).boundingRect(with: CGSize(width: (kScreenWidth-132), height: CGFloat(MAXFLOAT)), options: .usesLineFragmentOrigin, context: NSStringDrawingContext()).size.height+38
-                        var width: CGFloat = kScreenWidth-132
-                        if height < 62 {
-                            width = MessageAttriManager.manager.exchange(content: model.msgContent).boundingRect(with: CGSize(width: CGFloat(MAXFLOAT), height: 16), options: .usesLineFragmentOrigin, context: NSStringDrawingContext()).size.width
-                            width = width > (kScreenWidth-132) ? (kScreenWidth-132) : width
-                        }
-                        model.estimate_height = Float(height)
+        self.dbQueue?.inDatabase({ (db) in
+            if db.open() {
+                let msgStr: String = model.msgContent
+                if model.packageType == 1 {
+                    let height = MessageAttriManager.manager.exchange(content: model.msgContent).boundingRect(with: CGSize(width: (kScreenWidth-132), height: CGFloat(MAXFLOAT)), options: .usesLineFragmentOrigin, context: NSStringDrawingContext()).size.height+38
+                    var width: CGFloat = kScreenWidth-132
+                    if height < 62 {
+                        width = MessageAttriManager.manager.exchange(content: model.msgContent).boundingRect(with: CGSize(width: CGFloat(MAXFLOAT), height: 16), options: .usesLineFragmentOrigin, context: NSStringDrawingContext()).size.width
+                        width = width > (kScreenWidth-132) ? (kScreenWidth-132) : width
+                    }
+                    model.estimate_height = Float(height)
+                    model.estimate_width = Float(width)
+                } else {
+                    if model.msgContent.contains(".wav") {
+                        let height = 62
+                        let seconds = AVFManager().durationOf(filePath: model.msgContent)
+                        
+                        let width = (Int(kScreenWidth)-132)/2*(seconds>30 ? 30 : seconds)/30 + 60
                         model.estimate_width = Float(width)
+                        model.estimate_height = Float(height)
+                    } else if model.msgContent.contains(".mp4") {
+                        let size = AVFManager().sizeOfVideo(filePath: model.msgContent)
+                        let containerWidth: CGFloat = (kScreenWidth-132)/2
+                        model.estimate_width = Float(containerWidth)
+                        model.estimate_height = Float((size.height/size.width)*(containerWidth))
+                        if model.estimate_height > Float(1.5*containerWidth) {
+                            model.estimate_height = Float(1.5*containerWidth)
+                            model.estimate_width = model.estimate_height * Float(size.width/size.height)
+                        }
                     } else {
-                        if model.msgContent.contains(".wav") {
-                            let height = 62
-                            let seconds = AVFManager().durationOf(filePath: model.msgContent)
-                            
-                            let width = (Int(kScreenWidth)-132)/2*(seconds>30 ? 30 : seconds)/30 + 60
-                            model.estimate_width = Float(width)
-                            model.estimate_height = Float(height)
-                        } else if model.msgContent.contains(".mp4") {
-                            let size = AVFManager().sizeOfVideo(filePath: model.msgContent)
-                            let containerWidth: CGFloat = (kScreenWidth-132)/2
-                            model.estimate_width = Float(containerWidth)
-                            model.estimate_height = Float((size.height/size.width)*(containerWidth))
-                            if model.estimate_height > Float(1.5*containerWidth) {
-                                model.estimate_height = Float(1.5*containerWidth)
-                                model.estimate_width = model.estimate_height * Float(size.width/size.height)
-                            }
-                        } else {
-                            let imgData = ChatimagManager.manager.GetImageDataBy(MD5Str: model.msgContent)
-                            if imgData.count > 0 {
-                                let img = UIImage.init(data: imgData)
-                                if let ig = img {
-                                    let swidth = Double(kScreenWidth-116)
-                                    let width = Double(ig.size.width)
-                                    let height = Double(ig.size.height)
-                                    let scale = Double(height/width)
-                                    if scale > 1 {
-                                        let scaleW = Double(swidth/3)
-                                        if width > swidth {
-                                            let contrastHeight = Double(scale*scaleW)
-                                            if contrastHeight > swidth*2/3 {
-                                                model.estimate_width = Float(swidth*2/3)/Float(scale)
-                                                model.estimate_height = Float(swidth*2/3)
-                                            } else {
-                                                model.estimate_width = Float(scaleW)
-                                                model.estimate_height = Float(contrastHeight)
-                                            }
+                        let imgData = ChatimagManager.manager.GetImageDataBy(MD5Str: model.msgContent)
+                        if imgData.count > 0 {
+                            let img = UIImage.init(data: imgData)
+                            if let ig = img {
+                                let swidth = Double(kScreenWidth-116)
+                                let width = Double(ig.size.width)
+                                let height = Double(ig.size.height)
+                                let scale = Double(height/width)
+                                if scale > 1 {
+                                    let scaleW = Double(swidth/3)
+                                    if width > swidth {
+                                        let contrastHeight = Double(scale*scaleW)
+                                        if contrastHeight > swidth*2/3 {
+                                            model.estimate_width = Float(swidth*2/3)/Float(scale)
+                                            model.estimate_height = Float(swidth*2/3)
                                         } else {
-                                            if height > swidth*2/3 {
-                                                model.estimate_width = Float(swidth*2/3)/Float(scale)
-                                                model.estimate_height = Float(swidth*2/3)
-                                            } else {
-                                                model.estimate_width = Float(width)
-                                                model.estimate_height = Float(height)
-                                            }
+                                            model.estimate_width = Float(scaleW)
+                                            model.estimate_height = Float(contrastHeight)
                                         }
-                                        
                                     } else {
-                                        if width > swidth {
-                                            let scaleW = Double(swidth/2)
-                                            let contrastHeight = Double(scale*scaleW)
-                                            if contrastHeight < swidth/3 {
-                                                model.estimate_width = Float(scaleW)
-                                                model.estimate_height = Float(swidth/3)
-                                            } else {
-                                                model.estimate_width = Float(scaleW)
-                                                model.estimate_height = Float(contrastHeight)
-                                            }
+                                        if height > swidth*2/3 {
+                                            model.estimate_width = Float(swidth*2/3)/Float(scale)
+                                            model.estimate_height = Float(swidth*2/3)
                                         } else {
-                                            if height < swidth/3 {
-                                                model.estimate_width = Float(width)
-                                                model.estimate_height = Float(swidth/3)
-                                            } else {
-                                                model.estimate_width = Float(width)
-                                                model.estimate_height = Float(height)
-                                            }
+                                            model.estimate_width = Float(width)
+                                            model.estimate_height = Float(height)
                                         }
-                                        
                                     }
-                                    model.estimate_height = model.estimate_height+38
+                                    
+                                } else {
+                                    if width > swidth {
+                                        let scaleW = Double(swidth/2)
+                                        let contrastHeight = Double(scale*scaleW)
+                                        if contrastHeight < swidth/3 {
+                                            model.estimate_width = Float(scaleW)
+                                            model.estimate_height = Float(swidth/3)
+                                        } else {
+                                            model.estimate_width = Float(scaleW)
+                                            model.estimate_height = Float(contrastHeight)
+                                        }
+                                    } else {
+                                        if height < swidth/3 {
+                                            model.estimate_width = Float(width)
+                                            model.estimate_height = Float(swidth/3)
+                                        } else {
+                                            model.estimate_width = Float(width)
+                                            model.estimate_height = Float(height)
+                                        }
+                                    }
+                                    
                                 }
+                                model.estimate_height = model.estimate_height+38
                             }
-                            
                         }
                         
                     }
                     
-                    let insertSQL = "INSERT INTO ChatLogList (sender,sender_phone,voice_is_read,sender_avantar,receiver,receiver_phone,receiver_avantar,package_type,package_content,create_time,time_stamp,topic_group,estimate_height,estimate_width,is_remote,is_read) VALUES (?,?,?,?,?,?,?,?,?,datetime('now','localtime'),?,?,?,?,?,?)"
-                    
-                    print("----------MD5:\(msgStr) time:\(Date())")
-                    b = db.executeUpdate(insertSQL, withArgumentsIn: [model.sender,model.senderPhone,model.voiceIsReaded,model.senderAvanter,model.receiver,model.receiverPhone,model.receiverAvanter,model.packageType,msgStr,model.timeStamp,model.topic_group,model.estimate_height,model.estimate_width,model.isRemote,model.isReaded])
-                    if !db.interrupt() {
-                        print("db.lastError()")
-                    }
-                    if b {
-                        DispatchQueue.main.async {
-                            print("聊天数据插入成功")
-                            NotificationCenter.default.post(name: model.topic_group.count > 0 ? NotificationHelper.kChatOnGroupNotiName : NotificationHelper.kChatOnlineNotiName, object: nil)
-                        }
+                }
+                
+                let insertSQL = "INSERT INTO ChatLogList (sender,sender_phone,voice_is_read,sender_avantar,receiver,receiver_phone,receiver_avantar,package_type,package_content,create_time,time_stamp,topic_group,estimate_height,estimate_width,is_remote,is_read) VALUES (?,?,?,?,?,?,?,?,?,datetime('now','localtime'),?,?,?,?,?,?)"
+                
+                print("----------MD5:\(msgStr) time:\(Date())")
+                b = db.executeUpdate(insertSQL, withArgumentsIn: [model.sender,model.senderPhone,model.voiceIsReaded,model.senderAvanter,model.receiver,model.receiverPhone,model.receiverAvanter,model.packageType,msgStr,model.timeStamp,model.topic_group,model.estimate_height,model.estimate_width,model.isRemote,model.isReaded])
+                if !db.interrupt() {
+                    print("db.lastError()")
+                }
+                if b {
+                    DispatchQueue.main.async {
+                        print("聊天数据插入成功")
+                        NotificationCenter.default.post(name: model.topic_group.count > 0 ? NotificationHelper.kChatOnGroupNotiName : NotificationHelper.kChatOnlineNotiName, object: nil)
                     }
                 }
-                db.close()
-            })
-        }
+            }
+            db.close()
+        })
         print("聊天记录插入：\(b),时间\(Date())")
         //        updateRecentChat(model: model)
         return b

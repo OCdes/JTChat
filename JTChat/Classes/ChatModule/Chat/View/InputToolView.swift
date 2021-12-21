@@ -101,8 +101,8 @@ class InputToolView: UIView {
     init(frame: CGRect, viewModel vm: ChatViewModel) {
         super.init(frame: CGRect(x: 0, y: kScreenHeight-(62+(kiPhoneXOrXS ? 122 : 64)), width: kScreenWidth, height: (kiPhoneXOrXS ? 96 : 62)))
         viewModel = vm
-        backgroundColor = kIsFlagShip ? HEX_ThemeBlack : HEX_COLOR(hexStr: "#F5F5F5")
-        
+        backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#262a32") : HEX_COLOR(hexStr: "#F5F5F5")
+
         addSubview(toolV)
         toolV.snp_makeConstraints { (make) in
             make.edges.equalTo(UIEdgeInsets(top: 0, left: 0, bottom: self.bottomOffset, right: 0))
@@ -118,6 +118,7 @@ class InputToolView: UIView {
             make.right.equalTo(toolV).offset(-7.5)
             make.size.centerY.equalTo(self.typeBtn)
         }
+        
         toolV.addSubview(self.emojBtn)
         self.emojBtn.snp_makeConstraints { (make) in
             make.right.equalTo(self.moreBtn.snp_left).offset(-10)
@@ -246,7 +247,17 @@ class InputToolView: UIView {
                 self?.viewModel.navigationVC?.present(picker, animated: true, completion: nil)
             }
         })
-        
+        if kIsFlagShip {
+            let line = UIView()
+            line.backgroundColor = HEX_COLOR(hexStr: "#11121b")
+            toolV.addSubview(line)
+            line.snp_makeConstraints { make in
+                make.top.equalTo(self.textV.snp_bottom).offset(15)
+                make.left.right.equalTo(self)
+                make.height.equalTo(0.5)
+            }
+        }
+
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(noti:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(noti:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }

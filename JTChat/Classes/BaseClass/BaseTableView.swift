@@ -30,6 +30,13 @@ import RxSwift
                 // Fallback on earlier versions
             }
         }
+        
+        if #available(iOS 15.0, *) {
+            sectionHeaderTopPadding = 0
+        } else {
+            // Fallback on earlier versions
+        }
+
     }
     
     required public init?(coder: NSCoder) {

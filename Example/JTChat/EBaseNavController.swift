@@ -13,7 +13,7 @@ class EBaseNavController: UINavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let attributes = [
-//            NSAttributedString.Key.foregroundColor : HEX_FFF,
+            NSAttributedString.Key.foregroundColor : UIColor.white,
             NSAttributedString.Key.font : UIFont.systemFont(ofSize: 18)
         ]
         UINavigationBar.appearance().titleTextAttributes = attributes

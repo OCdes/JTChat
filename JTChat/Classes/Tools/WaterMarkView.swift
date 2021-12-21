@@ -18,7 +18,7 @@ class WaterMarkView: UIImageView {
     init(frame: CGRect, text: String) {
         super.init(frame: frame)
         let font = UIFont.systemFont(ofSize: 14)
-        let color = kIsFlagShip ? HEX_COLOR(hexStr: "#F0F0F0").withAlphaComponent(0.2) : HEX_COLOR(hexStr: "#F0F0F0").withAlphaComponent(0.5)
+        let color = kIsFlagShip ? HEX_COLOR(hexStr: "#525252").withAlphaComponent(0.3) : HEX_COLOR(hexStr: "#F0F0F0").withAlphaComponent(0.5)
         
         let width = frame.width
         let height = frame.height

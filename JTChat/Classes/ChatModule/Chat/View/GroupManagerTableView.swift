@@ -76,6 +76,7 @@ extension GroupManagerTableView: UITableViewDelegate, UITableViewDataSource {
             self.viewModel?.deleGroup()
         case "转让群主":
             let vc = GroupMemVC()
+            vc.title = s
             vc.viewModel.model = self.viewModel!.model
             vc.tableView.selectMode = true
             _ = vc.tableView.subject.subscribe(onNext: { (a) in

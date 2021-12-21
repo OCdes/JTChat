@@ -37,7 +37,7 @@ class MessageAttriManager: NSObject {
         
         for emStr in emojiStrs.reversed() {
             if let name = dict?["\(emStr)"] {
-                while attribu.string.contains(emStr) {
+                while attribu.string.contains("[\(emStr)]") {
                     var ranges = Array<NSRange>()
                     _ = findAimstrAllRange(baseStr: attribu.string as NSString, aimStr: "[\(emStr)]", baseRange: NSRange.init(location: 0, length: attribu.string.count), result: &ranges)
                     if let range = ranges.first {

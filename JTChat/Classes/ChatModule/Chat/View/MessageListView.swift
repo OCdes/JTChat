@@ -62,6 +62,9 @@ extension MessageListView: UITableViewDelegate, UITableViewDataSource {
                 cell.miniRedDot.isHidden = true
                 cell.redDot.isHidden = true
             }
+            cell.backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#292c34") : HEX_COLOR(hexStr: "#f5f6f8")
+            cell.line.isHidden = false
+
         } else {
             let m = dataArr[indexPath.row-1]
             cell.model = m
@@ -167,10 +170,11 @@ class MessageListCell: BaseTableCell {
                 self.atRemarkLa.text = ""
             }
             if let ti = model?.topTime, ti.count > 0 {
-                backgroundColor = HEX_COLOR(hexStr: "#e2e2e2").withAlphaComponent(0.3)
+                backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#292c34") : HEX_COLOR(hexStr: "#f5f6f8")
+                line.isHidden = true
             } else {
-                backgroundColor = UIColor.clear
-//                backgroundColor = HEX_COLOR(hexStr: "#e2e2e2").withAlphaComponent(0.3)
+                backgroundColor = kIsFlagShip ? UIColor.clear : HEX_FFF
+                line.isHidden = false
             }
         }
     }
@@ -231,6 +235,11 @@ class MessageListCell: BaseTableCell {
         return md
     }()
     
+    lazy var line: LineView = {
+        let l = LineView.init(frame: CGRect.zero)
+        return l
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(portraitV)
@@ -284,7 +293,6 @@ class MessageListCell: BaseTableCell {
             make.height.right.equalTo(self.nameLa)
         }
         
-        let line = LineView.init(frame: CGRect.zero)
         contentView.addSubview(line)
         line.snp_makeConstraints { (make) in
             make.left.equalTo(portraitV.snp_right)

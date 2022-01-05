@@ -1,9 +1,8 @@
 //
-//  InputToolView.swift
-//  Swift-jtyh
+//  BottomInputView.swift
+//  JTChat
 //
-//  Created by LJ on 2020/6/24.
-//  Copyright © 2020 WanCai. All rights reserved.
+//  Created by jingte on 2022/1/5.
 //
 
 import UIKit
@@ -11,15 +10,9 @@ import AudioToolbox
 import RxSwift
 import YPImagePicker
 import Photos
-public protocol InputToolViewDelegate: NSObjectProtocol {
-    func keyboardChangeFrame(inY: CGFloat)
-    func keyboardHideFrame(inY: CGFloat)
-    func needAtSomeOne(atRange: NSRange)
-}
 
-class InputToolView: UIView {
+class BottomInputView: UIView {
     private var previousOffsetY: CGFloat = 0
-    private var bottomHeight = kScreenWidth-90
     private var bottomOffset: CGFloat = 0
     private var atRange: NSRange?
     var bottomUpDistance: CGFloat = 0
@@ -27,12 +20,12 @@ class InputToolView: UIView {
     var recorder: RecorderManager?
     var levelTimer: Timer?
     var recorCount: Int = 0
-    lazy var emojiView: EmojiKeyboardView = {
-        let emk = EmojiKeyboardView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: kScreenWidth*2/3))
+    lazy var emojiView: EmojiInputView = {
+        let emk = EmojiInputView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: kScreenWidth*2/3), inputViewStyle: .default)
         return emk
     }()
-    lazy var funcView: FunctionKeyboardView = {
-        let fv = FunctionKeyboardView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: self.bottomHeight))
+    lazy var funcView: FunctionInputView = {
+        let fv = FunctionInputView.init(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: kScreenWidth-90), inputViewStyle: .default)
         return fv
     }()
     lazy var voiceView: VoiceAlertView = {
@@ -49,7 +42,7 @@ class InputToolView: UIView {
         tv.returnKeyType = .send
         tv.inputAccessoryView = nil
         tv.reloadInputViews()
-//        tv.selectedRange
+        //        tv.selectedRange
         return tv
     }()
     
@@ -102,7 +95,7 @@ class InputToolView: UIView {
         super.init(frame: CGRect(x: 0, y: kScreenHeight-(62+(kiPhoneXOrXS ? 122 : 64)), width: kScreenWidth, height: (kiPhoneXOrXS ? 96 : 62)))
         viewModel = vm
         backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#262a32") : HEX_COLOR(hexStr: "#F5F5F5")
-
+        
         addSubview(toolV)
         toolV.snp_makeConstraints { (make) in
             make.edges.equalTo(UIEdgeInsets(top: 0, left: 0, bottom: self.bottomOffset, right: 0))
@@ -144,7 +137,7 @@ class InputToolView: UIView {
             content.append(str)
             self?.frameChage(newStr: content)
             self?.textV.text = content
-//            _ = self?.textView(self!.textV, shouldChangeTextIn: NSRange(location: content.count > 0 ? content.count : 0, length: 0), replacementText: str)
+            //            _ = self?.textView(self!.textV, shouldChangeTextIn: NSRange(location: content.count > 0 ? content.count : 0, length: 0), replacementText: str)
         })
         
         let _ = emojiView.deletSubject.subscribe(onNext: { [weak self](a) in
@@ -239,9 +232,9 @@ class InputToolView: UIView {
                 let picker: YPImagePicker = YPImagePicker.init(configuration: config)
                 picker.imagePickerDelegate = self as? YPImagePickerDelegate
                 picker.didFinishPicking { [unowned picker] items, _  in
-                        if items.count > 0 {
-                            self?.viewModel.sendPicture(photos: items)
-                        }
+                    if items.count > 0 {
+                        self?.viewModel.sendPicture(photos: items)
+                    }
                     picker.dismiss(animated: true, completion: nil)
                 }
                 self?.viewModel.navigationVC?.present(picker, animated: true, completion: nil)
@@ -257,7 +250,7 @@ class InputToolView: UIView {
                 make.height.equalTo(0.5)
             }
         }
-
+        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(noti:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(noti:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
@@ -267,7 +260,6 @@ class InputToolView: UIView {
         let dict = noti.userInfo as! Dictionary<String, Any>
         let endFrame = dict["UIKeyboardFrameEndUserInfoKey"] as! CGRect
         print(dict)
-        if self.bottomUpDistance <= endFrame.height {
             self.bottomUpDistance = endFrame.height
             self.keyboardHeight = endFrame.height-(JTManager.manager.isHideBottom ? 0 : (49+(kiPhoneXOrXS ? 34 : 0)))
             if let de = delegate {
@@ -276,7 +268,6 @@ class InputToolView: UIView {
             self.toolV.snp_updateConstraints { (make) in
                 make.bottom.equalTo(self).offset(-self.keyboardHeight)
             }
-        }
     }
     
     @objc func keyboardWillHide(noti: Notification) {
@@ -284,6 +275,7 @@ class InputToolView: UIView {
         let endFrame = dict["UIKeyboardFrameEndUserInfoKey"] as! CGRect
         if self.bottomUpDistance >= endFrame.height {
             self.bottomUpDistance = endFrame.height
+            self.keyboardHeight = endFrame.height-(JTManager.manager.isHideBottom ? 0 : (49+(kiPhoneXOrXS ? 34 : 0)))
             self.toolV.snp_updateConstraints { (make) in
                 make.bottom.equalTo(self).offset(-self.bottomOffset)
             }
@@ -297,39 +289,27 @@ class InputToolView: UIView {
     @objc func emojiBtnClicked(btn: UIButton) {
         btn.isSelected = !btn.isSelected
         if btn.isSelected {
-            self.textV.resignFirstResponder()
-            hideFunctionView()
+            self.moreBtn.isSelected = false
             self.isTyping = false
             if self.typeBtn.isSelected {
                 self.typeBtnClicked(btn: self.typeBtn)
             }
-            addSubview(emojiView)
-            UIView.animate(withDuration: 0.3) {
-                self.toolV.snp_updateConstraints { (make) in
-                    make.bottom.equalTo(self).offset(-self.bottomHeight)
-                }
-                
-                self.emojiView.snp_makeConstraints { (make) in
-                    make.top.equalTo(self.toolV.snp_bottom)
-                    make.left.right.equalTo(self)
-                    make.bottom.equalTo(self).offset(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? -34 : 0) : 0)
-                }
-                if let de = self.delegate {
-                    de.keyboardChangeFrame(inY: self.bottomHeight+self.textHeight)
-                }
-            }
+            self.textV.inputView = self.emojiView
+            
         } else {
-            hideEmojiView()
+            self.textV.inputView = nil
             self.isTyping = true
-            self.textV.becomeFirstResponder()
         }
-        
+        self.textV.reloadInputViews()
+        self.textV.becomeFirstResponder()
     }
     
     @objc func typeBtnClicked(btn: UIButton) {
         btn.isSelected = !btn.isSelected
         if btn.isSelected {
-            resignActive()
+            self.emojBtn.isSelected = false
+            self.moreBtn.isSelected = false
+            self.textV.resignFirstResponder()
             self.textV.isHidden = true
             self.voiceBtn.isHidden = false
         } else {
@@ -351,13 +331,11 @@ class InputToolView: UIView {
                 print("录制路径：\(pathStr)")
                 if let subPath = (pathStr as NSString).components(separatedBy: "/Caches").last {
                     if AVFManager().durationOf(filePath: subPath) > 0 {
-        //                _ = self.recorder?.playAudio(by: pathStr)
                         self.viewModel.sendAudioMessage(path: subPath)
                     } else {
                     }
                 }
             }
-//            self.recorder = nil
         }
         
     }
@@ -475,70 +453,27 @@ class InputToolView: UIView {
     @objc func moreBtnClicked(btn: UIButton) {
         btn.isSelected = !btn.isSelected
         if btn.isSelected {
-            self.textV.resignFirstResponder()
-            hideEmojiView()
             if self.typeBtn.isSelected {
                 self.typeBtnClicked(btn: self.typeBtn)
             }
-            addSubview(funcView)
-            UIView.animate(withDuration: 0.3) {
-                if let de = self.delegate {
-                    de.keyboardChangeFrame(inY: self.bottomHeight+self.textHeight+(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) : 0))
-                }
-                
-                self.toolV.snp_updateConstraints { (make) in
-                    make.bottom.equalTo(self).offset(-self.bottomHeight-(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) : 0))
-                }
-                
-                self.funcView.snp_makeConstraints { (make) in
-                    make.top.equalTo(self.toolV.snp_bottom)
-                    make.left.right.equalTo(self)
-                    make.bottom.equalTo(self).offset(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? -34 : 0) : 0)
-                }
-                
-            }
+            self.emojBtn.isSelected = false
+            self.textV.inputView = self.funcView
+            
         } else {
-//            hideFunctionView()
             self.isTyping = true
-            self.textV.becomeFirstResponder()
+            self.textV.inputView = nil
         }
-    }
-    
-    func hideEmojiView() {
-        self.emojBtn.isSelected = false
-        self.toolV.snp_updateConstraints { (make) in
-            make.bottom.equalTo(self).offset(-self.bottomOffset)
-        }
-        self.emojiView.removeFromSuperview()
-        if let de = self.delegate {
-            de.keyboardHideFrame(inY: self.bottomOffset+textHeight)
-        }
-    }
-    
-    func hideFunctionView() {
-        self.moreBtn.isSelected = false
-        self.toolV.snp_updateConstraints { (make) in
-            make.bottom.equalTo(self).offset(-self.bottomOffset)
-        }
-        self.funcView.removeFromSuperview()
-        if let de = self.delegate {
-            de.keyboardHideFrame(inY: self.bottomOffset+textHeight)
-        }
+        self.textV.reloadInputViews()
+        self.textV.becomeFirstResponder()
     }
     
     func resignActive() {
-        //隐藏表情键盘
-        if self.emojBtn.isSelected {
-            hideEmojiView()
-        }
-        if self.moreBtn.isSelected {
-            hideFunctionView()
-        }
-        if self.textV.isFirstResponder {
-            self.textV.resignFirstResponder()
-        }
+        self.emojBtn.isSelected = false
+        self.moreBtn.isSelected = false
+        self.textV.resignFirstResponder()
+        self.textV.inputView = nil
+        self.textV.reloadInputViews()
     }
-    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -552,7 +487,12 @@ class InputToolView: UIView {
     
 }
 
-extension InputToolView: UITextViewDelegate {
+extension BottomInputView: UITextViewDelegate {
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        self.emojBtn.isSelected = false
+        self.moreBtn.isSelected = false
+    }
     
     func textViewDidChangeSelection(_ textView: UITextView) {
         let range = self.textV.selectedRange
@@ -564,6 +504,9 @@ extension InputToolView: UITextViewDelegate {
     }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        self.emojBtn.isSelected = false
+        self.moreBtn.isSelected = false
+        self.isTyping = true
         var newStr = (textView.text as NSString).replacingCharacters(in: range, with: text)
         if text == "\n" {
             if let str = textView.text, str.count > 0 {
@@ -616,15 +559,6 @@ extension InputToolView: UITextViewDelegate {
         return true
     }
     
-    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        hideEmojiView()
-        hideFunctionView()
-        self.isTyping = true
-        self.emojBtn.isSelected = false
-        self.moreBtn.isSelected = false
-        return true
-    }
-    
     func frameChage(newStr: String) {
         let width = kScreenWidth-135
         if newStr.count > 0  {
@@ -639,21 +573,19 @@ extension InputToolView: UITextViewDelegate {
         if self.previousOffsetY <= 72 && previousOffsetY > 19.1 {
             textHeight = previousOffsetY - 19.09375
             if let de = delegate {
-                de.keyboardChangeFrame(inY: textHeight + (self.isTyping ? keyboardHeight : bottomHeight))
+                de.keyboardChangeFrame(inY: textHeight + (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height - (JTManager.manager.isHideBottom ? 0 : ((kiPhoneXOrXS ? 34 : 0)+49))))
             }
         } else if previousOffsetY > 0 && previousOffsetY <= 19.1 {
             textHeight = previousOffsetY - 19.09375
             if let de = delegate {
-                de.keyboardChangeFrame(inY:(self.isTyping ? keyboardHeight : bottomHeight))
+                de.keyboardChangeFrame(inY: (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height-(JTManager.manager.isHideBottom ? 0 : ((kiPhoneXOrXS ? 34 : 0)+49))))
             }
         } else if previousOffsetY == 0  {
             textHeight = 0
             if let de = delegate {
-                de.keyboardChangeFrame(inY:(self.isTyping ? keyboardHeight : bottomHeight))
+                de.keyboardChangeFrame(inY: (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height-(JTManager.manager.isHideBottom ? 0 : ((kiPhoneXOrXS ? 34 : 0)+49))))
             }
         }
     }
     
 }
-
-

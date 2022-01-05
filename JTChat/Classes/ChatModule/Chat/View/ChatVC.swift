@@ -22,8 +22,13 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         return tv
     }()
 
-    lazy var toolView: InputToolView = {
-        let tv = InputToolView.init(frame: CGRect.zero, viewModel: self.viewModel)
+//    lazy var toolView: InputToolView = {
+//        let tv = InputToolView.init(frame: CGRect.zero, viewModel: self.viewModel)
+//        tv.delegate = self
+//        return tv
+//    }()
+    lazy var toolView: BottomInputView = {
+        let tv = BottomInputView.init(frame: CGRect.zero, viewModel: self.viewModel)
         tv.delegate = self
         return tv
     }()
@@ -112,13 +117,11 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         viewModel.navigationVC = self.navigationController
         if let m = self.viewModel.contactor {
             if m.topicGroupID.count > 0 {
-//                let cm = DBManager.manager.getRecent(byPhone: nil, byTopicID: m.topicGroupID)
                 if m.topicGroupName.count > 0 {
                     self.title = m.topicGroupName
                 }
                 USERDEFAULT.set(m.topicGroupID, forKey: "currentID")
             } else {
-//                let cm = DBManager.manager.getRecent(byPhone: m.phone, byTopicID: nil)
                 self.title = m.aliasName.count > 0 ? m.aliasName : m.nickName
                 USERDEFAULT.set(m.phone, forKey: "currentID")
             }
@@ -136,22 +139,27 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
     }
 
     func keyboardChangeFrame(inY: CGFloat) {
+        UIView.animate(withDuration: 0.2) {
+            self.tableView.snp_updateConstraints { (make) in
+                make.bottom.equalTo(self.view).offset(-62-inY);
+            }
+            self.view.layoutIfNeeded()
+        }
         self.toolView.snp_updateConstraints { (make) in
             make.bottom.equalTo(self.view)
-        }
-        self.tableView.snp_updateConstraints { (make) in
-            make.bottom.equalTo(self.view).offset(-62-inY);
         }
         self.tableView.reloadData()
     }
 
     func keyboardHideFrame(inY: CGFloat) {
-        
-        self.tableView.snp_updateConstraints { (make) in
-            make.bottom.equalTo(view).offset(-62-inY-(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) : 0))
+        UIView.animate(withDuration: 0.3) {
+            self.tableView.snp_updateConstraints { (make) in
+                make.bottom.equalTo(self.view).offset(-62-inY)
+            }
+            self.view.layoutIfNeeded()
         }
         self.toolView.snp_updateConstraints { (make) in
-            make.bottom.equalTo(view).offset(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? -34 : 0) : 0)
+            make.bottom.equalTo(self.view).offset(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? -34 : 0) : 0)
         }
         self.tableView.reloadData()
     }

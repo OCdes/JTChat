@@ -306,7 +306,7 @@ class ChatTableLeftCell: BaseTableCell {
             portraitV.kf.setImage(with: URL(string: m.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
             contentV.snp_updateConstraints { (make) in
-                make.right.equalTo(contentView).offset(-(35.5+kScreenWidth-122-CGFloat(model.estimate_width)))
+                make.right.equalTo(contentView).offset(-(25.5+kScreenWidth-122-CGFloat(model.estimate_width)))
             }
         }
     }
@@ -697,7 +697,7 @@ class ChatTableRightCell: BaseTableCell {
             portraitV.kf.setImage(with: URL(string: JTManager.manager.avatarUrl), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
             contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
             contentV.snp_updateConstraints { (make) in
-                make.left.equalTo(contentView).offset(kScreenWidth-122-CGFloat(model.estimate_width)+35.5)
+                make.left.equalTo(contentView).offset(kScreenWidth-122-CGFloat(model.estimate_width)+45.5)
             }
         }
     }

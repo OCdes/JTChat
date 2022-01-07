@@ -55,6 +55,8 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.viewModel.clearRedPot()
+        self.tableView.recordManager.stopPlayAudio(by: "")
+        self.tableView.previousImgv?.stopAnimating()
     }
     
     override func viewDidLayoutSubviews() {
@@ -193,6 +195,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
     }
     
     deinit {
+        
         print("聊天销毁了")
     }
     

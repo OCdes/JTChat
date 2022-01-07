@@ -10,6 +10,7 @@ import UIKit
 import RxSwift
 import AVFoundation
 import AVKit
+import RxCocoa
 class ChatTableView: BaseTableView {
     var dataArr: Array<MessageSectionModel> = []
     var viewModel: ChatViewModel?
@@ -24,6 +25,7 @@ class ChatTableView: BaseTableView {
         separatorStyle = .none
         delegate = self
         dataSource = self
+        recordManager.delegate = self
         if #available(iOS 11.0, *) {
             contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
         } else {
@@ -72,10 +74,6 @@ class ChatTableView: BaseTableView {
     }
     
     deinit {
-        if let iv = self.previousImgv {
-            iv.stopAnimating()
-        }
-        self.recordManager.stopPlayAudio(by: "")
         print(" chattableview 销毁了")
     }
     
@@ -85,9 +83,15 @@ class ChatTableView: BaseTableView {
     
 }
 
-extension ChatTableView: UITableViewDelegate, UITableViewDataSource, JTChatMenuViewDelegate {
+extension ChatTableView: UITableViewDelegate, UITableViewDataSource, JTChatMenuViewDelegate, RecorderManagerPlayerDelegate {
+    
+    func recordManagerPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        self.previousImgv?.stopAnimating()
+        self.recordManager.stopPlayAudio(by: "")
+    }
+    
     func retweetMessage(fromMessageView: JTChatMenuView) {
-        let index = fromMessageView.indexPath
+        _ = fromMessageView.indexPath
     }
     
     func deleteMessage(fromMessageView: JTChatMenuView) {
@@ -234,26 +238,22 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource, JTChatMenuV
                     let c = cell as! RightVoiceCell
                     imgv = c.imgv
                 }
-                imgv.startAnimating()
-                self.previousImgv = imgv
-                let duration = (AVFManager().durationOf(filePath: model.msgContent))
-                self.recordManager.stopPlayAudio(by: "")
-                self.recordManager.playAudio(by: model.msgContent)
-                if !model.voiceIsReaded {
-                    model.voiceIsReaded = true
-                    DBManager.manager.updateChatLog(model: model)
-                }
-                DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + .seconds(duration)) {
-                    DispatchQueue.main.async {
-                        imgv.stopAnimating()
-                        self.recordManager.stopPlayAudio(by: model.msgContent)
+                if let curl = self.recordManager.avPlayer?.url?.absoluteString, (curl as NSString).contains(model.msgContent) {
+                    imgv.stopAnimating()
+                    self.recordManager.stopPlayAudio(by: model.msgContent)
+                } else {
+                    imgv.startAnimating()
+                    self.previousImgv = imgv
+                    self.recordManager.stopPlayAudio(by: "")
+                    self.recordManager.playAudio(by: model.msgContent)
+                    if !model.voiceIsReaded {
+                        model.voiceIsReaded = true
+                        DBManager.manager.updateChatLog(model: model)
                     }
                 }
             }
             
         }
-        
-        
     }
     
     
@@ -307,6 +307,7 @@ class ChatTableLeftCell: BaseTableCell {
             contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
             contentV.snp_updateConstraints { (make) in
                 make.right.equalTo(contentView).offset(-(25.5+kScreenWidth-122-CGFloat(model.estimate_width)))
+            
             }
         }
     }
@@ -698,6 +699,7 @@ class ChatTableRightCell: BaseTableCell {
             contentLa.attributedText = MessageAttriManager.manager.exchange(content: "\(model.msgContent)")
             contentV.snp_updateConstraints { (make) in
                 make.left.equalTo(contentView).offset(kScreenWidth-122-CGFloat(model.estimate_width)+45.5)
+            
             }
         }
     }

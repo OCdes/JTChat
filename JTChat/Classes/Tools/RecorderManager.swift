@@ -7,10 +7,14 @@
 
 import UIKit
 import AVFoundation
+public protocol RecorderManagerPlayerDelegate: NSObjectProtocol {
+    func recordManagerPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool)
+}
 class RecorderManager: NSObject {
     var avRecorder: AVAudioRecorder?
     var avPlayer: AVAudioPlayer?
     var avPath: String?
+    weak var delegate: RecorderManagerPlayerDelegate?
     func beginRecordAudio(name: String) {
         let filemanager = FileManager.default
         let filePath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first?.appending("/recorder")
@@ -151,5 +155,8 @@ extension RecorderManager: AVAudioRecorderDelegate, AVAudioPlayerDelegate {
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         print("回调方法，播放完成")
+        if let de = self.delegate {
+            de.recordManagerPlayerDidFinishPlaying(player, successfully: flag)
+        }
     }
 }

@@ -11,6 +11,12 @@ import RxSwift
 import YPImagePicker
 import Photos
 
+public protocol InputToolViewDelegate: NSObjectProtocol {
+    func keyboardChangeFrame(inY: CGFloat)
+    func keyboardHideFrame(inY: CGFloat)
+    func needAtSomeOne(atRange: NSRange)
+}
+
 class BottomInputView: UIView {
     private var previousOffsetY: CGFloat = 0
     private var bottomOffset: CGFloat = 0
@@ -200,6 +206,7 @@ class BottomInputView: UIView {
                 config.wordings.cancel = "取消"
                 config.wordings.libraryTitle = "相册"
                 config.wordings.cameraTitle = "相机"
+                config.wordings.videoTitle = "视频"
                 config.wordings.albumsTitle = "全部相册"
                 config.library.defaultMultipleSelection = true
                 let picker: YPImagePicker = YPImagePicker.init(configuration: config)
@@ -211,14 +218,14 @@ class BottomInputView: UIView {
                     picker.dismiss(animated: true, completion: nil)
                 }
                 self?.viewModel.navigationVC?.present(picker, animated: true, completion: nil)
-            } else if a == "拍摄" {
+            } else if a == "视频" || a == "拍摄" {
                 var config: YPImagePickerConfiguration = YPImagePickerConfiguration.init()
                 config.onlySquareImagesFromCamera = false
-                config.screens = [.video, .photo]
+                config.screens = a == "视频" ? [.video] : [.photo]
                 config.startOnScreen = .video
                 config.showsPhotoFilters = false
                 config.video.fileType = .mp4
-                config.library.mediaType = .photoAndVideo
+                config.library.mediaType =  .photoAndVideo
                 config.video.recordingTimeLimit = 60
                 config.video.minimumTimeLimit = 1
                 config.video.trimmerMaxDuration = 10
@@ -228,7 +235,10 @@ class BottomInputView: UIView {
                 config.wordings.cancel = "取消"
                 config.wordings.libraryTitle = "相册"
                 config.wordings.cameraTitle = "相机"
+                config.wordings.videoTitle = "视频"
                 config.wordings.albumsTitle = "全部相册"
+                config.wordings.cover = "封面"
+                config.wordings.trim = "剪辑"
                 let picker: YPImagePicker = YPImagePicker.init(configuration: config)
                 picker.imagePickerDelegate = self as? YPImagePickerDelegate
                 picker.didFinishPicking { [unowned picker] items, _  in

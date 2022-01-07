@@ -162,5 +162,29 @@ extension EmojiInputView: UICollectionViewDelegate, UICollectionViewDataSource, 
         let dict = dataArr[indexPath.item]
         subject.onNext(dict["name"] as! String)
     }
+}
+
+class EmojiItem: BaseCollectionCell {
+    var dict: Dictionary<String, Any>? {
+        didSet {
+            imgv.image = JTBundleTool.getBundleImg(with: dict!["font_class"] as! String)
+        }
+    }
+    lazy var imgv: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFill
+        return iv
+    }()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = UIColor.clear
+        contentView.addSubview(imgv)
+        imgv.snp_makeConstraints { (make) in
+            make.edges.equalTo(UIEdgeInsets.zero)
+        }
+    }
     
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }

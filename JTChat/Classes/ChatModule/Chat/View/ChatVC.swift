@@ -22,11 +22,6 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         return tv
     }()
 
-//    lazy var toolView: InputToolView = {
-//        let tv = InputToolView.init(frame: CGRect.zero, viewModel: self.viewModel)
-//        tv.delegate = self
-//        return tv
-//    }()
     lazy var toolView: BottomInputView = {
         let tv = BottomInputView.init(frame: CGRect.zero, viewModel: self.viewModel)
         tv.delegate = self
@@ -46,11 +41,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         }
 //        self.toolView.textV.becomeFirstResponder()
     }
-    
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//
-//    }
+
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)

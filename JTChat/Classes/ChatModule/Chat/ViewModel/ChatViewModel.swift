@@ -203,12 +203,12 @@ class ChatViewModel: BaseViewModel {
             model.receiverPhone = USERDEFAULT.object(forKey: "phone") as! String
             model.receiverAvanter = ""
             DBManager.manager.getChatLog(model: model, page: page, nums: page == 1 ? 0 : self.totalTimeArr.count) { [weak self](arr) in
-                self!.first = false
+                self?.first = false
                 scrollView.jt_endRefresh()
-                self!.appendArr = arr
-                if self!.page == 1 {
-                    self!.originArr = self!.appendArr
-                    self!.dealSectionData()
+                self?.appendArr = arr
+                if self?.page == 1 {
+                    self?.originArr = self!.appendArr
+                    self?.dealSectionData()
                 } else {
                     self!.originArr.insert(contentsOf: self!.appendArr, at: 0)
                     if let mm = arr.last, arr.count > 0 {
@@ -216,12 +216,12 @@ class ChatViewModel: BaseViewModel {
                         sm.time = mm.creatTime
                         sm.timeStamp = mm.timeStamp
                         sm.rowsArr = arr
-                        self!.dataArr.insert(sm, at: 0)
-                        self!.totalTimeArr.append(mm.creatTime)
-                        self!.subject.onNext(1)
+                        self?.dataArr.insert(sm, at: 0)
+                        self?.totalTimeArr.append(mm.creatTime)
+                        self?.subject.onNext(1)
                     }
                 }
-                if self!.appendArr.count == 0 {
+                if self?.appendArr.count == 0 {
                     scrollView.jt_endHeaderRefreshWithNoMoreData()
                 } else {
                     scrollView.jt_endRefresh()

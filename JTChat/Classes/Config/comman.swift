@@ -34,6 +34,7 @@ struct NotificationHelper {
     static let kReLoginName = Notification.Name("kReLoginName")
     static let kUpdateRedDot = Notification.Name("NewPrewarningIsComing")
     static let kUpdateRecentList = Notification.Name("kUpdateRecentList")
+    static let kUpdateContactor = Notification.Name("kUpdateContactor")
 }
 //设备ID
 let UDID = UDIDManager.getUDID()

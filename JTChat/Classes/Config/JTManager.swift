@@ -116,8 +116,12 @@ open class JTManager: NSObject {
         mmodel.timeStamp = Date().timeIntervalSince1970
         mmodel.isRemote = true
         let cm = DBManager.manager.getContactor(phone: model.fromUserId)
-        mmodel.sender = cm.nickName
-        mmodel.senderAvanter = cm.avatarUrl
+        if cm.phone.count > 0 {
+            mmodel.sender = cm.nickName
+            mmodel.senderAvanter = cm.avatarUrl
+        } else {
+            NotificationCenter.default.post(name: NotificationHelper.kUpdateContactor, object: nil)
+        }
         mmodel.receiverPhone = (USERDEFAULT.object(forKey: "phone") ?? "") as! String
         mmodel.receiverAvanter = ""
         mmodel.isReaded = false

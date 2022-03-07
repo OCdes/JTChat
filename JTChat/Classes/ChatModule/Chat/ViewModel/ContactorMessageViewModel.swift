@@ -24,6 +24,7 @@ open class ContactorMessageViewModel: BaseViewModel {
         NotificationCenter.default.addObserver(self, selector: #selector(updateRecentList), name: NotificationHelper.kReLoginName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(getAllGroupData), name: NotificationHelper.kChatOnGroupNotiName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateRecentList), name: NotificationHelper.kUpdateRecentList, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(getAllGroupData), name: NotificationHelper.kUpdateContactor, object: nil)
     }
     
     @objc func getAllGroupData() {
@@ -31,10 +32,9 @@ open class ContactorMessageViewModel: BaseViewModel {
     }
     
     @objc func getAllRecentContactor(scrollView: UIScrollView?) {
-        let sub = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_ADDAPPLY, params: [:]) { [weak self](msg, code, response, data) in
+        let sub = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_ADDAPPLY, params: [:]) { (msg, code, response, data) in
             print(data)
-//            self?.addApplyData = (JSONDeserializer<ApplyNoteModel>.deserializeModelArrayFrom(array: ((data["data"] ?? data["Data"]) as! Array<Dictionary<String, Any>>))! as? Array<ApplyNoteModel>)!
-//            self?.subject.onNext("")
+
         } fail: { (errorInfo) in
             SVProgressHUD.showError(withStatus: (errorInfo.message.count>0 ? errorInfo.message : "获取待处理事项错误"))
         }

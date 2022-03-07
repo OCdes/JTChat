@@ -14,6 +14,11 @@ open class ContactorMessageVC: BaseViewController {
         return tv
     }()
     
+    open override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.viewModel.getAllRecentContactor(scrollView: UIScrollView())
+    }
+    
     open override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "消息"

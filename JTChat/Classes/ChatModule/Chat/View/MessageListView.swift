@@ -146,9 +146,9 @@ class MessageListCell: BaseTableCell {
             if model!.nickname.count > 0 || model!.topicGroupName.count > 0 {
                 let imgurl = model!.topicGroupID.count > 0 ? model!.avatarUrl : model!.avatar
                 if imgurl.count > 0 {
-                    portraitV.kf.setImage(with: URL(string: "\(imgurl)?tmp=\(arc4random())"), placeholder: JTBundleTool.getBundleImg(with:"groupPortrait"))
+                    portraitV.kf.setImage(with: URL(string: "\(imgurl)?tmp=\(arc4random())"), placeholder: JTBundleTool.getBundleImg(with: model!.topicGroupID.count > 0 ? "groupPortrait" : "approvalPortrait"))
                 } else {
-                    portraitV.image = JTBundleTool.getBundleImg(with:"groupPortrait")
+                    portraitV.image = JTBundleTool.getBundleImg(with:model!.topicGroupID.count > 0 ? "groupPortrait" : "approvalPortrait")
                 }
                 nameLa.text = model!.topicGroupName.count > 0 ? model!.topicGroupName : (model!.aliasName.count > 0 ? model!.aliasName: model!.nickname)
             } else {

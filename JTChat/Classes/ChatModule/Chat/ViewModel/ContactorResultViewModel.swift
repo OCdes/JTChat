@@ -16,7 +16,7 @@ class ContactorResultViewModel: BaseViewModel {
             let arr = JSONDeserializer<ContactorSearchModel>.deserializeModelArrayFrom(array: ((data["data"] ?? data["Data"]) as! Array<Dictionary<String, Any>>))!
             var marr = [ContactorSearchModel]()
             for model in arr {
-                if let m = model, m.phone.contains(self!.key) {
+                if let m = model, m.phone.contains(self!.key) || m.aliasName.contains(self!.key) || m.nickName.contains(self!.key) {
                     marr.append(m)
                 }
             }

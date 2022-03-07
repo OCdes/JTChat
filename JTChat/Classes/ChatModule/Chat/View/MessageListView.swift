@@ -20,6 +20,7 @@ class MessageListView: BaseTableView {
         viewModel = vm
         delegate = self
         dataSource = self
+        separatorStyle = .none
         register(MessageListCell.self, forCellReuseIdentifier: "MessageListCell")
         separatorStyle = .none
         NotificationCenter.default.addObserver(self, selector: #selector(reloadListView), name: Notification.Name("NewJTMessageIsComing"), object: nil)
@@ -54,7 +55,7 @@ extension MessageListView: UITableViewDelegate, UITableViewDataSource {
                     cell.redDot.isHidden = true
                 } else {
                     cell.redDot.isHidden = false
-                    cell.redDot.text = "\(arr.count)"
+                    cell.redDot.text = "\(arr.count > 99 ? "99+" : "\(arr.count)")"
                 }
             } else {
                 cell.messageLa.text = "暂无新的系统消息"
@@ -145,9 +146,9 @@ class MessageListCell: BaseTableCell {
             if model!.nickname.count > 0 || model!.topicGroupName.count > 0 {
                 let imgurl = model!.topicGroupID.count > 0 ? model!.avatarUrl : model!.avatar
                 if imgurl.count > 0 {
-                    portraitV.kf.setImage(with: URL(string: "\(imgurl)?tmp=\(arc4random())"), placeholder: JTBundleTool.getBundleImg(with:"approvalPortrait"))
+                    portraitV.kf.setImage(with: URL(string: "\(imgurl)?tmp=\(arc4random())"), placeholder: JTBundleTool.getBundleImg(with:"groupPortrait"))
                 } else {
-                    portraitV.image = JTBundleTool.getBundleImg(with:"approvalPortrait")
+                    portraitV.image = JTBundleTool.getBundleImg(with:"groupPortrait")
                 }
                 nameLa.text = model!.topicGroupName.count > 0 ? model!.topicGroupName : (model!.aliasName.count > 0 ? model!.aliasName: model!.nickname)
             } else {
@@ -170,7 +171,7 @@ class MessageListCell: BaseTableCell {
                 self.atRemarkLa.text = ""
             }
             if let ti = model?.topTime, ti.count > 0 {
-                backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#292c34") : HEX_COLOR(hexStr: "#f5f6f8")
+                backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#292c34") : HEX_COLOR(hexStr: "#F7F7F7")
                 line.isHidden = true
             } else {
                 backgroundColor = kIsFlagShip ? UIColor.clear : HEX_FFF

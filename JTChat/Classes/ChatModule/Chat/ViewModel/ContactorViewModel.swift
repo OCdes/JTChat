@@ -45,14 +45,14 @@ open class ContactorViewModel: BaseViewModel {
         let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_CHATFRIENDSlIST, params: [:], success: { [weak self](msg, code, response, data) in
             scrollView.jt_endRefresh()
             let arr: Array<Any> = (data["data"] ?? data["Data"]) as! Array
-            self!.employeeArr = JSONDeserializer<ContactorModel>.deserializeModelArrayFrom(array: arr)! as? Array<ContactorModel>
-            self!.matchAllEmployee(with: self!.employeeArr!)
+            self?.employeeArr = JSONDeserializer<ContactorModel>.deserializeModelArrayFrom(array: arr)! as? Array<ContactorModel>
+            self?.matchAllEmployee(with: self?.employeeArr! ?? [])
             if let deDict: Dictionary<String, Any> = USERDEFAULT.object(forKey: "cdepartmentDict") as? Dictionary<String, Any> {
                 let deArr: Array<Any> = deDict["data"] as! Array
-            self!.departmentArr = JSONDeserializer<DepartmentModel>.deserializeModelArrayFrom(array: deArr)! as? Array<DepartmentModel>
+            self?.departmentArr = JSONDeserializer<DepartmentModel>.deserializeModelArrayFrom(array: deArr)! as? Array<DepartmentModel>
             }
-            self!.listChangeWithType(b: self!.typeChange)
-            self!.employeePersistence()
+            self?.listChangeWithType(b: self?.typeChange ?? false)
+            self?.employeePersistence()
         }) { (errorInfo) in
             scrollView.jt_endRefresh()
             SVProgressHUD.showError(withStatus: (errorInfo.message.count>0 ? errorInfo.message : "可联系列表获取失败"))
@@ -60,8 +60,8 @@ open class ContactorViewModel: BaseViewModel {
         
         let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_ADDAPPLY, params: [:]) { [weak self](msg, code, response, data) in
             print(data)
-            self!.addApplyData = (JSONDeserializer<ApplyNoteModel>.deserializeModelArrayFrom(array: ((data["data"] ?? data["Data"]) as! Array<Dictionary<String, Any>>))! as? Array<ApplyNoteModel>)!
-            self!.subject.onNext("")
+            self?.addApplyData = (JSONDeserializer<ApplyNoteModel>.deserializeModelArrayFrom(array: ((data["data"] ?? data["Data"]) as! Array<Dictionary<String, Any>>))! as? Array<ApplyNoteModel>)!
+            self?.subject.onNext("")
         } fail: { (errorInfo) in
             SVProgressHUD.showError(withStatus: (errorInfo.message.count>0 ? errorInfo.message : "获取待处理事项错误"))
         }

@@ -46,6 +46,7 @@ class SearchVC: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "添加"
+        self.searchTf.becomeFirstResponder()
         view.addSubview(self.tableView)
         self.tableView.snp_makeConstraints { make in
             make.edges.equalTo(UIEdgeInsets.zero)

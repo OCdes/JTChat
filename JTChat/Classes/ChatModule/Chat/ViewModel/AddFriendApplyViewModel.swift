@@ -34,13 +34,13 @@ class AddFriendApplyViewModel: BaseViewModel {
             let dealApplyDict = dealApplyData as! [String:Any]
             print(myApplyData,dealApplyData)
             if let dict = (myApplyDict["Data"] ?? myApplyDict["data"]) as? [[String: Any]] {
-                self!.myApplyArr = JSONDeserializer<MyApplyNoteModel>.deserializeModelArrayFrom(array: dict) as! [MyApplyNoteModel]
+                self?.myApplyArr = JSONDeserializer<MyApplyNoteModel>.deserializeModelArrayFrom(array: dict) as! [MyApplyNoteModel]
             }
             if let dict = (dealApplyDict["Data"] ?? dealApplyDict["data"]) as? [[String: Any]] {
-                self!.dealApplyArr = JSONDeserializer<ApplyNoteModel>.deserializeModelArrayFrom(array: dict) as! [ApplyNoteModel]
+                self?.dealApplyArr = JSONDeserializer<ApplyNoteModel>.deserializeModelArrayFrom(array: dict) as! [ApplyNoteModel]
             }
             print("lianxiren:\(Thread.current)")
-            self!.subject.onNext("")
+            self?.subject.onNext("")
         }.disposed(by: self.disposeBag)
 
         
@@ -50,7 +50,7 @@ class AddFriendApplyViewModel: BaseViewModel {
     func dealFriendApply(model: ApplyNoteModel, isAgreen: Bool) {
         let _ = NetServiceManager.manager.requestByType(requestType: .RequestTypePost, api: POST_DEALFRIENDAPPLY, params: ["friendPhone":model.friendPhone,"isAgree":isAgreen]) { [weak self](msg, code, response, data) in
             SVPShowSuccess(content: msg)
-            self!.refreshData(scrollView: UIScrollView())
+            self?.refreshData(scrollView: UIScrollView())
         } fail: { (errorInfo) in
             SVPShowError(content: errorInfo.message.count>0 ? errorInfo.message : "处理失败")
         }

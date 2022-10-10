@@ -32,14 +32,12 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
     var toolBottomConstrait: Constraint?
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        JTManager.manager.updateUnreadedCount()
         self.viewModel.clearRedPot()
         if let gid = viewModel.contactor?.topicGroupID, gid.count > 0 {
             self.bgImgv.image = viewModel.getChatViewBG(forID: gid)
         } else {
             self.bgImgv.image = viewModel.getChatViewBG(forID: viewModel.contactor?.phone ?? "")
         }
-//        self.toolView.textV.becomeFirstResponder()
     }
 
     

@@ -576,7 +576,7 @@ extension BottomInputView: UITextViewDelegate {
             let height = (newStr as NSString).boundingRect(with: CGSize(width: width, height: CGFloat(MAXFLOAT)), options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 16)], context: context).height
             previousOffsetY = height
         } else {
-            _ = CGRect(x: 0, y: kScreenHeight-(62+kNavibarHeight+kBottomSafeHeight), width: kScreenWidth, height: ((kiPhoneXOrXS || kDynamicIsland) ? 96 : 62))
+            _ = CGRect(x: 0, y: kScreenHeight-(62+kNavibarHeight+kBottomSafeHeight), width: kScreenWidth, height: ((kiPhoneXOrXS||kDynamicIsland) ? 96 : 62))
             previousOffsetY = 0
         }
         print(self.previousOffsetY)

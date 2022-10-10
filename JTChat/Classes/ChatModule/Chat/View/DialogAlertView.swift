@@ -26,7 +26,7 @@ class DialogAlertView: UIView {
     }()
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.frame = CGRect(x: Int(kScreenWidth)-155, y: (kiPhoneXOrXS ? 84 : 64) , width: 135, height: 10+btnArr.count*44)
+        self.frame = CGRect(x: Int(kScreenWidth)-155, y: ((kiPhoneXOrXS||kDynamicIsland) ? 84 : 64) , width: 135, height: 10+btnArr.count*44)
         animateV.layer.anchorPoint = CGPoint(x: 1, y: 0)
         let trangle = UIImageView.init(frame: CGRect(x: 110, y: 4, width: 10, height: 6))
         DispatchQueue.global().async {

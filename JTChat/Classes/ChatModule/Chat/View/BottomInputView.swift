@@ -98,7 +98,7 @@ class BottomInputView: UIView {
     var textHeight: CGFloat = 0
     var isTyping: Bool = true
     init(frame: CGRect, viewModel vm: ChatViewModel) {
-        super.init(frame: CGRect(x: 0, y: kScreenHeight-(62+(kiPhoneXOrXS ? 122 : 64)), width: kScreenWidth, height: (kiPhoneXOrXS ? 96 : 62)))
+        super.init(frame: CGRect(x: 0, y: kScreenHeight-(62+kNavibarHeight+kBottomSafeHeight), width: kScreenWidth, height: ((kiPhoneXOrXS||kDynamicIsland) ? 96 : 62)))
         viewModel = vm
         backgroundColor = kIsFlagShip ? HEX_COLOR(hexStr: "#262a32") : HEX_COLOR(hexStr: "#F5F5F5")
         
@@ -271,7 +271,7 @@ class BottomInputView: UIView {
         let endFrame = dict["UIKeyboardFrameEndUserInfoKey"] as! CGRect
         print(dict)
             self.bottomUpDistance = endFrame.height
-            self.keyboardHeight = endFrame.height-(JTManager.manager.isHideBottom ? 0 : (49+(kiPhoneXOrXS ? 34 : 0)))
+            self.keyboardHeight = endFrame.height-(JTManager.manager.isHideBottom ? 0 : (49+kBottomSafeHeight))
             if let de = delegate {
                 de.keyboardChangeFrame(inY: self.keyboardHeight+textHeight)
             }
@@ -285,7 +285,7 @@ class BottomInputView: UIView {
         let endFrame = dict["UIKeyboardFrameEndUserInfoKey"] as! CGRect
         if self.bottomUpDistance >= endFrame.height {
             self.bottomUpDistance = endFrame.height
-            self.keyboardHeight = endFrame.height-(JTManager.manager.isHideBottom ? 0 : (49+(kiPhoneXOrXS ? 34 : 0)))
+            self.keyboardHeight = endFrame.height-(JTManager.manager.isHideBottom ? 0 : (49+kBottomSafeHeight))
             self.toolV.snp_updateConstraints { (make) in
                 make.bottom.equalTo(self).offset(-self.bottomOffset)
             }
@@ -576,24 +576,24 @@ extension BottomInputView: UITextViewDelegate {
             let height = (newStr as NSString).boundingRect(with: CGSize(width: width, height: CGFloat(MAXFLOAT)), options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 16)], context: context).height
             previousOffsetY = height
         } else {
-            _ = CGRect(x: 0, y: kScreenHeight-(62+(kiPhoneXOrXS ? 122 : 64)), width: kScreenWidth, height: (kiPhoneXOrXS ? 96 : 62))
+            _ = CGRect(x: 0, y: kScreenHeight-(62+kNavibarHeight+kBottomSafeHeight), width: kScreenWidth, height: ((kiPhoneXOrXS || kDynamicIsland) ? 96 : 62))
             previousOffsetY = 0
         }
         print(self.previousOffsetY)
         if self.previousOffsetY <= 72 && previousOffsetY > 19.1 {
             textHeight = previousOffsetY - 19.09375
             if let de = delegate {
-                de.keyboardChangeFrame(inY: textHeight + (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height - (JTManager.manager.isHideBottom ? 0 : ((kiPhoneXOrXS ? 34 : 0)+49))))
+                de.keyboardChangeFrame(inY: textHeight + (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height - (JTManager.manager.isHideBottom ? 0 : (kBottomSafeHeight+49))))
             }
         } else if previousOffsetY > 0 && previousOffsetY <= 19.1 {
             textHeight = previousOffsetY - 19.09375
             if let de = delegate {
-                de.keyboardChangeFrame(inY: (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height-(JTManager.manager.isHideBottom ? 0 : ((kiPhoneXOrXS ? 34 : 0)+49))))
+                de.keyboardChangeFrame(inY: (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height-(JTManager.manager.isHideBottom ? 0 : (kBottomSafeHeight+49))))
             }
         } else if previousOffsetY == 0  {
             textHeight = 0
             if let de = delegate {
-                de.keyboardChangeFrame(inY: (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height-(JTManager.manager.isHideBottom ? 0 : ((kiPhoneXOrXS ? 34 : 0)+49))))
+                de.keyboardChangeFrame(inY: (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height-(JTManager.manager.isHideBottom ? 0 : (kBottomSafeHeight+49))))
             }
         }
     }

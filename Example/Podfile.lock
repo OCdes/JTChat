@@ -8,8 +8,8 @@ PODS:
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
   - HandyJSON (5.0.2)
-  - IQKeyboardManagerSwift (6.5.9)
-  - JTChat (1.0.9):
+  - IQKeyboardManagerSwift (6.5.10)
+  - JTChat (1.1.0):
     - ALQRCode
     - CocoaAsyncSocket
     - DZNEmptyDataSet (~> 1.8.1)
@@ -38,12 +38,12 @@ PODS:
     - Result (~> 4.1)
   - PryntTrimmerView (4.0.2)
   - Result (4.1.0)
-  - RxCocoa (6.2.0):
-    - RxRelay (= 6.2.0)
-    - RxSwift (= 6.2.0)
-  - RxRelay (6.2.0):
-    - RxSwift (= 6.2.0)
-  - RxSwift (6.2.0)
+  - RxCocoa (6.5.0):
+    - RxRelay (= 6.5.0)
+    - RxSwift (= 6.5.0)
+  - RxRelay (6.5.0):
+    - RxSwift (= 6.5.0)
+  - RxSwift (6.5.0)
   - SnapKit (4.0.1)
   - SteviaLayout (4.7.3)
   - SVProgressHUD (2.2.5)
@@ -91,8 +91,8 @@ SPEC CHECKSUMS:
   ESTabBarController-swift: 05593a6ad64700b03c0eb60ff625916370aa4136
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
-  IQKeyboardManagerSwift: 6e839c575c4aa1078d58a596e41244e77abe918f
-  JTChat: 2013e0b74cc319f8f7bbfdc1b12163dcd442aa73
+  IQKeyboardManagerSwift: 52962c76ab33532f15ad9f3ff4e5715eda5335bb
+  JTChat: b252f02a62efd9cc7bf77b2305d119b656ac509f
   JTVoiceConvert: fa6db09d629e234fcc9fefe5974a9cf15b260c2d
   KeychainSwift: c46e1438d121e47459fb304ac88c5e058a2a91ed
   Kingfisher: 016c8b653a35add51dd34a3aba36b580041acc74
@@ -100,9 +100,9 @@ SPEC CHECKSUMS:
   Moya: f4a4b80ff2f8a4ffc208dfb31cd91636622fee6e
   PryntTrimmerView: 6a43cc90df5d99addeabd33d4ba09b1365322130
   Result: bd966fac789cc6c1563440b348ab2598cc24d5c7
-  RxCocoa: 4baf94bb35f2c0ab31bc0cb9f1900155f646ba42
-  RxRelay: e72dbfd157807478401ef1982e1c61c945c94b2f
-  RxSwift: d356ab7bee873611322f134c5f9ef379fa183d8f
+  RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
+  RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
+  RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
   SnapKit: 0de968a9fec17499afa29683b05d0c775b6d1c29
   SteviaLayout: c2ecdcff57d44e38fd2f65e54ad52aeae28ca0c4
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
@@ -110,4 +110,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 11fa637f8187f7482b52b78e6669e39b001dbf51
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3

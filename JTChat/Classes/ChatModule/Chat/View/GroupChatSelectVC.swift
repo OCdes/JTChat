@@ -59,7 +59,7 @@ class GroupChatSelectVC: BaseViewController {
         self.viewModel.refreshData()
         _ = self.tableView.selectSubject.subscribe(onNext: { [weak self](a) in
             self!.tableView.snp_updateConstraints { (make) in
-                make.bottom.equalTo(self!.view).offset((kiPhoneXOrXS ? -84 : -50))
+                make.bottom.equalTo(self!.view).offset(((kiPhoneXOrXS || kDynamicIsland) ? -84 : -50))
             }
             self!.seleView.dataArr = self!.viewModel.seleDataArr
         })

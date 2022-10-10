@@ -96,13 +96,13 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         view.addSubview(tableView)
         tableView.snp_makeConstraints { (make) in
             make.top.left.right.equalTo(view)
-            make.bottom.equalTo(view).offset(-62-(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? 34 : 0) : 0))
+            make.bottom.equalTo(view).offset(-62-(JTManager.manager.isHideBottom ? kBottomSafeHeight : 0))
         }
         view.addSubview(toolView)
         toolView.snp_makeConstraints { (make) in
             make.left.right.equalTo(self.view)
             make.top.equalTo(self.tableView.snp_bottom)
-            make.bottom.equalTo(view).offset(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? -34 : 0) : 0)
+            make.bottom.equalTo(view).offset(JTManager.manager.isHideBottom ? -kBottomSafeHeight : 0)
         }
     }
 
@@ -152,7 +152,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
             self.view.layoutIfNeeded()
         }
         self.toolView.snp_updateConstraints { (make) in
-            make.bottom.equalTo(self.view).offset(JTManager.manager.isHideBottom ? (kiPhoneXOrXS ? -34 : 0) : 0)
+            make.bottom.equalTo(self.view).offset(JTManager.manager.isHideBottom ? -kBottomSafeHeight : 0)
         }
         self.tableView.reloadData()
     }

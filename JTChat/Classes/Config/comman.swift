@@ -24,10 +24,13 @@ let kScreenHeight: CGFloat = UIScreen.main.bounds.height
 let kTabbarHidden: Bool = true
 let kTabBarHeight: CGFloat = 49
 //机型判断
-let kiPhoneXOrXS: Bool = kScreenHeight >= 812
+let kDynamicIsland: Bool = (kScreenHeight == 852 || kScreenHeight == 932)
+let kiPhoneXOrXS: Bool = (kScreenHeight == 812 || kScreenHeight == 896 || kScreenHeight == 926)
 let kiPhonePlus: Bool = kScreenHeight == 736 && kScreenWidth == 414
 let kiPhonoe678: Bool = kScreenHeight == 667 && kScreenWidth == 375
 let kiPhone45SC: Bool = kScreenHeight == 480 && kScreenHeight == 320
+let kNavibarHeight: CGFloat = (kiPhoneXOrXS ? 88 : (kDynamicIsland ? 98 : 64))
+let kBottomSafeHeight: CGFloat = ((kiPhoneXOrXS || kDynamicIsland) ? 34 : 0)
 struct NotificationHelper {
     static let kChatOnlineNotiName = Notification.Name("kChatOnlineNotiName")
     static let kChatOnGroupNotiName = Notification.Name("kChatOnGroupNotiName")

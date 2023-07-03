@@ -266,7 +266,6 @@ class BottomInputView: UIView {
     }
     
     @objc func keyboardWillShow(noti: Notification) {
-        self.textV.reloadInputViews()
         let dict = noti.userInfo as! Dictionary<String, Any>
         let endFrame = dict["UIKeyboardFrameEndUserInfoKey"] as! CGRect
         print(dict)

@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
   s.libraries = "c++","c"
   s.xcconfig = { 'VALID_ARCHS' => 'arm64 x86_64 armv7 armv7s', }
-  s.ios.deployment_target = '10.0'
+  s.ios.deployment_target = '11.0'
   s.source_files = 'JTChat/Classes/**/*'
   s.swift_versions = ['4.0','4.2','5.0']
    s.resource_bundles = {
@@ -40,7 +40,7 @@ Pod::Spec.new do |s|
    # , 'FRAMEWORK_SEARCH_PATHS' => '"${PODS_ROOT}/MJRefresh"'
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  s.dependency "KeychainSwift", "~> 18.0.0"
+  s.dependency "KeychainSwift"
   s.dependency "ESTabBarController-swift"
   s.dependency "Moya", "~> 13.0.0"
   s.dependency "HandyJSON"
@@ -52,7 +52,7 @@ Pod::Spec.new do |s|
   s.dependency "YPImagePicker"
   s.dependency "MJRefresh"
   s.dependency "SVProgressHUD"
-  s.dependency "DZNEmptyDataSet", "~> 1.8.1"
+  s.dependency "DZNEmptyDataSet"
   s.dependency "ALQRCode"
   s.dependency "CocoaAsyncSocket"
   s.dependency "FMDB"

@@ -8,17 +8,17 @@ PODS:
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
   - HandyJSON (5.0.2)
-  - IQKeyboardManagerSwift (6.5.10)
+  - IQKeyboardManagerSwift (6.5.12)
   - JTChat (1.1.1):
     - ALQRCode
     - CocoaAsyncSocket
-    - DZNEmptyDataSet (~> 1.8.1)
+    - DZNEmptyDataSet
     - ESTabBarController-swift
     - FMDB
     - HandyJSON
     - IQKeyboardManagerSwift
     - JTVoiceConvert
-    - KeychainSwift (~> 18.0.0)
+    - KeychainSwift
     - Kingfisher
     - MJRefresh
     - Moya (~> 13.0.0)
@@ -28,7 +28,7 @@ PODS:
     - SVProgressHUD
     - YPImagePicker
   - JTVoiceConvert (0.2.2)
-  - KeychainSwift (18.0.0)
+  - KeychainSwift (20.0.0)
   - Kingfisher (6.3.1)
   - MJRefresh (3.7.5)
   - Moya (13.0.1):
@@ -91,10 +91,10 @@ SPEC CHECKSUMS:
   ESTabBarController-swift: 05593a6ad64700b03c0eb60ff625916370aa4136
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
-  IQKeyboardManagerSwift: 52962c76ab33532f15ad9f3ff4e5715eda5335bb
-  JTChat: e531f70f1c9fc208dac90bdf9191388f69048779
+  IQKeyboardManagerSwift: 371b08cb39664fb56030f5345c815a4ffc74bbc0
+  JTChat: 47d6cbc5e8b4f143bc917fb36721120c756f5296
   JTVoiceConvert: fa6db09d629e234fcc9fefe5974a9cf15b260c2d
-  KeychainSwift: c46e1438d121e47459fb304ac88c5e058a2a91ed
+  KeychainSwift: 0ce6a4d13f7228054d1a71bb1b500448fb2ab837
   Kingfisher: 016c8b653a35add51dd34a3aba36b580041acc74
   MJRefresh: fdf5e979eb406a0341468932d1dfc8b7f9fce961
   Moya: f4a4b80ff2f8a4ffc208dfb31cd91636622fee6e
@@ -108,6 +108,6 @@ SPEC CHECKSUMS:
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   YPImagePicker: 6f410f475bd22fa8cd430495b54d4b2f15865c2d
 
-PODFILE CHECKSUM: 11fa637f8187f7482b52b78e6669e39b001dbf51
+PODFILE CHECKSUM: a9a869ab24f3066954853539dee3bdb71eb504fe
 
 COCOAPODS: 1.11.3

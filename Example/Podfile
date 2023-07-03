@@ -1,4 +1,4 @@
-platform :ios, "10.0"
+platform :ios, "11.0"
 #source 'git@github.com:OCdes/JTVoiceConvertSpecRepo.git'
 #source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!

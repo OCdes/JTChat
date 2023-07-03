@@ -254,8 +254,14 @@ let HEX_GOLDYELLOW = HEX_COLOR(hexStr: "#D0A72F")
 let APPWINDOW: UIWindow = (UIApplication.shared.delegate?.window!)!
 //云端地址
 let URL_CLOUD = "https://cloud.hzjtyh.com"
-public var BASE_URL = (USERDEFAULT.object(forKey: "baseURL") as? String) ?? ""
-public let ACCESS_TOKEN = USERDEFAULT.object(forKey: "jwt") as! String
+public var BASE_URL = {()->String in
+    return (USERDEFAULT.object(forKey: "baseURL") as? String) ?? ""
+}()
+
+public var tocken = {()->String in
+    return USERDEFAULT.object(forKey: "jwt") as! String
+}()
+
 //请求状态码
 //NOTE:网络请求状态码
 let REQUEST_SUCCESSFUL: Int = 0

@@ -23,7 +23,7 @@
     "VALID_ARCHS": "arm64 x86_64 armv7 armv7s"
   },
   "platforms": {
-    "ios": "10.0"
+    "ios": "11.0"
   },
   "source_files": "JTChat/Classes/**/*",
   "swift_versions": [
@@ -39,7 +39,7 @@
   "static_framework": true,
   "dependencies": {
     "KeychainSwift": [
-      "~> 18.0.0"
+
     ],
     "ESTabBarController-swift": [
 
@@ -75,7 +75,7 @@
 
     ],
     "DZNEmptyDataSet": [
-      "~> 1.8.1"
+
     ],
     "ALQRCode": [
 

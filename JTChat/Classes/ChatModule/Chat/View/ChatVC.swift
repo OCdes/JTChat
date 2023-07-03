@@ -134,7 +134,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
             self.tableView.snp_updateConstraints { (make) in
                 make.bottom.equalTo(self.view).offset(-62-inY);
             }
-            self.view.layoutIfNeeded()
+//            self.view.layoutIfNeeded()
         }
         self.toolView.snp_updateConstraints { (make) in
             make.bottom.equalTo(self.view)
@@ -147,7 +147,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
             self.tableView.snp_updateConstraints { (make) in
                 make.bottom.equalTo(self.view).offset(-62-inY)
             }
-            self.view.layoutIfNeeded()
+//            self.view.layoutIfNeeded()
         }
         self.toolView.snp_updateConstraints { (make) in
             make.bottom.equalTo(self.view).offset(JTManager.manager.isHideBottom ? -kBottomSafeHeight : 0)

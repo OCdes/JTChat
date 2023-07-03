@@ -88,6 +88,7 @@ class BottomInputView: UIView {
     lazy var moreBtn: UIButton = {
         let mb = UIButton()
         mb.setImage(JTBundleTool.getBundleImg(with:"moreicon"), for: .normal)
+        mb.setImage(JTBundleTool.getBundleImg(with:"texticon"), for: .selected)
         mb.addTarget(self, action: #selector(moreBtnClicked(btn:)), for: .touchUpInside)
         return mb
     }()

@@ -8,6 +8,8 @@
 
 import UIKit
 import SnapKit
+import IQKeyboardManagerSwift
+
 class ChatVC: BaseViewController,InputToolViewDelegate {
     
     var viewModel: ChatViewModel = ChatViewModel()
@@ -38,6 +40,8 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         } else {
             self.bgImgv.image = viewModel.getChatViewBG(forID: viewModel.contactor?.phone ?? "")
         }
+        IQKeyboardManager.shared.enable = false
+        IQKeyboardManager.shared.enableAutoToolbar = false
     }
 
     
@@ -55,6 +59,8 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
     override func viewDidDisappear(_ animated: Bool) {
         USERDEFAULT.removeObject(forKey: "currentID")
         super.viewDidAppear(animated)
+        IQKeyboardManager.shared.enable = true
+        IQKeyboardManager.shared.enableAutoToolbar = true
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -91,17 +97,18 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
     func initView() {
         view.backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_COLOR(hexStr: "#EBEBEB");
         view.addSubview(bgImgv)
-        view.addSubview(tableView)
-        tableView.snp_makeConstraints { (make) in
-            make.top.left.right.equalTo(view)
-            make.bottom.equalTo(view).offset(-62-(JTManager.manager.isHideBottom ? kBottomSafeHeight : 0))
-        }
         view.addSubview(toolView)
         toolView.snp_makeConstraints { (make) in
             make.left.right.equalTo(self.view)
-            make.top.equalTo(self.tableView.snp_bottom)
-            make.bottom.equalTo(view).offset(JTManager.manager.isHideBottom ? -kBottomSafeHeight : 0)
+            make.height.greaterThanOrEqualTo(62)
+            make.bottom.equalTo(view)
         }
+        view.addSubview(tableView)
+        tableView.snp_makeConstraints { (make) in
+            make.top.left.right.equalTo(view)
+            make.bottom.equalTo(toolView.snp_top)
+        }
+        
     }
 
     func bindModel() {
@@ -130,27 +137,19 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
     }
 
     func keyboardChangeFrame(inY: CGFloat) {
-        UIView.animate(withDuration: 0.2) {
-            self.tableView.snp_updateConstraints { (make) in
-                make.bottom.equalTo(self.view).offset(-62-inY);
+        UIView.animate(withDuration: 0.3) {
+            self.toolView.snp_updateConstraints { make in
+                make.bottom.equalTo(self.view).offset(-inY)
             }
-//            self.view.layoutIfNeeded()
-        }
-        self.toolView.snp_updateConstraints { (make) in
-            make.bottom.equalTo(self.view)
         }
         self.tableView.reloadData()
     }
 
     func keyboardHideFrame(inY: CGFloat) {
         UIView.animate(withDuration: 0.3) {
-            self.tableView.snp_updateConstraints { (make) in
-                make.bottom.equalTo(self.view).offset(-62-inY)
+            self.toolView.snp_updateConstraints { make in
+                make.bottom.equalTo(self.view)
             }
-//            self.view.layoutIfNeeded()
-        }
-        self.toolView.snp_updateConstraints { (make) in
-            make.bottom.equalTo(self.view).offset(JTManager.manager.isHideBottom ? -kBottomSafeHeight : 0)
         }
         self.tableView.reloadData()
     }

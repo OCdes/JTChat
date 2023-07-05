@@ -73,6 +73,10 @@ class ChatTableView: BaseTableView {
         self.tapSubject.onNext("")
     }
     
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        self.tapSubject.onNext("")
+    }
+    
     deinit {
         print(" chattableview 销毁了")
     }
@@ -128,6 +132,10 @@ extension ChatTableView: UITableViewDelegate, UITableViewDataSource, JTChatMenuV
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.init(uptimeNanoseconds: 1)) {
                     self.scrollTo(offsetY: self.contentSize.height, animated: false)
                 }
+            }
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.init(uptimeNanoseconds: 1)) {
+                self.scrollTo(offsetY: self.contentSize.height, animated: false)
             }
         }
         return dataArr[section].rowsArr.count

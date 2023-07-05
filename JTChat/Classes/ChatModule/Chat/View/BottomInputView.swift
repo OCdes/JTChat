@@ -107,31 +107,35 @@ class BottomInputView: UIView {
         toolV.snp_makeConstraints { (make) in
             make.edges.equalTo(UIEdgeInsets(top: 0, left: 0, bottom: self.bottomOffset, right: 0))
         }
+        
+        toolV.addSubview(self.textV)
+        self.textV.snp_makeConstraints { (make) in
+            make.left.equalTo(toolV).offset(47.5)
+            make.bottom.equalTo(toolV).offset(-16)
+            make.right.equalTo(toolV).offset(-87.5)
+            make.top.equalTo(toolV).offset(11)
+            make.height.greaterThanOrEqualTo(40)
+        }
+        
         toolV.addSubview(self.typeBtn)
         self.typeBtn.snp_makeConstraints { (make) in
-            make.left.equalTo(toolV).offset(7.5)
-            make.bottom.equalTo(toolV).offset(-16)
+            make.right.equalTo(textV.snp_left).offset(-10)
+            make.centerY.equalTo(textV)
             make.size.equalTo(CGSize(width: 30, height: 30))
-        }
-        toolV.addSubview(self.moreBtn)
-        self.moreBtn.snp_makeConstraints { (make) in
-            make.right.equalTo(toolV).offset(-7.5)
-            make.size.centerY.equalTo(self.typeBtn)
         }
         
         toolV.addSubview(self.emojBtn)
         self.emojBtn.snp_makeConstraints { (make) in
-            make.right.equalTo(self.moreBtn.snp_left).offset(-10)
-            make.size.centerY.equalTo(self.moreBtn)
+            make.left.equalTo(textV.snp_right).offset(10)
+            make.size.centerY.equalTo(self.typeBtn)
         }
         
-        toolV.addSubview(self.textV)
-        self.textV.snp_makeConstraints { (make) in
-            make.left.equalTo(self.typeBtn.snp_right).offset(10)
-            make.bottom.equalTo(toolV).offset(-16)
-            make.right.equalTo(self.emojBtn.snp_left).offset(-10)
-            make.top.equalTo(toolV).offset(11)
+        toolV.addSubview(self.moreBtn)
+        self.moreBtn.snp_makeConstraints { (make) in
+            make.left.equalTo(emojBtn.snp_right).offset(10)
+            make.size.centerY.equalTo(self.emojBtn)
         }
+        
         
         toolV.addSubview(self.voiceBtn)
         self.voiceBtn.snp_makeConstraints { (make) in
@@ -144,7 +148,6 @@ class BottomInputView: UIView {
             content.append(str)
             self?.frameChage(newStr: content)
             self?.textV.text = content
-            //            _ = self?.textView(self!.textV, shouldChangeTextIn: NSRange(location: content.count > 0 ? content.count : 0, length: 0), replacementText: str)
         })
         
         let _ = emojiView.deletSubject.subscribe(onNext: { [weak self](a) in
@@ -268,16 +271,16 @@ class BottomInputView: UIView {
     
     @objc func keyboardWillShow(noti: Notification) {
         let dict = noti.userInfo as! Dictionary<String, Any>
-        let endFrame = dict["UIKeyboardFrameEndUserInfoKey"] as! CGRect
+        let endFrame = dict["UIKeyboardBoundsUserInfoKey"] as! CGRect
         print(dict)
             self.bottomUpDistance = endFrame.height
             self.keyboardHeight = endFrame.height-(JTManager.manager.isHideBottom ? 0 : (49+kBottomSafeHeight))
             if let de = delegate {
                 de.keyboardChangeFrame(inY: self.keyboardHeight+textHeight)
             }
-            self.toolV.snp_updateConstraints { (make) in
-                make.bottom.equalTo(self).offset(-self.keyboardHeight)
-            }
+//            self.toolV.snp_updateConstraints { (make) in
+//                make.bottom.equalTo(self).offset(-self.keyboardHeight)
+//            }
     }
     
     @objc func keyboardWillHide(noti: Notification) {
@@ -286,9 +289,9 @@ class BottomInputView: UIView {
         if self.bottomUpDistance >= endFrame.height {
             self.bottomUpDistance = endFrame.height
             self.keyboardHeight = endFrame.height-(JTManager.manager.isHideBottom ? 0 : (49+kBottomSafeHeight))
-            self.toolV.snp_updateConstraints { (make) in
-                make.bottom.equalTo(self).offset(-self.bottomOffset)
-            }
+//            self.toolV.snp_updateConstraints { (make) in
+//                make.bottom.equalTo(self).offset(-self.bottomOffset)
+//            }
             if let de = delegate {
                 de.keyboardHideFrame(inY: self.bottomOffset+textHeight)
             }
@@ -557,7 +560,6 @@ extension BottomInputView: UITextViewDelegate {
                         return false
                     }
                 }
-                
             }
             
             if range.location < self.textV.text.count {
@@ -582,19 +584,19 @@ extension BottomInputView: UITextViewDelegate {
         print(self.previousOffsetY)
         if self.previousOffsetY <= 72 && previousOffsetY > 19.1 {
             textHeight = previousOffsetY - 19.09375
-            if let de = delegate {
-                de.keyboardChangeFrame(inY: textHeight + (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height - (JTManager.manager.isHideBottom ? 0 : (kBottomSafeHeight+49))))
-            }
+//            if let de = delegate {
+//                de.keyboardChangeFrame(inY: textHeight + (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height - (JTManager.manager.isHideBottom ? 0 : (kBottomSafeHeight+49))))
+//            }
         } else if previousOffsetY > 0 && previousOffsetY <= 19.1 {
             textHeight = previousOffsetY - 19.09375
-            if let de = delegate {
-                de.keyboardChangeFrame(inY: (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height-(JTManager.manager.isHideBottom ? 0 : (kBottomSafeHeight+49))))
-            }
+//            if let de = delegate {
+//                de.keyboardChangeFrame(inY: (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height-(JTManager.manager.isHideBottom ? 0 : (kBottomSafeHeight+49))))
+//            }
         } else if previousOffsetY == 0  {
             textHeight = 0
-            if let de = delegate {
-                de.keyboardChangeFrame(inY: (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height-(JTManager.manager.isHideBottom ? 0 : (kBottomSafeHeight+49))))
-            }
+//            if let de = delegate {
+//                de.keyboardChangeFrame(inY: (self.textV.inputView == nil ? keyboardHeight : self.textV.inputView!.frame.height-(JTManager.manager.isHideBottom ? 0 : (kBottomSafeHeight+49))))
+//            }
         }
     }
     

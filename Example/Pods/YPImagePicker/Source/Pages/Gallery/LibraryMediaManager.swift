@@ -13,7 +13,7 @@ class LibraryMediaManager {
     
     weak var v: YPLibraryView?
     var collection: PHAssetCollection?
-    internal var fetchResult: PHFetchResult<PHAsset>!
+    internal var fetchResult: PHFetchResult<PHAsset>?
     internal var previousPreheatRect: CGRect = .zero
     internal var imageManager: PHCachingImageManager?
     internal var exportTimer: Timer?
@@ -40,7 +40,9 @@ class LibraryMediaManager {
     
     func updateCachedAssets(in collectionView: UICollectionView) {
         let screenWidth = YPImagePickerConfiguration.screenWidth
-        let size = screenWidth / 4 * UIScreen.main.scale
+        let windowScene = UIApplication.safeFirstWindowScene
+        let scale = windowScene?.screen.scale ?? 1.0
+        let size = screenWidth / 4 * scale
         let cellSize = CGSize(width: size, height: size)
         
         var preheatRect = collectionView.bounds
@@ -60,8 +62,11 @@ class LibraryMediaManager {
                 addedIndexPaths += indexPaths
             })
             
-            let assetsToStartCaching = fetchResult.assetsAtIndexPaths(addedIndexPaths)
-            let assetsToStopCaching = fetchResult.assetsAtIndexPaths(removedIndexPaths)
+            guard let assetsToStartCaching = fetchResult?.assetsAtIndexPaths(addedIndexPaths),
+                  let assetsToStopCaching = fetchResult?.assetsAtIndexPaths(removedIndexPaths) else {
+                print("Some problems in fetching and caching assets.")
+                return
+            }
             
             imageManager?.startCachingImages(for: assetsToStartCaching,
                                              targetSize: cellSize,
@@ -90,7 +95,11 @@ class LibraryMediaManager {
         videosOptions.deliveryMode = .highQualityFormat
         imageManager?.requestAVAsset(forVideo: videoAsset, options: videosOptions) { asset, _, _ in
             do {
-                guard let asset = asset else { print("⚠️ PHCachingImageManager >>> Don't have the asset"); return }
+                guard let asset = asset else {
+                    ypLog("Don't have the asset")
+                    DispatchQueue.main.async { callback(nil) }
+                    return
+                }
                 
                 let assetComposition = AVMutableComposition()
                 let assetMaxDuration = self.getMaxVideoDuration(between: duration, andAssetDuration: asset.duration)
@@ -99,17 +108,18 @@ class LibraryMediaManager {
                 // 1. Inserting audio and video tracks in composition
                 
                 guard let videoTrack = asset.tracks(withMediaType: AVMediaType.video).first,
-                    let videoCompositionTrack = assetComposition
+                      let videoCompositionTrack = assetComposition
                         .addMutableTrack(withMediaType: .video,
                                          preferredTrackID: kCMPersistentTrackID_Invalid) else {
-                                            print("⚠️ PHCachingImageManager >>> Problems with video track")
-                                            return
-                                            
+                    ypLog("Problems with video track")
+                    DispatchQueue.main.async { callback(nil) }
+                    return
+
                 }
                 if let audioTrack = asset.tracks(withMediaType: AVMediaType.audio).first,
-                    let audioCompositionTrack = assetComposition
-                        .addMutableTrack(withMediaType: AVMediaType.audio,
-                                         preferredTrackID: kCMPersistentTrackID_Invalid) {
+                   let audioCompositionTrack = assetComposition
+                    .addMutableTrack(withMediaType: AVMediaType.audio,
+                                     preferredTrackID: kCMPersistentTrackID_Invalid) {
                     try audioCompositionTrack.insertTimeRange(trackTimeRange, of: audioTrack, at: CMTime.zero)
                 }
                 
@@ -144,29 +154,27 @@ class LibraryMediaManager {
                     .export(to: fileURL,
                             videoComposition: videoComposition,
                             removeOldFile: true) { [weak self] session in
-                                DispatchQueue.main.async {
-                                    switch session.status {
-                                    case .completed:
-                                        if let url = session.outputURL {
-                                            if let index = self?.currentExportSessions.firstIndex(of: session) {
-                                                self?.currentExportSessions.remove(at: index)
-                                            }
-                                            callback(url)
-                                        } else {
-                                            print("LibraryMediaManager -> Don't have URL.")
-                                            callback(nil)
-                                        }
-                                    case .failed:
-                                        print("LibraryMediaManager")
-										print("Export of the video failed : \(String(describing: session.error))")
-                                        callback(nil)
-                                    default:
-										print("LibraryMediaManager")
-                                        print("Export session completed with \(session.status) status. Not handled.")
-                                        callback(nil)
+                        DispatchQueue.main.async {
+                            switch session.status {
+                            case .completed:
+                                if let url = session.outputURL {
+                                    if let index = self?.currentExportSessions.firstIndex(of: session) {
+                                        self?.currentExportSessions.remove(at: index)
                                     }
+                                    callback(url)
+                                } else {
+                                    ypLog("Don't have URL.")
+                                    callback(nil)
                                 }
-                }
+                            case .failed:
+                                ypLog("Export of the video failed : \(String(describing: session.error))")
+                                callback(nil)
+                            default:
+                                ypLog("Export session completed with \(session.status) status. Not handled.")
+                                callback(nil)
+                            }
+                        }
+                    }
 
                 // 6. Exporting
                 DispatchQueue.main.async {
@@ -179,9 +187,12 @@ class LibraryMediaManager {
 
                 if let s = exportSession {
                     self.currentExportSessions.append(s)
+                } else {
+                    DispatchQueue.main.async { callback(nil) }
                 }
             } catch let error {
-                print("⚠️ PHCachingImageManager >>> \(error)")
+                ypLog("Error: \(error)")
+                DispatchQueue.main.async { callback(nil) }
             }
         }
     }
@@ -216,5 +227,17 @@ class LibraryMediaManager {
         for s in self.currentExportSessions {
             s.cancelExport()
         }
+    }
+
+    func getAsset(at index: Int) -> PHAsset? {
+        guard let fetchResult = fetchResult else {
+            print("FetchResult not contain this index: \(index)")
+            return nil
+        }
+        guard fetchResult.count > index else {
+            print("FetchResult not contain this index: \(index)")
+            return nil
+        }
+        return fetchResult.object(at: index)
     }
 }

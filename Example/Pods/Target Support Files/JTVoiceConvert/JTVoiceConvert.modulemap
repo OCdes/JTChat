@@ -1,6 +1,0 @@
-framework module JTVoiceConvert {
-  umbrella header "JTVoiceConvert-umbrella.h"
-
-  export *
-  module * { export * }
-}

@@ -19,16 +19,11 @@
     "c++",
     "c"
   ],
-  "xcconfig": {
-    "VALID_ARCHS": "arm64 x86_64 armv7 armv7s"
-  },
   "platforms": {
-    "ios": "11.0"
+    "ios": "15.0"
   },
   "source_files": "JTChat/Classes/**/*",
   "swift_versions": [
-    "4.0",
-    "4.2",
     "5.0"
   ],
   "resource_bundles": {
@@ -37,58 +32,23 @@
     ]
   },
   "static_framework": true,
+  "vendored_frameworks": "JTChat/Frameworks/libopencore-amrnb.xcframework",
   "dependencies": {
-    "KeychainSwift": [
-
-    ],
-    "ESTabBarController-swift": [
-
-    ],
-    "Moya": [
-      "~> 13.0.0"
-    ],
-    "HandyJSON": [
-
-    ],
-    "IQKeyboardManagerSwift": [
-
-    ],
-    "RxSwift": [
-
-    ],
-    "RxCocoa": [
-
-    ],
-    "SnapKit": [
-      "~>4.0.0"
-    ],
-    "Kingfisher": [
-
-    ],
-    "YPImagePicker": [
-
-    ],
-    "MJRefresh": [
-
-    ],
-    "SVProgressHUD": [
-
-    ],
-    "DZNEmptyDataSet": [
-
-    ],
-    "ALQRCode": [
-
-    ],
-    "CocoaAsyncSocket": [
-
-    ],
-    "FMDB": [
-
-    ],
-    "JTVoiceConvert": [
-
-    ]
+    "KeychainSwift": [],
+    "Moya": [],
+    "HandyJSON": [],
+    "IQKeyboardManagerSwift": [],
+    "RxSwift": [],
+    "RxCocoa": [],
+    "SnapKit": [],
+    "Kingfisher": [],
+    "YPImagePicker": [],
+    "MJRefresh": [],
+    "SVProgressHUD": [],
+    "DZNEmptyDataSet": [],
+    "ALQRCode": [],
+    "CocoaAsyncSocket": [],
+    "FMDB": []
   },
   "swift_version": "5.0"
 }

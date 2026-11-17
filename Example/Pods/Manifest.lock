@@ -1,76 +1,117 @@
 PODS:
-  - Alamofire (4.9.1)
+  - Alamofire (5.12.2)
   - ALQRCode (1.0.0)
   - CocoaAsyncSocket (7.6.5)
   - DZNEmptyDataSet (1.8.1)
-  - ESTabBarController-swift (2.8.0)
-  - FMDB (2.7.5):
-    - FMDB/standard (= 2.7.5)
-  - FMDB/standard (2.7.5)
+  - FMDB (2.7.12):
+    - FMDB/standard (= 2.7.12)
+  - FMDB/Core (2.7.12)
+  - FMDB/standard (2.7.12):
+    - FMDB/Core
   - HandyJSON (5.0.2)
-  - IQKeyboardManagerSwift (6.5.12)
+  - IQKeyboardCore (1.0.9)
+  - IQKeyboardManagerSwift (8.0.3):
+    - IQKeyboardManagerSwift/Appearance (= 8.0.3)
+    - IQKeyboardManagerSwift/Core (= 8.0.3)
+    - IQKeyboardManagerSwift/IQKeyboardReturnManager (= 8.0.3)
+    - IQKeyboardManagerSwift/IQKeyboardToolbarManager (= 8.0.3)
+    - IQKeyboardManagerSwift/IQTextView (= 8.0.3)
+    - IQKeyboardManagerSwift/Resign (= 8.0.3)
+  - IQKeyboardManagerSwift/Appearance (8.0.3):
+    - IQKeyboardManagerSwift/Core
+    - IQTextInputViewNotification
+  - IQKeyboardManagerSwift/Core (8.0.3):
+    - IQKeyboardNotification
+    - IQTextInputViewNotification
+  - IQKeyboardManagerSwift/IQKeyboardReturnManager (8.0.3):
+    - IQKeyboardReturnManager
+  - IQKeyboardManagerSwift/IQKeyboardToolbarManager (8.0.3):
+    - IQKeyboardManagerSwift/Core
+    - IQKeyboardToolbarManager
+  - IQKeyboardManagerSwift/IQTextView (8.0.3):
+    - IQTextView
+  - IQKeyboardManagerSwift/Resign (8.0.3):
+    - IQKeyboardManagerSwift/Core
+    - IQTextInputViewNotification
+  - IQKeyboardNotification (1.0.7)
+  - IQKeyboardReturnManager (1.0.6):
+    - IQKeyboardCore
+  - IQKeyboardToolbar (1.1.5):
+    - IQKeyboardToolbar/Core (= 1.1.5)
+  - IQKeyboardToolbar/Core (1.1.5):
+    - IQKeyboardCore
+    - IQKeyboardToolbar/Placeholderable
+  - IQKeyboardToolbar/Placeholderable (1.1.5)
+  - IQKeyboardToolbarManager (1.1.6):
+    - IQKeyboardToolbar
+    - IQTextInputViewNotification
+  - IQTextInputViewNotification (1.0.9):
+    - IQKeyboardCore
+  - IQTextView (1.0.5):
+    - IQKeyboardToolbar/Placeholderable
   - JTChat (1.1.3):
     - ALQRCode
     - CocoaAsyncSocket
     - DZNEmptyDataSet
-    - ESTabBarController-swift
     - FMDB
     - HandyJSON
     - IQKeyboardManagerSwift
-    - JTVoiceConvert
     - KeychainSwift
     - Kingfisher
     - MJRefresh
-    - Moya (~> 13.0.0)
+    - Moya
     - RxCocoa
     - RxSwift
-    - SnapKit (~> 4.0.0)
+    - SnapKit
     - SVProgressHUD
     - YPImagePicker
-  - JTVoiceConvert (0.2.2)
-  - KeychainSwift (20.0.0)
-  - Kingfisher (6.3.1)
-  - MJRefresh (3.7.5)
-  - Moya (13.0.1):
-    - Moya/Core (= 13.0.1)
-  - Moya/Core (13.0.1):
-    - Alamofire (~> 4.1)
-    - Result (~> 4.1)
+  - KeychainSwift (24.0.0)
+  - Kingfisher (8.16.0)
+  - MJRefresh (3.7.9)
+  - Moya (15.0.0):
+    - Moya/Core (= 15.0.0)
+  - Moya/Core (15.0.0):
+    - Alamofire (~> 5.0)
   - PryntTrimmerView (4.0.2)
-  - Result (4.1.0)
-  - RxCocoa (6.5.0):
-    - RxRelay (= 6.5.0)
-    - RxSwift (= 6.5.0)
-  - RxRelay (6.5.0):
-    - RxSwift (= 6.5.0)
-  - RxSwift (6.5.0)
-  - SnapKit (4.0.1)
-  - SteviaLayout (4.7.3)
-  - SVProgressHUD (2.2.5)
-  - YPImagePicker (4.5.0):
-    - PryntTrimmerView (~> 4.0.2)
-    - SteviaLayout (~> 4.7.3)
+  - RxCocoa (6.9.0):
+    - RxRelay (= 6.9.0)
+    - RxSwift (= 6.9.0)
+  - RxRelay (6.9.0):
+    - RxSwift (= 6.9.0)
+  - RxSwift (6.9.0)
+  - SnapKit (5.7.1)
+  - SteviaLayout (6.2.2)
+  - SVProgressHUD (2.3.1):
+    - SVProgressHUD/Core (= 2.3.1)
+  - SVProgressHUD/Core (2.3.1)
+  - YPImagePicker (5.4.0):
+    - PryntTrimmerView (= 4.0.2)
+    - SteviaLayout (= 6.2.2)
 
 DEPENDENCIES:
   - JTChat (from `../`)
 
 SPEC REPOS:
-  trunk:
+  https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git:
     - Alamofire
     - ALQRCode
     - CocoaAsyncSocket
     - DZNEmptyDataSet
-    - ESTabBarController-swift
     - FMDB
     - HandyJSON
+    - IQKeyboardCore
     - IQKeyboardManagerSwift
-    - JTVoiceConvert
+    - IQKeyboardNotification
+    - IQKeyboardReturnManager
+    - IQKeyboardToolbar
+    - IQKeyboardToolbarManager
+    - IQTextInputViewNotification
+    - IQTextView
     - KeychainSwift
     - Kingfisher
     - MJRefresh
     - Moya
     - PryntTrimmerView
-    - Result
     - RxCocoa
     - RxRelay
     - RxSwift
@@ -84,30 +125,34 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+  Alamofire: c5f37d8f438dc1d7fd3ff767f2f80fd01ca381d7
   ALQRCode: 5826079a88b8fc35e7c0638fd5ab3167ec5228f9
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DZNEmptyDataSet: 9525833b9e68ac21c30253e1d3d7076cc828eaa7
-  ESTabBarController-swift: 05593a6ad64700b03c0eb60ff625916370aa4136
-  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  FMDB: 728731dd336af3936ce00f91d9d8495f5718a0e6
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
-  IQKeyboardManagerSwift: 371b08cb39664fb56030f5345c815a4ffc74bbc0
-  JTChat: d73a02a9cdccea5573efa618a7f79bc154cc9848
-  JTVoiceConvert: fa6db09d629e234fcc9fefe5974a9cf15b260c2d
-  KeychainSwift: 0ce6a4d13f7228054d1a71bb1b500448fb2ab837
-  Kingfisher: 016c8b653a35add51dd34a3aba36b580041acc74
-  MJRefresh: fdf5e979eb406a0341468932d1dfc8b7f9fce961
-  Moya: f4a4b80ff2f8a4ffc208dfb31cd91636622fee6e
+  IQKeyboardCore: 250a88dfc713b2ecbe1dce250811d054fc016959
+  IQKeyboardManagerSwift: 7f6a9a1e2285732d3ff5f485ff921215253ea77e
+  IQKeyboardNotification: 3b9bc812a5af2cf97df08a363d9daa9fc0dc1848
+  IQKeyboardReturnManager: fcbf51fc68d7536fc1fbcca5231c4e82576b12ac
+  IQKeyboardToolbar: b0f26e43b9e806e961fde2344fe379ae193236b9
+  IQKeyboardToolbarManager: 242e858cc74e06e00aa989bea1355b24d4397854
+  IQTextInputViewNotification: 3b9fb27a16e7ee8958cc9092cfb07a1a9e1fd559
+  IQTextView: ae13b4922f22e6f027f62c557d9f4f236b19d5c7
+  JTChat: 507222e55ab214bffb03f18d439b9706ef95c402
+  KeychainSwift: 007c4647486e4563adca839cf02cef00deb3b670
+  Kingfisher: b329a33a08cbdc616d53629d08b4eef8eacd865a
+  MJRefresh: ff9e531227924c84ce459338414550a05d2aea78
+  Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
   PryntTrimmerView: 6a43cc90df5d99addeabd33d4ba09b1365322130
-  Result: bd966fac789cc6c1563440b348ab2598cc24d5c7
-  RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
-  RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
-  RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
-  SnapKit: 0de968a9fec17499afa29683b05d0c775b6d1c29
-  SteviaLayout: c2ecdcff57d44e38fd2f65e54ad52aeae28ca0c4
-  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
-  YPImagePicker: 6f410f475bd22fa8cd430495b54d4b2f15865c2d
+  RxCocoa: ac16414696ae706516be3e1ab00fcce5bdc9be8a
+  RxRelay: 6b0c930e5cef57d5fe2032571e5e65b78e3cbdb1
+  RxSwift: 31649ace6aceeb422e16ff71c60804f9c3281ed9
+  SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
+  SteviaLayout: c85f591c5af5f0b3883d904984b7d41e15b4e582
+  SVProgressHUD: 4837c74bdfe2e51e8821c397825996a8d7de6e22
+  YPImagePicker: afd61b18aa3610fa9f3837c3d08778f2728b89bc
 
-PODFILE CHECKSUM: 316dd59311bcd927112a86b70343a602cfc1d47a
+PODFILE CHECKSUM: 93229c668325d09d71cadbca66df6457fac383be
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.16.2

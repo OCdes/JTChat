@@ -40,7 +40,8 @@ public class YPSelectionsGalleryVC: UIViewController, YPSelectionsGalleryCellDel
         v.collectionView.delegate = self
         
         // Setup navigation bar
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.next,
+        let title = YPWordings().computeNavigationRightButtonText(step: .multipleGallary)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: title,
                                                             style: .done,
                                                             target: self,
                                                             action: #selector(done))
@@ -130,6 +131,7 @@ extension YPSelectionsGalleryVC: UICollectionViewDelegate {
         if let mediaFilterVC = mediaFilterVC as? UIViewController {
             let navVC = UINavigationController(rootViewController: mediaFilterVC)
             navVC.navigationBar.isTranslucent = false
+            navVC.navigationBar.backgroundColor = YPConfig.colors.defaultNavigationBarColor
             present(navVC, animated: true, completion: nil)
         }
     }

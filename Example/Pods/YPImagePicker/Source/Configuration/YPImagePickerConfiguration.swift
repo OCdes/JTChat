@@ -20,25 +20,27 @@ public struct YPImagePickerConfiguration {
     public static var widthOniPad: CGFloat = -1
     
     public static var screenWidth: CGFloat {
-		var screenWidth: CGFloat = UIScreen.main.bounds.width
+        var screenWidth: CGFloat = 0
+        
+        screenWidth = UIApplication.safeFirstWindowScreenWidth ?? 1.0
 		if UIDevice.current.userInterfaceIdiom == .pad && YPImagePickerConfiguration.widthOniPad > 0 {
 			screenWidth =  YPImagePickerConfiguration.widthOniPad
 		}
 		return screenWidth
     }
-    
+
+    /// If don't want to have logs from picker, set it to false.
+    public var isDebugLogsEnabled: Bool = true
+
     public init() {}
     
-    /// Scroll to change modes, defaults to true
-    public var isScrollToChangeModesEnabled = true
-    
-    // Library configuration
+    /// Library configuration
     public var library = YPConfigLibrary()
     
-    // Video configuration
+    /// Video configuration
     public var video = YPConfigVideo()
     
-    // Gallery configuration
+    /// Gallery configuration
     public var gallery = YPConfigSelectionsGallery()
     
     /// Use this property to modify the default wordings provided.
@@ -52,7 +54,10 @@ public struct YPImagePickerConfiguration {
 
     /// Use this property to modify the default fonts provided
     public var fonts = YPFonts()
-    
+
+    /// Scroll to change modes, defaults to true
+    public var isScrollToChangeModesEnabled = true
+
     /// Set this to true if you want to force the camera output to be a squared image. Defaults to true
     public var onlySquareImagesFromCamera = true
     
@@ -72,7 +77,7 @@ public struct YPImagePickerConfiguration {
     /// Defines the name of the album when saving pictures in the user's photo library.
     /// In general that would be your App name. Defaults to "DefaultYPImagePickerAlbumName"
     public var albumName = "DefaultYPImagePickerAlbumName"
-    
+
     /// Defines which screen is shown at launch. Video mode will only work if `showsVideo = true`.
     /// Default value is `.photo`
     public var startOnScreen: YPPickerScreen = .photo
@@ -83,6 +88,9 @@ public struct YPImagePickerConfiguration {
 
     /// Adds a Crop step in the photo taking process, after filters.  Defaults to .none
     public var showsCrop: YPCropType = .none
+    
+    /// Controls the visibility of a grid on crop stage. Default it false
+    public var showsCropGridOverlay = false
     
     /// Ex: cappedTo:1024 will make sure images from the library or the camera will be
     /// resized to fit in a 1024x1024 box. Defaults to original image size.
@@ -112,6 +120,9 @@ public struct YPImagePickerConfiguration {
     /// Defines the max camera zoom factor for camera. Disable camera zoom with 1. Default is 1.
     public var maxCameraZoomFactor: CGFloat = 1.0
     
+    /// Controls the camera shutter sound. If set to true, the camera shutter sound will be disabled. Defaults to false.
+    public var silentMode = false
+    
     /// List of default filters which will be added on the filter screen
     public var filters: [YPFilter] = [
         YPFilter(name: "Normal", applier: nil),
@@ -119,7 +130,6 @@ public struct YPImagePickerConfiguration {
         YPFilter(name: "Toaster", applier: YPFilter.toasterFilter),
         YPFilter(name: "1977", applier: YPFilter.apply1977Filter),
         YPFilter(name: "Clarendon", applier: YPFilter.clarendonFilter),
-        YPFilter(name: "HazeRemoval", applier: YPFilter.hazeRemovalFilter),
         YPFilter(name: "Chrome", coreImageFilterName: "CIPhotoEffectChrome"),
         YPFilter(name: "Fade", coreImageFilterName: "CIPhotoEffectFade"),
         YPFilter(name: "Instant", coreImageFilterName: "CIPhotoEffectInstant"),
@@ -130,50 +140,9 @@ public struct YPImagePickerConfiguration {
         YPFilter(name: "Transfer", coreImageFilterName: "CIPhotoEffectTransfer"),
         YPFilter(name: "Tone", coreImageFilterName: "CILinearToSRGBToneCurve"),
         YPFilter(name: "Linear", coreImageFilterName: "CISRGBToneCurveToLinear"),
-        YPFilter(name: "Sepia", coreImageFilterName: "CISepiaTone")
+        YPFilter(name: "Sepia", coreImageFilterName: "CISepiaTone"),
+        YPFilter(name: "XRay", coreImageFilterName: "CIXRay")
         ]
-    
-    /// Migration
-    
-    @available(iOS, obsoleted: 3.0.0, renamed: "video.compression")
-    public var videoCompression: String = AVAssetExportPresetHighestQuality
-    
-    @available(iOS, obsoleted: 3.0.0, renamed: "video.fileType")
-    public var videoExtension: AVFileType = .mov
-    
-    @available(iOS, obsoleted: 3.0.0, renamed: "video.recordingTimeLimit")
-    public var videoRecordingTimeLimit: TimeInterval = 60.0
-    
-    @available(iOS, obsoleted: 3.0.0, renamed: "video.libraryTimeLimit")
-    public var videoFromLibraryTimeLimit: TimeInterval = 60.0
-    
-    @available(iOS, obsoleted: 3.0.0, renamed: "video.minimumTimeLimit")
-    public var videoMinimumTimeLimit: TimeInterval = 3.0
-    
-    @available(iOS, obsoleted: 3.0.0, renamed: "video.trimmerMaxDuration")
-    public var trimmerMaxDuration: Double = 60.0
-
-    @available(iOS, obsoleted: 3.0.0, renamed: "video.trimmerMinDuration")
-    public var trimmerMinDuration: Double = 3.0
-    
-    @available(iOS, obsoleted: 3.0.0, renamed: "library.onlySquare")
-    public var onlySquareImagesFromLibrary = false
-    
-    @available(iOS, obsoleted: 3.0.0, renamed: "library.onlySquare")
-    public var onlySquareFromLibrary = false
-    
-    @available(iOS, obsoleted: 3.0.0, renamed: "targetImageSize")
-    public var libraryTargetImageSize = YPImageSize.original
-    
-    @available(iOS, obsoleted: 3.0.0, renamed: "library.mediaType")
-    public var showsVideoInLibrary = false
-    
-    @available(iOS, obsoleted: 3.0.0, renamed: "library.mediaType")
-    public var libraryMediaType = YPlibraryMediaType.photo
-    
-    @available(iOS, obsoleted: 3.0.0, renamed: "library.maxNumberOfItems")
-    public var maxNumberOfItems = 1
-    
 }
 
 /// Encapsulates library specific settings.
@@ -190,7 +159,8 @@ public struct YPConfigLibrary {
 	/// Minimum width, to prevent selectiong too high images. Have sense if onlySquare is true and the image is portrait.
     public var minWidthForItem: CGFloat?
     
-    /// Choose what media types are available in the library. Defaults to `.photo`
+    /// Choose what media types are available in the library. Defaults to `.photo`.
+    /// If you define custom options PHFetchOptions var, than this will not work.
     public var mediaType = YPlibraryMediaType.photo
 
     /// Initial state of multiple selection button.
@@ -203,7 +173,7 @@ public struct YPConfigLibrary {
     public var maxNumberOfItems = 1
     
     /// Anything greater than 1 will desactivate live photo and video modes (library only) and
-    // force users to select at least the number of items defined.
+    /// force users to select at least the number of items defined.
     public var minNumberOfItems = 1
 
     /// Set the number of items per row in collection view. Defaults to 4.
@@ -241,6 +211,19 @@ public struct YPConfigVideo {
     
     /// Choose the result video extension if you trim or compress a video. Defaults to mov.
     public var fileType: AVFileType = .mov
+    
+    /// Set this value for the `AVAssetExportSession` property `fileLengthLimit`
+    /// May be useful for exporting video with original format `mp4`
+    ///
+    /// Sometimes `AVAssetExportSession` increase mp4 video bitrate
+    /// so result file might be quite bigger than original from user gallery
+    ///
+    /// Usage example - setting `fileLengthLimit` to `10 MB`:
+    /// ``` swift
+    /// config.video.fileLengthLimit = 1048576 * 10
+    /// ```
+    /// For more information check [this thread](https://stackoverflow.com/questions/50560922/reducing-the-size-of-a-video-exported-with-avassetexportsession-ios-swift)
+    public var fileLengthLimit: Int64?
     
     /// Defines the time limit for recording videos.
     /// Default is 60 seconds.

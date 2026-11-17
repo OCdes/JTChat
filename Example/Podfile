@@ -1,8 +1,21 @@
-platform :ios, "11.0"
+platform :ios, "15.0"
 #source 'git@github.com:OCdes/JTVoiceConvertSpecRepo.git'
 #source 'https://github.com/CocoaPods/Specs.git'
+source 'https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git'
 use_frameworks!
 target 'JTChat_Example' do
   pod 'JTChat', :path => '../'
 
+end
+
+# 把 Pods 工程里每个依赖 target 的部署版本统一抬到 15.0
+# （pod install 默认只按各自 podspec 的 deployment_target 生成，不会跟随 Podfile 的 platform）
+post_install do |installer|
+  installer.generated_projects.each do |project|
+    project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+      end
+    end
+  end
 end

@@ -9,7 +9,7 @@
 import UIKit
 import JTChat
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
@@ -38,8 +38,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         tabVC.viewControllers = [messageNav, contactorNav]
         tabVC.edgesForExtendedLayout = UIRectEdge.all
         tabVC.tabBar.isTranslucent = false
-        self.window = UIWindow.init(frame: UIScreen.main.bounds)
-        self.window?.rootViewController = tabVC
+        // scene 生命周期下 window 必须绑定到 UIWindowScene，绑定放到 scene(_:willConnectTo:) 里做
+        let window = UIWindow()
+        window.rootViewController = tabVC
+        self.window = window
+    }
+
+    // MARK: - UISceneSession Lifecycle
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+        if let window = self.window {
+            window.windowScene = windowScene
+        } else {
+            setRootVC()
+            self.window?.windowScene = windowScene
+        }
+        self.window?.makeKeyAndVisible()
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

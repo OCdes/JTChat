@@ -76,21 +76,18 @@ func urlByNetworkEnv(env: NetworkEnvironment)->String{
 
 
 class NetServiceManager: NSObject {
-    private var sessionManager: SessionManager?
+    private var sessionManager: Session?
     static let manager = NetServiceManager()
     let dataCachePath = NSHomeDirectory()+"/Documents/NetworkDataCache/"
     let networkStatus: NetworkStautsCode = .NetworkStatusCodeWifi
-    private var header:[String: Any] = {
-        var httpHeader: HTTPHeaders = SessionManager.defaultHTTPHeaders
-        return httpHeader
-    }()
+    private var header: HTTPHeaders = HTTPHeaders.default
     private var subject: PublishSubject<Any>?
     override init() {
         super.init()
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = networkTimeout
         
-        sessionManager = SessionManager.init(configuration: configuration, delegate: SessionDelegate.init(), serverTrustPolicyManager: nil)
+        sessionManager = Session(configuration: configuration)
         
     }
     
@@ -117,9 +114,9 @@ class NetServiceManager: NSObject {
     
     public func requestByType(requestType: RequestType, url: String, params: [String: Any], success: @escaping RequestSuccess, fail: @escaping RequestFail)->PublishSubject<Any> {
         let sub: PublishSubject = PublishSubject<Any>()
-        self.header = SessionManager.defaultHTTPHeaders
+        self.header = HTTPHeaders.default
         if let a = USERDEFAULT.object(forKey: "jwt") {
-            self.header["jwt"] = a
+            self.header["jwt"] = "\(a)"
         }
         var mparam: Dictionary<String, Any> = params
         if let a = USERDEFAULT.object(forKey: "ctoken") {
@@ -164,10 +161,10 @@ class NetServiceManager: NSObject {
     }
     
     public func requestByType(requestType: RequestType, api: String, params: [String: Any], success: @escaping RequestSuccess, fail: @escaping RequestFail)->PublishSubject<Any> {
-        self.header = SessionManager.defaultHTTPHeaders
+        self.header = HTTPHeaders.default
         let sub: PublishSubject = PublishSubject<Any>()
         if let a = USERDEFAULT.object(forKey: "jwt") {
-            self.header["jwt"] = a
+            self.header["jwt"] = "\(a)"
         }
         var mparam: Dictionary<String, Any> = params
         if let a = USERDEFAULT.object(forKey: "ctoken") {
@@ -218,7 +215,7 @@ class NetServiceManager: NSObject {
 extension NetServiceManager {
     
     fileprivate func GET(requestType: RequestType, url: String, params: [String: Any], success:@escaping RequestSuccess, fail:@escaping RequestFail){
-        self.sessionManager?.request(url, method: .get, parameters: params, encoding: URLEncoding.default, headers: self.header as? HTTPHeaders).validate().responseJSON(completionHandler: { [weak self](response) in
+        self.sessionManager?.request(url, method: .get, parameters: params, encoding: URLEncoding.default, headers: self.header).validate().responseJSON(completionHandler: { [weak self](response) in
             self!.handleResponse(response: response, successBlock: success, faliedBlock: fail)
         })
     }
@@ -234,7 +231,7 @@ extension NetServiceManager {
         request.httpMethod = HTTPMethod.post.rawValue
         request.setValue("application/json/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpBody = paraStr.data(using: .utf8)
-        self.sessionManager?.request(url, method: HTTPMethod.post, parameters: params, encoding: URLEncoding.default, headers: self.header as? HTTPHeaders).responseJSON(completionHandler: { [weak self](response) in
+        self.sessionManager?.request(url, method: HTTPMethod.post, parameters: params, encoding: URLEncoding.default, headers: self.header).responseJSON(completionHandler: { [weak self](response) in
             return self!.handleResponse(response: response, successBlock: success, faliedBlock: fail)
         })
     }
@@ -242,62 +239,54 @@ extension NetServiceManager {
     func UploadImage(images: [UIImage], api: String, param: Dictionary<String, Any>, isShowHUD: Bool, progressBlock: @escaping NetworkProgress, successBlock:@escaping RequestSuccess,faliedBlock:@escaping RequestFail) {
         let a = JTManager.manager.jwt
         self.header["jwt"] = a
-        self.header["content-type"] = "multipart/form-data"
-        postImage(images: images, url: BASE_URL+api, param: param, headers: self.header as! HTTPHeaders, isShowHUD: isShowHUD, progressBlock: progressBlock, successBlock: successBlock, faliedBlock: faliedBlock)
+        // 不要手动设 content-type：Alamofire 上传时会自动带 boundary，手写会把 boundary 顶掉导致服务端解析失败
+        postImage(images: images, url: BASE_URL+api, param: param, headers: self.header, isShowHUD: isShowHUD, progressBlock: progressBlock, successBlock: successBlock, faliedBlock: faliedBlock)
     }
         
     //    上传图片
     func postImage(images: [UIImage], url: String, param: Parameters?, headers: HTTPHeaders, isShowHUD: Bool, progressBlock: @escaping NetworkProgress, successBlock:@escaping RequestSuccess,faliedBlock:@escaping RequestFail) {
-            self.sessionManager?.upload(multipartFormData: { (multipartFormData) in
-                //采用post表单上传
-                // 参数解释
-                if let dict = param {
-                    for (key, value) in dict {
-                        multipartFormData.append((value as! String).data(using: String.Encoding.utf8)!, withName: key)
-                    }
+        let uploadRequest = self.sessionManager?.upload(multipartFormData: { (multipartFormData) in
+            //采用post表单上传
+            // 参数解释
+            if let dict = param {
+                for (key, value) in dict {
+                    multipartFormData.append((value as! String).data(using: String.Encoding.utf8)!, withName: key)
                 }
-                for img in images {
-                    let imageData = img.jpegData(compressionQuality: 0.0001)
-                    let dataStr = DateFormatter.init()
-                    dataStr.dateFormat = "yyyyMMddHHmmss"
-                    let fileName = "\(dataStr.string(from: Date.init())).png"
-                    multipartFormData.append(imageData!, withName: "file", fileName: fileName, mimeType: "image/jpg/png/jpeg")
-                }
-                
-            }, to: url, headers: headers, encodingCompletion: { (encodingResult) in
-                
-                switch encodingResult {
-                case .success(let upload, _, _):
-                    //连接服务器成功后，对json的处理
-                    upload.responseJSON { response in
-                        //解包
-                        self.handleResponse(response: response, successBlock: successBlock, faliedBlock: faliedBlock)
-    //                    print("json:\(result)")
-                    }
-                    //获取上传进度
-                    upload.uploadProgress(queue: DispatchQueue.global(qos: .utility)) { progress in
-                        progressBlock(progress.fractionCompleted);
-                        print("图片上传进度: \(progress.fractionCompleted)")
-                    }
-                    break
-                case .failure(let encodingError):
-                    self.handleRequestError(error: encodingError as NSError, faliedBlock: faliedBlock)
-                    break
-                }
-            })
-        }
-    /** 处理服务器响应数据*/
-    private func handleResponse(response:DataResponse<Any>, successBlock: RequestSuccess ,faliedBlock: RequestFail){
-        if let error = response.result.error {
-            // 服务器未返回数据
-                self.handleRequestError(error: error as NSError , faliedBlock: faliedBlock)
+            }
+            for img in images {
+                let imageData = img.jpegData(compressionQuality: 0.0001)
+                let dataStr = DateFormatter.init()
+                dataStr.dateFormat = "yyyyMMddHHmmss"
+                let fileName = "\(dataStr.string(from: Date.init())).png"
+                multipartFormData.append(imageData!, withName: "file", fileName: fileName, mimeType: "image/jpg/png/jpeg")
+            }
             
-        }else if let value = response.result.value {
-            // 服务器又返回数h数据
+        }, to: url, headers: headers)
+        
+        //连接服务器成功后，对json的处理
+        uploadRequest?.responseJSON { [weak self] response in
+            self?.handleResponse(response: response, successBlock: successBlock, faliedBlock: faliedBlock)
+        }
+        //获取上传进度
+        uploadRequest?.uploadProgress(queue: DispatchQueue.global(qos: .utility)) { progress in
+            progressBlock(progress.fractionCompleted)
+            print("图片上传进度: \(progress.fractionCompleted)")
+        }
+    }
+
+    /** 处理服务器响应数据*/
+    private func handleResponse(response: AFDataResponse<Any>, successBlock: RequestSuccess ,faliedBlock: RequestFail){
+        switch response.result {
+        case .failure(let error):
+            // Alamofire 5 把底层 URLError 包在 AFError 里，取出来才能拿到 -1009 这类网络码
+            let nsError = (error.underlyingError ?? error) as NSError
+            self.handleRequestError(error: nsError, faliedBlock: faliedBlock)
+        case .success(let value):
+            // 服务器又返回数据
             if (value as? NSDictionary) == nil {
                 // 返回格式不对
                 self.handleRequestSuccessWithFaliedBlcok(faliedBlock: faliedBlock)
-            }else{
+            } else {
                 self.handleRequestSuccess(value: response.data as Any, data: value as! Dictionary<String, Any>, successBlock: successBlock, faliedBlock: faliedBlock)
             }
         }

@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JTChat'
-  s.version          = '1.1.3'
+  s.version          = '1.2.0'
   s.summary          = '精特聊天演示'
 
 # This description is used to generate tags and improve search results.
@@ -28,26 +28,23 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'git@github.com:OCdes/JTChat.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
   s.libraries = "c++","c"
-  s.xcconfig = { 'VALID_ARCHS' => 'arm64 x86_64 armv7 armv7s', }
-  s.ios.deployment_target = '11.0'
+  s.ios.deployment_target = '15.0'
   s.source_files = 'JTChat/Classes/**/*'
-  s.swift_versions = ['4.0','4.2','5.0']
+  s.swift_versions = ['5.0']
    s.resource_bundles = {
      'JTChat' => ['JTChat/Assets/*']
    }
    s.static_framework = true
-   #s.pod_target_xcconfig = {'DEFINES_MODULE' => 'YES'}
-   # , 'FRAMEWORK_SEARCH_PATHS' => '"${PODS_ROOT}/MJRefresh"'
+   # opencore-amr 0.1.5 自编译静态库（含真机 arm64 与模拟器 arm64/x86_64）
+   s.vendored_frameworks = 'JTChat/Frameworks/libopencore-amrnb.xcframework'
   # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
   s.dependency "KeychainSwift"
-  s.dependency "ESTabBarController-swift"
-  s.dependency "Moya", "~> 13.0.0"
+  s.dependency "Moya"
   s.dependency "HandyJSON"
   s.dependency "IQKeyboardManagerSwift"
   s.dependency "RxSwift"
   s.dependency "RxCocoa"
-  s.dependency "SnapKit", "~>4.0.0"
+  s.dependency "SnapKit"
   s.dependency "Kingfisher"
   s.dependency "YPImagePicker"
   s.dependency "MJRefresh"
@@ -56,5 +53,4 @@ Pod::Spec.new do |s|
   s.dependency "ALQRCode"
   s.dependency "CocoaAsyncSocket"
   s.dependency "FMDB"
-  s.dependency "JTVoiceConvert"
 end

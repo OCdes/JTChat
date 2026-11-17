@@ -40,8 +40,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         } else {
             self.bgImgv.image = viewModel.getChatViewBG(forID: viewModel.contactor?.phone ?? "")
         }
-        IQKeyboardManager.shared.enable = false
-        IQKeyboardManager.shared.enableAutoToolbar = false
+        IQKeyboardManager.shared.isEnabled = false
     }
 
     
@@ -59,8 +58,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
     override func viewDidDisappear(_ animated: Bool) {
         USERDEFAULT.removeObject(forKey: "currentID")
         super.viewDidAppear(animated)
-        IQKeyboardManager.shared.enable = true
-        IQKeyboardManager.shared.enableAutoToolbar = true
+        IQKeyboardManager.shared.isEnabled = true
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -98,15 +96,15 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
         view.backgroundColor = kIsFlagShip ? HEX_VIEWBACKCOLOR : HEX_COLOR(hexStr: "#EBEBEB");
         view.addSubview(bgImgv)
         view.addSubview(toolView)
-        toolView.snp_makeConstraints { (make) in
+        toolView.snp.makeConstraints { make in
             make.left.right.equalTo(self.view)
             make.height.greaterThanOrEqualTo(62)
             make.bottom.equalTo(view)
         }
         view.addSubview(tableView)
-        tableView.snp_makeConstraints { (make) in
+        tableView.snp.makeConstraints { make in
             make.top.left.right.equalTo(view)
-            make.bottom.equalTo(toolView.snp_top)
+            make.bottom.equalTo(toolView.snp.top)
         }
         
     }
@@ -138,7 +136,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
 
     func keyboardChangeFrame(inY: CGFloat) {
         UIView.animate(withDuration: 0.3) {
-            self.toolView.snp_updateConstraints { make in
+            self.toolView.snp.updateConstraints { make in
                 make.bottom.equalTo(self.view).offset(-inY)
             }
         }
@@ -147,7 +145,7 @@ class ChatVC: BaseViewController,InputToolViewDelegate {
 
     func keyboardHideFrame(inY: CGFloat) {
         UIView.animate(withDuration: 0.3) {
-            self.toolView.snp_updateConstraints { make in
+            self.toolView.snp.updateConstraints { make in
                 make.bottom.equalTo(self.view)
             }
         }
